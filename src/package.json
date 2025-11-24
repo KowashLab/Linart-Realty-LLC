@@ -1,0 +1,42 @@
+{
+  "name": "luxury-real-estate-website-design",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Ultra-premium luxury real estate platform with royal Lion/King aesthetic",
+  "author": "Linart Realty LLC",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "figma:fetch-tokens": "node scripts/figma-fetch-tokens.js",
+    "images:download": "node scripts/download-images.js",
+    "images:list": "ls -lh public/images/"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
+    "motion": "^10.18.0",
+    "lucide-react": "^0.263.1",
+    "sonner": "^2.0.3",
+    "@supabase/supabase-js": "^2.45.0",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.1",
+    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

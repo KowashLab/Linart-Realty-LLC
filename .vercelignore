@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs (Vercel will rebuild)
+dist/
+build/
+
+# Environment files (use Vercel dashboard for env vars)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Editor files
+.vscode/
+.idea/
+.DS_Store
+
+# Documentation (не нужно на production)
+README.md
+Attributions.md
+guidelines/
+
+# Config files that Vercel doesn't need
+.eslintrc*
+.prettierrc*
+tsconfig.tsbuildinfo
+
+# Git files
+.git/
+.gitignore

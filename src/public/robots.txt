@@ -1,0 +1,66 @@
+# Linart Realty LLC - Robots.txt
+# https://linartrealty.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Main Pages - Full Access
+Allow: /$
+Allow: /properties
+Allow: /services
+Allow: /about
+Allow: /testimonials
+Allow: /contact
+
+# Service Pages - Full Access
+Allow: /residential-estates
+Allow: /commercial-property
+Allow: /investment-advisory
+Allow: /design-renovation
+
+# User Pages - No Index (but allow crawling for authenticated users)
+Disallow: /profile
+Disallow: /auth
+
+# Legal Pages - Allow but Low Priority
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
+
+# API & Backend - Disallow
+Disallow: /api/
+Disallow: /supabase/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://linartrealty.com/sitemap.xml
+
+# Crawl Delay (optional, for aggressive bots)
+Crawl-delay: 1
+
+# Specific Bot Rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 0
+
+# Block bad bots (optional)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
