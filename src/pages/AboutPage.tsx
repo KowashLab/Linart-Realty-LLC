@@ -2,7 +2,7 @@ import React from 'react';
 import { SEO } from '../components/SEO';
 import { About } from '../components/About';
 import { TrustSection } from '../components/TrustSection';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Target, Award, Users, TrendingUp, Globe, Shield } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 

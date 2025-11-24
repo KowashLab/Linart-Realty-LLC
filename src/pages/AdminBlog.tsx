@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Plus, Edit2, Trash2, Save, X, Eye, EyeOff, Calendar, User as UserIcon, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { projectId, publicAnonKey } from '../utils/supabase/info';

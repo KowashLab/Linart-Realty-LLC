@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { MapPin, Bed, Bath, Square, TrendingUp, Building2, Home, Filter } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { PremiumButton } from '../components/PremiumButton';

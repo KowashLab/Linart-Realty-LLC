@@ -1,6 +1,6 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Wrench, Palette, Ruler, Lightbulb, CheckCircle, Award, Target, Zap } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Building2, TrendingUp, Users, Shield, CheckCircle, MapPin, DollarSign, BarChart } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';

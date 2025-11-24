@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Building2, Home, Paintbrush, TrendingUp, ArrowRight, Crown } from 'lucide-react';
 
 /*

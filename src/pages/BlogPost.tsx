@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Calendar, ArrowLeft, User } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';

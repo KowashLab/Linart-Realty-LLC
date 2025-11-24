@@ -1,7 +1,7 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
 import { Testimonials } from '../components/Testimonials';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 

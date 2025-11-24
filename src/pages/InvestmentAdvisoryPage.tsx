@@ -1,6 +1,6 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { TrendingUp, BarChart3, PieChart, DollarSign, CheckCircle, Shield, Target, LineChart } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 

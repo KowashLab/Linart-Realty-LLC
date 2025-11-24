@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Mail, Lock, User, Chrome, LogIn, UserPlus, Crown, Apple, Facebook } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 

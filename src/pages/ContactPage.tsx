@@ -1,7 +1,7 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
 import { Contact } from '../components/Contact';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 /*
 ═══════════════════════════════════════════════════════════════════

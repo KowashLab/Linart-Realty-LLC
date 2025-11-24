@@ -1,6 +1,6 @@
 import React from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
 import { PremiumButton } from '../components/PremiumButton';
 
