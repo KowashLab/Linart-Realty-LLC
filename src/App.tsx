@@ -26,6 +26,7 @@ import { AdminProperties } from './components/AdminProperties';
 import { AdminTestimonials } from './components/AdminTestimonials';
 import { AdminRecognition } from './components/AdminRecognition';
 import { AdminPartnerships } from './components/AdminPartnerships';
+import SeedPage from './pages/SeedPage';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -140,6 +141,8 @@ export default function App() {
         return <AdminRecognition />;
       case '/admin/partnerships':
         return <AdminPartnerships />;
+      case '/seed':
+        return <SeedPage />;
       default:
         return <HomePage />;
     }
