@@ -1,7 +1,5 @@
 
-  # Luxury Real Estate Website Design
-
-  This is a code bundle for Luxury Real Estate Website Design. The original project is available at https://www.figma.com/design/3kkiMI1TzIk2mOv0QpZbMZ/Luxury-Real-Estate-Website-Design.
+  # Luxury Real Estate project.
 
   ## Running the code
 
