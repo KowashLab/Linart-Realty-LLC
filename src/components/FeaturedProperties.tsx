@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Bed, Bath, Square, TrendingUp, ArrowRight } from 'lucide-react';
 import { PremiumButton } from './PremiumButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { kvGetByPrefix } from '../utils/supabase/kvClient';
+import { fetchProperties } from '../utils/api/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -33,19 +33,17 @@ export function FeaturedProperties() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProperties();
+    fetchPropertiesData();
   }, []);
 
-  const fetchProperties = async () => {
+  const fetchPropertiesData = async () => {
     try {
       setLoading(true);
-      const data = await kvGetByPrefix('property_');
+      const data = await fetchProperties();
       
       // Show only published properties, limit to 3 for featured section
       const publishedProperties = data.filter((p: any) => p.published !== false).slice(0, 3);
       setProperties(publishedProperties);
-      
-      console.log('Loaded featured properties:', publishedProperties.length);
     } catch (error) {
       console.error('Error fetching properties:', error);
       setProperties([]);
@@ -158,9 +156,9 @@ export function FeaturedProperties() {
                 (window as any).navigateTo('/properties');
               }
             }}
-            label="Explore All Properties"
-            icon={<ArrowRight size={16} />}
-          />
+          >
+            Explore All Properties
+          </PremiumButton>
         </motion.div>
       </div>
 

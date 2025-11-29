@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const supabase = getSupabaseClient();
-  const serverUrl = `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f`;
+  const serverUrl = `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f`;
 
   const getAccessToken = async (): Promise<string | null> => {
     const { data: { session } } = await supabase.auth.getSession();
