@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Trophy, Star, Shield } from 'lucide-react';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { Trophy, Building2, Award, Users, CheckCircle2, Handshake } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { kvGetByPrefix } from '../utils/supabase/kvClient';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  TRUST SECTION - Premium Partners & Awards
-  - Data loaded from API (Recognition & Partnerships)
+  TRUST SECTION - Global Recognition & Strategic Partnerships
+  - Data loaded directly from KV store
 ═══════════════════════════════════════════════════════════════════
 */
 
-interface Partner {
-  id: string;
-  name: string;
-  category: string;
-  logo?: string;
-  website?: string;
-  published?: boolean;
-}
-
-interface AwardItem {
+interface RecognitionItem {
   id: string;
   title: string;
   organization: string;
@@ -29,8 +21,17 @@ interface AwardItem {
   published?: boolean;
 }
 
+interface PartnershipItem {
+  id: string;
+  name: string;
+  category: string;
+  logo?: string;
+  website?: string;
+  published?: boolean;
+}
+
 // Fallback demo data when API is unavailable
-const FALLBACK_AWARDS: AwardItem[] = [
+const FALLBACK_RECOGNITION: RecognitionItem[] = [
   {
     id: '1',
     title: 'Luxury Real Estate Agency of the Year',
@@ -65,7 +66,7 @@ const FALLBACK_AWARDS: AwardItem[] = [
   }
 ];
 
-const FALLBACK_PARTNERS: Partner[] = [
+const FALLBACK_PARTNERSHIPS: PartnershipItem[] = [
   {
     id: '1',
     name: 'Sotheby\'s International Realty',
@@ -93,8 +94,8 @@ const FALLBACK_PARTNERS: Partner[] = [
 ];
 
 export function TrustSection() {
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [awards, setAwards] = useState<AwardItem[]>([]);
+  const [partnerships, setPartnerships] = useState<PartnershipItem[]>([]);
+  const [recognition, setRecognition] = useState<RecognitionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,62 +107,21 @@ export function TrustSection() {
       setLoading(true);
       
       // Fetch Recognition (Awards)
-      const recognitionResponse = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/recognition`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
+      const recognitionData = await kvGetByPrefix('recognition_');
+      const publishedRecognition = recognitionData.filter((r: any) => r.published !== false);
+      setRecognition(publishedRecognition);
+      
       // Fetch Partnerships
-      const partnershipsResponse = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/partnerships`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (recognitionResponse.ok) {
-        const data = await recognitionResponse.json();
-        // Check if data.items exists and is an array
-        if (data.items && Array.isArray(data.items)) {
-          const publishedAwards = data.items.filter((item: AwardItem) => item.published !== false);
-          setAwards(publishedAwards);
-        } else {
-          console.log('Recognition data format:', data);
-          setAwards(FALLBACK_AWARDS);
-        }
-      } else {
-        console.log('Recognition API error, using fallback');
-        setAwards(FALLBACK_AWARDS);
-      }
-
-      if (partnershipsResponse.ok) {
-        const data = await partnershipsResponse.json();
-        // Check if data.items exists and is an array
-        if (data.items && Array.isArray(data.items)) {
-          const publishedPartners = data.items.filter((item: Partner) => item.published !== false);
-          setPartners(publishedPartners);
-        } else {
-          console.log('Partnerships data format:', data);
-          setPartners(FALLBACK_PARTNERS);
-        }
-      } else {
-        console.log('Partnerships API error, using fallback');
-        setPartners(FALLBACK_PARTNERS);
-      }
+      const partnershipsData = await kvGetByPrefix('partnership_');
+      const publishedPartnerships = partnershipsData.filter((p: any) => p.published !== false);
+      setPartnerships(publishedPartnerships);
+      
+      console.log('Loaded recognition:', publishedRecognition.length);
+      console.log('Loaded partnerships:', publishedPartnerships.length);
     } catch (error) {
-      console.error('Error fetching trust data:', error);
-      // Use fallback data on network error
-      console.log('Network error, using fallback data');
-      setAwards(FALLBACK_AWARDS);
-      setPartners(FALLBACK_PARTNERS);
+      console.error('Error fetching data:', error);
+      setRecognition([]);
+      setPartnerships([]);
     } finally {
       setLoading(false);
     }
@@ -169,7 +129,7 @@ export function TrustSection() {
 
   // Default icon mapping
   const getIconForAward = (index: number) => {
-    const icons = [Trophy, Award, Star, Shield];
+    const icons = [Trophy, Award, Users, CheckCircle2];
     return icons[index % icons.length];
   };
 
@@ -242,7 +202,7 @@ export function TrustSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24"
         >
-          {awards.map((award, index) => {
+          {recognition.map((award, index) => {
             const Icon = getIconForAward(index);
             return (
               <motion.div
@@ -344,7 +304,7 @@ export function TrustSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {partners.map((partner, index) => (
+            {partnerships.map((partner, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.95 }}

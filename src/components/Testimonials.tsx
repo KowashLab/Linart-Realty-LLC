@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Quote, Star } from 'lucide-react';
+import { Star, Quote } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { kvGetByPrefix } from '../utils/supabase/kvClient';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  TESTIMONIALS - Premium Client Reviews (4x2 Grid)
-  - Data loaded from API
+  TESTIMONIALS SECTION
+  - Data loaded directly from KV store
 ═══════════════════════════════════════════════════════════════════
 */
 
@@ -22,50 +22,6 @@ interface Testimonial {
   published?: boolean;
 }
 
-// Fallback demo testimonials when API is unavailable
-const FALLBACK_TESTIMONIALS: Testimonial[] = [
-  {
-    id: '1',
-    name: 'Victoria Ashford',
-    role: 'CEO, Ashford Holdings',
-    text: 'Linart Realty exceeded every expectation. Their professionalism, market knowledge, and dedication to finding the perfect property for our portfolio was unmatched. A truly exceptional experience.',
-    rating: 5,
-    image: 'professional-woman-executive',
-    location: 'Beverly Hills, CA',
-    published: true
-  },
-  {
-    id: '2',
-    name: 'Marcus Wellington',
-    role: 'Investment Director',
-    text: 'The team at Linart demonstrated exceptional expertise in luxury real estate investment. Their strategic insights and market analysis were instrumental in our successful acquisition.',
-    rating: 5,
-    image: 'businessman-professional',
-    location: 'Manhattan, NY',
-    published: true
-  },
-  {
-    id: '3',
-    name: 'Sophia Laurent',
-    role: 'Fashion Executive',
-    text: 'Finding our dream home felt effortless with Linart Realty. Their attention to detail, understanding of our needs, and access to exclusive properties made all the difference.',
-    rating: 5,
-    image: 'elegant-woman-portrait',
-    location: 'Malibu, CA',
-    published: true
-  },
-  {
-    id: '4',
-    name: 'James Hartford III',
-    role: 'Private Equity Partner',
-    text: 'Impeccable service from start to finish. Linart Realty\'s market intelligence and negotiation skills secured us an exceptional property at the perfect value.',
-    rating: 5,
-    image: 'executive-businessman',
-    location: 'Newport Beach, CA',
-    published: true
-  }
-];
-
 export function Testimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,35 +33,16 @@ export function Testimonials() {
   const fetchTestimonials = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/testimonials`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        // Check if data.testimonials exists and is an array
-        if (data.testimonials && Array.isArray(data.testimonials)) {
-          // Show only published testimonials
-          const publishedTestimonials = data.testimonials.filter((t: Testimonial) => t.published !== false);
-          setTestimonials(publishedTestimonials);
-        } else {
-          console.log('Testimonials data format:', data);
-          setTestimonials(FALLBACK_TESTIMONIALS);
-        }
-      } else {
-        console.log('Testimonials API error, using fallback');
-        setTestimonials(FALLBACK_TESTIMONIALS);
-      }
+      const data = await kvGetByPrefix('testimonial_');
+      
+      // Show only published testimonials
+      const publishedTestimonials = data.filter((t: any) => t.published !== false);
+      setTestimonials(publishedTestimonials);
+      
+      console.log('Loaded testimonials:', publishedTestimonials.length);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
-      console.log('Network error, using fallback testimonials');
-      setTestimonials(FALLBACK_TESTIMONIALS);
+      setTestimonials([]);
     } finally {
       setLoading(false);
     }

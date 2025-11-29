@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Maximize, Bed, Bath, ArrowUpRight } from 'lucide-react';
+import { MapPin, Bed, Bath, Square, TrendingUp, ArrowRight } from 'lucide-react';
+import { PremiumButton } from './PremiumButton';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { kvGetByPrefix } from '../utils/supabase/kvClient';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  FEATURED PROPERTIES - Ultra-Premium Property Showcase
-═══════════════════════════════════════════════════════════════════
-
-  Premium Features:
-  - Luxury property cards with platinum frames
-  - Shimmer effects and dramatic hover
-  - Architectural typography (Cinzel + Montserrat)
-  - Diagonal platinum decorative lines
-  - Royal animations on appearance
-  - High vertical spacing
-  - Data loaded from API
-  
+  FEATURED PROPERTIES SECTION - Luxury Property Showcase
+  - Data loaded directly from KV store
 ═══════════════════════════════════════════════════════════════════
 */
 
@@ -37,55 +28,6 @@ interface Property {
   published?: boolean;
 }
 
-// Fallback demo properties when API is unavailable
-const FALLBACK_PROPERTIES: Property[] = [
-  {
-    id: '1',
-    title: 'Platinum Residence Estate',
-    location: 'Beverly Hills, CA',
-    price: '$24,500,000',
-    image: 'luxury-mansion-exterior',
-    sqft: '12,500',
-    bedrooms: 7,
-    bathrooms: 9,
-    status: 'For Sale',
-    type: 'Residential',
-    yearBuilt: 2023,
-    features: ['Private Theater', 'Wine Cellar', 'Smart Home'],
-    published: true
-  },
-  {
-    id: '2',
-    title: 'Imperial Penthouse',
-    location: 'Manhattan, NY',
-    price: '$35,000,000',
-    image: 'modern-penthouse-interior',
-    sqft: '8,200',
-    bedrooms: 5,
-    bathrooms: 6,
-    status: 'Exclusive',
-    type: 'Residential',
-    yearBuilt: 2024,
-    features: ['Rooftop Terrace', 'Private Elevator', 'City Views'],
-    published: true
-  },
-  {
-    id: '3',
-    title: 'Coastal Royal Villa',
-    location: 'Malibu, CA',
-    price: '$42,000,000',
-    image: 'coastal-luxury-villa',
-    sqft: '15,000',
-    bedrooms: 8,
-    bathrooms: 10,
-    status: 'For Sale',
-    type: 'Residential',
-    yearBuilt: 2023,
-    features: ['Ocean Views', 'Private Beach', 'Infinity Pool'],
-    published: true
-  }
-];
-
 export function FeaturedProperties() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,40 +39,16 @@ export function FeaturedProperties() {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/properties`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        // Check if data.properties exists and is an array
-        if (data.properties && Array.isArray(data.properties)) {
-          // Show only first 6 published properties
-          const publishedProperties = data.properties
-            .filter((p: Property) => p.published !== false)
-            .slice(0, 6);
-          setProperties(publishedProperties);
-        } else {
-          console.log('Properties data format:', data);
-          // Use fallback data
-          setProperties(FALLBACK_PROPERTIES);
-        }
-      } else {
-        // API error - use fallback
-        console.log('API returned error, using fallback properties');
-        setProperties(FALLBACK_PROPERTIES);
-      }
+      const data = await kvGetByPrefix('property_');
+      
+      // Show only published properties, limit to 3 for featured section
+      const publishedProperties = data.filter((p: any) => p.published !== false).slice(0, 3);
+      setProperties(publishedProperties);
+      
+      console.log('Loaded featured properties:', publishedProperties.length);
     } catch (error) {
       console.error('Error fetching properties:', error);
-      // Network error - use fallback
-      console.log('Network error, using fallback properties');
-      setProperties(FALLBACK_PROPERTIES);
+      setProperties([]);
     } finally {
       setLoading(false);
     }
@@ -234,50 +152,15 @@ export function FeaturedProperties() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-center mt-20 lg:mt-28"
         >
-          <button 
+          <PremiumButton 
             onClick={() => {
               if ((window as any).navigateTo) {
                 (window as any).navigateTo('/properties');
               }
             }}
-            className="group relative px-12 py-5 overflow-hidden bg-transparent border border-[#E5E4E2]/30 hover:border-[#A8A9AD]/80 transition-all duration-700"
-          >
-            
-            {/* Shimmer background on hover */}
-            <div 
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-              style={{
-                background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
-                backgroundSize: '200% 200%',
-                animation: 'shimmer 3s ease-in-out infinite',
-              }}
-            />
-            
-            {/* Dark overlay */}
-            <div className="absolute inset-0 bg-[#0F0F0F]/90 group-hover:bg-[#0F0F0F]/60 transition-all duration-700" />
-
-            {/* Button Content */}
-            <div className="relative z-10 flex items-center gap-3">
-              <span 
-                className="font-['Montserrat'] uppercase text-[#E5E4E2] group-hover:text-[#F2EEE7] transition-colors duration-500"
-                style={{
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.22em'
-                }}
-              >
-                Explore All Properties
-              </span>
-              <ArrowUpRight 
-                size={16} 
-                className="text-[#E5E4E2] group-hover:text-[#F2EEE7] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500" 
-              />
-            </div>
-
-            {/* Corner accents */}
-            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#E5E4E2] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#E5E4E2] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          </button>
+            label="Explore All Properties"
+            icon={<ArrowRight size={16} />}
+          />
         </motion.div>
       </div>
 
@@ -414,7 +297,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
           {/* View Details Button - Appears on hover */}
           <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             <button className="w-9 h-9 bg-[#0F0F0F]/90 backdrop-blur-sm border border-[#E5E4E2]/40 hover:border-[#E5E4E2]/80 hover:bg-[#1A1A1A] transition-all duration-300 flex items-center justify-center">
-              <ArrowUpRight size={16} className="text-[#E5E4E2]" />
+              <ArrowRight size={16} className="text-[#E5E4E2]" />
             </button>
           </div>
         </div>
@@ -477,7 +360,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
           {property.type === 'Residential' ? (
             <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E5E4E2]/10">
               <div className="flex items-center gap-1.5 text-[#A8A9AD]">
-                <Maximize size={12} strokeWidth={1.5} />
+                <Square size={12} strokeWidth={1.5} />
                 <span 
                   className="font-['Montserrat'] text-[#E5E4E2]"
                   style={{
@@ -519,7 +402,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
           ) : (
             <div className="mb-4 pb-4 border-b border-[#E5E4E2]/10">
               <div className="flex items-center gap-1.5 text-[#A8A9AD]">
-                <Maximize size={12} strokeWidth={1.5} />
+                <Square size={12} strokeWidth={1.5} />
                 <span 
                   className="font-['Montserrat'] text-[#E5E4E2]"
                   style={{
@@ -580,7 +463,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
               >
                 View
               </span>
-              <ArrowUpRight 
+              <ArrowRight 
                 size={14} 
                 className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-300" 
               />
