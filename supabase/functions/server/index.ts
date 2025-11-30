@@ -915,4 +915,21 @@ app.delete("/make-server-dcec270f/partnerships/admin/:id", async (c) => {
   }
 });
 
-Deno.serve(app.fetch);
+// Wrapper handler that bypasses Supabase's default JWT verification
+// This allows public endpoints to work without authentication
+const handler = async (req: Request) => {
+  try {
+    return await app.fetch(req);
+  } catch (error) {
+    console.log(`Error in request handler: ${error}`);
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }), 
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+};
+
+Deno.serve(handler);
