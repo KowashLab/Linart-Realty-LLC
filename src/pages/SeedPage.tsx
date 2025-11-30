@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SEO } from '../components/SEO';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Database, CheckCircle, AlertCircle, Loader, Crown } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
