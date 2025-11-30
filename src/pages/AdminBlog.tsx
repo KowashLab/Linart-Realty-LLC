@@ -68,11 +68,12 @@ export default function AdminBlog() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
+      const token = session?.access_token;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/admin/posts`,
         {
           headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -107,7 +108,7 @@ export default function AdminBlog() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/admin/posts`,
         {
           method: 'POST',
           headers: {
@@ -157,7 +158,7 @@ export default function AdminBlog() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts/${editingPost.id}`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/admin/posts/${editingPost.id}`,
         {
           method: 'PUT',
           headers: {
@@ -184,7 +185,7 @@ export default function AdminBlog() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/admin/posts/${id}`,
         {
           method: 'DELETE',
           headers: {

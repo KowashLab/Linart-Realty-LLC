@@ -60,7 +60,7 @@ export function AdminProperties() {
   const fetchProperties = async () => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/properties`,
+        `https://${projectId}.supabase.co/functions/v1/server/properties`,
         {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`,
@@ -97,8 +97,8 @@ export function AdminProperties() {
       };
 
       const url = editingId
-        ? `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/properties/admin/${editingId}`
-        : `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/properties/admin`;
+        ? `https://${projectId}.supabase.co/functions/v1/server/properties/admin/${editingId}`
+        : `https://${projectId}.supabase.co/functions/v1/server/properties/admin`;
 
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -135,7 +135,7 @@ export function AdminProperties() {
       if (!token) return;
 
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/properties/admin/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/server/properties/admin/${id}`,
         {
           method: 'DELETE',
           headers: {

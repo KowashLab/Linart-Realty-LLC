@@ -55,7 +55,7 @@ export function AdminPartnerships() {
   const fetchPartnerships = async () => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/partnerships`,
+        `https://${projectId}.supabase.co/functions/v1/server/partnerships`,
         {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`
@@ -84,8 +84,8 @@ export function AdminPartnerships() {
       }
 
       const url = editingId
-        ? `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/partnerships/admin/${editingId}`
-        : `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/partnerships/admin`;
+        ? `https://${projectId}.supabase.co/functions/v1/server/partnerships/admin/${editingId}`
+        : `https://${projectId}.supabase.co/functions/v1/server/partnerships/admin`;
 
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -122,7 +122,7 @@ export function AdminPartnerships() {
       if (!token) return;
 
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/partnerships/admin/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/server/partnerships/admin/${id}`,
         {
           method: 'DELETE',
           headers: {

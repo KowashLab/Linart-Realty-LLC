@@ -48,7 +48,7 @@ export function AdminRecognition() {
   const fetchRecognitions = async () => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/recognition`,
+        `https://${projectId}.supabase.co/functions/v1/server/recognition`,
         {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`
@@ -77,8 +77,8 @@ export function AdminRecognition() {
       }
 
       const url = editingId
-        ? `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/recognition/admin/${editingId}`
-        : `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/recognition/admin`;
+        ? `https://${projectId}.supabase.co/functions/v1/server/recognition/admin/${editingId}`
+        : `https://${projectId}.supabase.co/functions/v1/server/recognition/admin`;
 
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -115,7 +115,7 @@ export function AdminRecognition() {
       if (!token) return;
 
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/recognition/admin/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/server/recognition/admin/${id}`,
         {
           method: 'DELETE',
           headers: {

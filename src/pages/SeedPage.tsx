@@ -33,7 +33,7 @@ export default function SeedPage() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/seed-all`,
+        `https://${projectId}.supabase.co/functions/v1/server/seed-all`,
         {
           method: 'GET',
           headers: {
@@ -65,7 +65,7 @@ export default function SeedPage() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/blog/seed`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/seed`,
         {
           method: 'GET',
           headers: {
@@ -248,7 +248,7 @@ export default function SeedPage() {
                 </summary>
                 <div className="mt-3 p-3 bg-[#0A0A0B] border border-[#E5E4E2]/10 font-mono text-xs text-[#E5E4E2]/50 break-all space-y-1">
                   <div>Project ID: <span className="text-[#E5E4E2]/70">{projectId}</span></div>
-                  <div>Endpoint: <span className="text-[#E5E4E2]/70">https://{projectId}.supabase.co/functions/v1/make-server-dcec270f/server/seed-all</span></div>
+                  <div>Endpoint: <span className="text-[#E5E4E2]/70">https://{projectId}.supabase.co/functions/v1/server/seed-all</span></div>
                 </div>
               </details>
             </div>
