@@ -33,12 +33,12 @@ app.use(
 );
 
 // Health check endpoint
-app.get("/make-server-dcec270f/health", (c) => {
+app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });
 
 // Seed all initial data
-app.get("/make-server-dcec270f/seed-all", async (c) => {
+app.get("/seed-all", async (c) => {
   try {
     await blog.seedInitialPosts();
     await properties.seedInitialProperties();
@@ -53,7 +53,7 @@ app.get("/make-server-dcec270f/seed-all", async (c) => {
 });
 
 // Sign up endpoint
-app.post("/make-server-dcec270f/auth/signup", async (c) => {
+app.post("/auth/signup", async (c) => {
   try {
     const body = await c.req.json();
     const { email, password, name } = body;
@@ -90,7 +90,7 @@ app.post("/make-server-dcec270f/auth/signup", async (c) => {
 });
 
 // Get user profile endpoint
-app.get("/make-server-dcec270f/auth/profile", async (c) => {
+app.get("/auth/profile", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -118,7 +118,7 @@ app.get("/make-server-dcec270f/auth/profile", async (c) => {
 });
 
 // Update user profile endpoint
-app.put("/make-server-dcec270f/auth/profile", async (c) => {
+app.put("/auth/profile", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -161,7 +161,7 @@ app.put("/make-server-dcec270f/auth/profile", async (c) => {
 });
 
 // Favorites endpoints
-app.get("/make-server-dcec270f/favorites", async (c) => {
+app.get("/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -183,7 +183,7 @@ app.get("/make-server-dcec270f/favorites", async (c) => {
   }
 });
 
-app.post("/make-server-dcec270f/favorites", async (c) => {
+app.post("/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -219,7 +219,7 @@ app.post("/make-server-dcec270f/favorites", async (c) => {
   }
 });
 
-app.delete("/make-server-dcec270f/favorites/:propertyId", async (c) => {
+app.delete("/favorites/:propertyId", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -254,7 +254,7 @@ app.delete("/make-server-dcec270f/favorites/:propertyId", async (c) => {
 */
 
 // Seed initial blog posts (run once on first request)
-app.get("/make-server-dcec270f/blog/seed", async (c) => {
+app.get("/blog/seed", async (c) => {
   try {
     await blog.seedInitialPosts();
     return c.json({ success: true, message: 'Initial posts seeded' });
@@ -265,7 +265,7 @@ app.get("/make-server-dcec270f/blog/seed", async (c) => {
 });
 
 // Get all published posts (PUBLIC)
-app.get("/make-server-dcec270f/blog/posts", async (c) => {
+app.get("/blog/posts", async (c) => {
   try {
     const posts = await blog.getAllPublishedPosts();
     return c.json({ posts });
@@ -276,7 +276,7 @@ app.get("/make-server-dcec270f/blog/posts", async (c) => {
 });
 
 // Get post by slug (PUBLIC)
-app.get("/make-server-dcec270f/blog/posts/:slug", async (c) => {
+app.get("/blog/posts/:slug", async (c) => {
   try {
     const slug = c.req.param('slug');
     const post = await blog.getPostBySlug(slug);
@@ -293,7 +293,7 @@ app.get("/make-server-dcec270f/blog/posts/:slug", async (c) => {
 });
 
 // Get all posts including drafts (ADMIN - requires auth)
-app.get("/make-server-dcec270f/blog/admin/posts", async (c) => {
+app.get("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -316,7 +316,7 @@ app.get("/make-server-dcec270f/blog/admin/posts", async (c) => {
 });
 
 // Get post by ID (ADMIN - for editing)
-app.get("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
+app.get("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -345,7 +345,7 @@ app.get("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
 });
 
 // Create new post (ADMIN)
-app.post("/make-server-dcec270f/blog/admin/posts", async (c) => {
+app.post("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -373,7 +373,7 @@ app.post("/make-server-dcec270f/blog/admin/posts", async (c) => {
 });
 
 // Update post (ADMIN)
-app.put("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
+app.put("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -403,7 +403,7 @@ app.put("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
 });
 
 // Delete post (ADMIN)
-app.delete("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
+app.delete("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -438,7 +438,7 @@ app.delete("/make-server-dcec270f/blog/admin/posts/:id", async (c) => {
 */
 
 // Get all properties (PUBLIC)
-app.get("/make-server-dcec270f/properties", async (c) => {
+app.get("/properties", async (c) => {
   try {
     const propertiesList = await properties.getAllProperties();
     return c.json({ properties: propertiesList });
@@ -449,7 +449,7 @@ app.get("/make-server-dcec270f/properties", async (c) => {
 });
 
 // Get property by ID (PUBLIC)
-app.get("/make-server-dcec270f/properties/:id", async (c) => {
+app.get("/properties/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const property = await properties.getPropertyById(id);
@@ -466,7 +466,7 @@ app.get("/make-server-dcec270f/properties/:id", async (c) => {
 });
 
 // Create new property (ADMIN)
-app.post("/make-server-dcec270f/properties/admin", async (c) => {
+app.post("/properties/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -494,7 +494,7 @@ app.post("/make-server-dcec270f/properties/admin", async (c) => {
 });
 
 // Update property (ADMIN)
-app.put("/make-server-dcec270f/properties/admin/:id", async (c) => {
+app.put("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -524,7 +524,7 @@ app.put("/make-server-dcec270f/properties/admin/:id", async (c) => {
 });
 
 // Delete property (ADMIN)
-app.delete("/make-server-dcec270f/properties/admin/:id", async (c) => {
+app.delete("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -559,7 +559,7 @@ app.delete("/make-server-dcec270f/properties/admin/:id", async (c) => {
 */
 
 // Get all testimonials (PUBLIC)
-app.get("/make-server-dcec270f/testimonials", async (c) => {
+app.get("/testimonials", async (c) => {
   try {
     const testimonialsList = await testimonials.getAllTestimonials();
     return c.json({ testimonials: testimonialsList });
@@ -570,7 +570,7 @@ app.get("/make-server-dcec270f/testimonials", async (c) => {
 });
 
 // Get testimonial by ID (PUBLIC)
-app.get("/make-server-dcec270f/testimonials/:id", async (c) => {
+app.get("/testimonials/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const testimonial = await testimonials.getTestimonialById(id);
@@ -587,7 +587,7 @@ app.get("/make-server-dcec270f/testimonials/:id", async (c) => {
 });
 
 // Create new testimonial (ADMIN)
-app.post("/make-server-dcec270f/testimonials/admin", async (c) => {
+app.post("/testimonials/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -615,7 +615,7 @@ app.post("/make-server-dcec270f/testimonials/admin", async (c) => {
 });
 
 // Update testimonial (ADMIN)
-app.put("/make-server-dcec270f/testimonials/admin/:id", async (c) => {
+app.put("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -645,7 +645,7 @@ app.put("/make-server-dcec270f/testimonials/admin/:id", async (c) => {
 });
 
 // Delete testimonial (ADMIN)
-app.delete("/make-server-dcec270f/testimonials/admin/:id", async (c) => {
+app.delete("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -680,7 +680,7 @@ app.delete("/make-server-dcec270f/testimonials/admin/:id", async (c) => {
 */
 
 // Get all recognitions (PUBLIC)
-app.get("/make-server-dcec270f/recognition", async (c) => {
+app.get("/recognition", async (c) => {
   try {
     const recognitionsList = await recognition.getAllRecognitions();
     return c.json({ recognitions: recognitionsList });
@@ -691,7 +691,7 @@ app.get("/make-server-dcec270f/recognition", async (c) => {
 });
 
 // Get recognition by ID (PUBLIC)
-app.get("/make-server-dcec270f/recognition/:id", async (c) => {
+app.get("/recognition/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const recognitionItem = await recognition.getRecognitionById(id);
@@ -708,7 +708,7 @@ app.get("/make-server-dcec270f/recognition/:id", async (c) => {
 });
 
 // Create new recognition (ADMIN)
-app.post("/make-server-dcec270f/recognition/admin", async (c) => {
+app.post("/recognition/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -736,7 +736,7 @@ app.post("/make-server-dcec270f/recognition/admin", async (c) => {
 });
 
 // Update recognition (ADMIN)
-app.put("/make-server-dcec270f/recognition/admin/:id", async (c) => {
+app.put("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -766,7 +766,7 @@ app.put("/make-server-dcec270f/recognition/admin/:id", async (c) => {
 });
 
 // Delete recognition (ADMIN)
-app.delete("/make-server-dcec270f/recognition/admin/:id", async (c) => {
+app.delete("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -801,7 +801,7 @@ app.delete("/make-server-dcec270f/recognition/admin/:id", async (c) => {
 */
 
 // Get all partnerships (PUBLIC)
-app.get("/make-server-dcec270f/partnerships", async (c) => {
+app.get("/partnerships", async (c) => {
   try {
     const partnershipsList = await partnerships.getAllPartnerships();
     return c.json({ partnerships: partnershipsList });
@@ -812,7 +812,7 @@ app.get("/make-server-dcec270f/partnerships", async (c) => {
 });
 
 // Get partnership by ID (PUBLIC)
-app.get("/make-server-dcec270f/partnerships/:id", async (c) => {
+app.get("/partnerships/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const partnership = await partnerships.getPartnershipById(id);
@@ -829,7 +829,7 @@ app.get("/make-server-dcec270f/partnerships/:id", async (c) => {
 });
 
 // Create new partnership (ADMIN)
-app.post("/make-server-dcec270f/partnerships/admin", async (c) => {
+app.post("/partnerships/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -857,7 +857,7 @@ app.post("/make-server-dcec270f/partnerships/admin", async (c) => {
 });
 
 // Update partnership (ADMIN)
-app.put("/make-server-dcec270f/partnerships/admin/:id", async (c) => {
+app.put("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -887,7 +887,7 @@ app.put("/make-server-dcec270f/partnerships/admin/:id", async (c) => {
 });
 
 // Delete partnership (ADMIN)
-app.delete("/make-server-dcec270f/partnerships/admin/:id", async (c) => {
+app.delete("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
