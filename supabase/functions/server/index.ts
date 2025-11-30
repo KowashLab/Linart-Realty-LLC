@@ -11,24 +11,32 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const app = new Hono();
 
-// Create Supabase client
+// Create Supabase client using Service Role Key for elevated permissions
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
 );
 
-// Enable logger
+// Enable logger for all requests
 app.use('*', logger(console.log));
 
-// Enable CORS for all routes and methods
+// CORS FIX: Use the specific Vercel domain to allow Authorization headers
+const VERCEL_FRONTEND_DOMAIN = 'https://linart-realty-llc.vercel.app'; 
+
 app.use(
   "/*",
   cors({
-    origin: "*",
-    allowHeaders: ["Content-Type", "Authorization"],
+    origin: VERCEL_FRONTEND_DOMAIN,
+    allowHeaders: [
+      "Content-Type", 
+      "Authorization",
+      "X-Custom-Header",
+      "apikey",
+    ],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
+    credentials: true,
   }),
 );
 
@@ -54,7 +62,8 @@ app.get("/server/seed-all", async (c) => {
     return c.json({ success: true, message: 'All initial data seeded successfully' });
   } catch (error) {
     console.log(`Error seeding initial data: ${error}`);
-    return c.json({ error: 'Error seeding initial data' }, 500);
+    // Returning the error message for better debugging via logs
+    return c.json({ error: `Error seeding initial data: ${error.message || error}` }, 500); 
   }
 });
 
@@ -64,7 +73,7 @@ app.get("/server/seed-all", async (c) => {
 ═══════════════════════════════════════════════════════════════════
 */
 
-// Sign up endpoint
+// Sign up endpoint (Admin key is used to bypass RLS)
 app.post("/server/auth/signup", async (c) => {
   try {
     const body = await c.req.json();
@@ -174,11 +183,11 @@ app.put("/server/auth/profile", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  FAVORITES ENDPOINTS
+  FAVORITES ENDPOINTS (Uses kv_store)
 ═══════════════════════════════════════════════════════════════════
 */
 
-// Favorites endpoints
+// Get user favorites
 app.get("/server/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
@@ -201,6 +210,7 @@ app.get("/server/favorites", async (c) => {
   }
 });
 
+// Add property to favorites
 app.post("/server/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
@@ -237,6 +247,7 @@ app.post("/server/favorites", async (c) => {
   }
 });
 
+// Delete property from favorites
 app.delete("/server/favorites/:propertyId", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
