@@ -1,6 +1,6 @@
-import { Hono } from "npm:hono";
-import { cors } from "npm:hono/cors";
-import { logger } from "npm:hono/logger";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import * as kv from "./kv_store.tsx";
 import * as blog from "./blog.tsx";
 import * as properties from "./properties.tsx";
@@ -32,13 +32,19 @@ app.use(
   }),
 );
 
+/*
+═══════════════════════════════════════════════════════════════════
+  PUBLIC/SETUP ENDPOINTS
+═══════════════════════════════════════════════════════════════════
+*/
+
 // Health check endpoint
-app.get("/health", (c) => {
+app.get("/server/health", (c) => { // <-- ИСПРАВЛЕНО
   return c.json({ status: "ok" });
 });
 
 // Seed all initial data
-app.get("/seed-all", async (c) => {
+app.get("/server/seed-all", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     await blog.seedInitialPosts();
     await properties.seedInitialProperties();
@@ -52,8 +58,14 @@ app.get("/seed-all", async (c) => {
   }
 });
 
+/*
+═══════════════════════════════════════════════════════════════════
+  AUTH ENDPOINTS
+═══════════════════════════════════════════════════════════════════
+*/
+
 // Sign up endpoint
-app.post("/auth/signup", async (c) => {
+app.post("/server/auth/signup", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const body = await c.req.json();
     const { email, password, name } = body;
@@ -90,7 +102,7 @@ app.post("/auth/signup", async (c) => {
 });
 
 // Get user profile endpoint
-app.get("/auth/profile", async (c) => {
+app.get("/server/auth/profile", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -118,7 +130,7 @@ app.get("/auth/profile", async (c) => {
 });
 
 // Update user profile endpoint
-app.put("/auth/profile", async (c) => {
+app.put("/server/auth/profile", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -160,8 +172,14 @@ app.put("/auth/profile", async (c) => {
   }
 });
 
+/*
+═══════════════════════════════════════════════════════════════════
+  FAVORITES ENDPOINTS
+═══════════════════════════════════════════════════════════════════
+*/
+
 // Favorites endpoints
-app.get("/favorites", async (c) => {
+app.get("/server/favorites", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -183,7 +201,7 @@ app.get("/favorites", async (c) => {
   }
 });
 
-app.post("/favorites", async (c) => {
+app.post("/server/favorites", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -219,7 +237,7 @@ app.post("/favorites", async (c) => {
   }
 });
 
-app.delete("/favorites/:propertyId", async (c) => {
+app.delete("/server/favorites/:propertyId", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -249,12 +267,12 @@ app.delete("/favorites/:propertyId", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  BLOG API ENDPOINTS
+  BLOG API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
 // Seed initial blog posts (run once on first request)
-app.get("/blog/seed", async (c) => {
+app.get("/server/blog/seed", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     await blog.seedInitialPosts();
     return c.json({ success: true, message: 'Initial posts seeded' });
@@ -265,7 +283,7 @@ app.get("/blog/seed", async (c) => {
 });
 
 // Get all published posts (PUBLIC)
-app.get("/blog/posts", async (c) => {
+app.get("/server/blog/posts", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const posts = await blog.getAllPublishedPosts();
     return c.json({ posts });
@@ -276,7 +294,7 @@ app.get("/blog/posts", async (c) => {
 });
 
 // Get post by slug (PUBLIC)
-app.get("/blog/posts/:slug", async (c) => {
+app.get("/server/blog/posts/:slug", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const slug = c.req.param('slug');
     const post = await blog.getPostBySlug(slug);
@@ -293,7 +311,7 @@ app.get("/blog/posts/:slug", async (c) => {
 });
 
 // Get all posts including drafts (ADMIN - requires auth)
-app.get("/blog/admin/posts", async (c) => {
+app.get("/server/blog/admin/posts", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -316,7 +334,7 @@ app.get("/blog/admin/posts", async (c) => {
 });
 
 // Get post by ID (ADMIN - for editing)
-app.get("/blog/admin/posts/:id", async (c) => {
+app.get("/server/blog/admin/posts/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -345,7 +363,7 @@ app.get("/blog/admin/posts/:id", async (c) => {
 });
 
 // Create new post (ADMIN)
-app.post("/blog/admin/posts", async (c) => {
+app.post("/server/blog/admin/posts", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -373,7 +391,7 @@ app.post("/blog/admin/posts", async (c) => {
 });
 
 // Update post (ADMIN)
-app.put("/blog/admin/posts/:id", async (c) => {
+app.put("/server/blog/admin/posts/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -403,7 +421,7 @@ app.put("/blog/admin/posts/:id", async (c) => {
 });
 
 // Delete post (ADMIN)
-app.delete("/blog/admin/posts/:id", async (c) => {
+app.delete("/server/blog/admin/posts/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -433,12 +451,12 @@ app.delete("/blog/admin/posts/:id", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  PROPERTIES API ENDPOINTS
+  PROPERTIES API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
 // Get all properties (PUBLIC)
-app.get("/properties", async (c) => {
+app.get("/server/properties", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const propertiesList = await properties.getAllProperties();
     return c.json({ properties: propertiesList });
@@ -449,7 +467,7 @@ app.get("/properties", async (c) => {
 });
 
 // Get property by ID (PUBLIC)
-app.get("/properties/:id", async (c) => {
+app.get("/server/properties/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const id = c.req.param('id');
     const property = await properties.getPropertyById(id);
@@ -466,7 +484,7 @@ app.get("/properties/:id", async (c) => {
 });
 
 // Create new property (ADMIN)
-app.post("/properties/admin", async (c) => {
+app.post("/server/properties/admin", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -494,7 +512,7 @@ app.post("/properties/admin", async (c) => {
 });
 
 // Update property (ADMIN)
-app.put("/properties/admin/:id", async (c) => {
+app.put("/server/properties/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -524,7 +542,7 @@ app.put("/properties/admin/:id", async (c) => {
 });
 
 // Delete property (ADMIN)
-app.delete("/properties/admin/:id", async (c) => {
+app.delete("/server/properties/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -554,12 +572,12 @@ app.delete("/properties/admin/:id", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  TESTIMONIALS API ENDPOINTS
+  TESTIMONIALS API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
 // Get all testimonials (PUBLIC)
-app.get("/testimonials", async (c) => {
+app.get("/server/testimonials", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const testimonialsList = await testimonials.getAllTestimonials();
     return c.json({ testimonials: testimonialsList });
@@ -570,7 +588,7 @@ app.get("/testimonials", async (c) => {
 });
 
 // Get testimonial by ID (PUBLIC)
-app.get("/testimonials/:id", async (c) => {
+app.get("/server/testimonials/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const id = c.req.param('id');
     const testimonial = await testimonials.getTestimonialById(id);
@@ -587,7 +605,7 @@ app.get("/testimonials/:id", async (c) => {
 });
 
 // Create new testimonial (ADMIN)
-app.post("/testimonials/admin", async (c) => {
+app.post("/server/testimonials/admin", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -615,7 +633,7 @@ app.post("/testimonials/admin", async (c) => {
 });
 
 // Update testimonial (ADMIN)
-app.put("/testimonials/admin/:id", async (c) => {
+app.put("/server/testimonials/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -645,7 +663,7 @@ app.put("/testimonials/admin/:id", async (c) => {
 });
 
 // Delete testimonial (ADMIN)
-app.delete("/testimonials/admin/:id", async (c) => {
+app.delete("/server/testimonials/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -675,12 +693,12 @@ app.delete("/testimonials/admin/:id", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  RECOGNITION API ENDPOINTS
+  RECOGNITION API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
 // Get all recognitions (PUBLIC)
-app.get("/recognition", async (c) => {
+app.get("/server/recognition", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const recognitionsList = await recognition.getAllRecognitions();
     return c.json({ recognitions: recognitionsList });
@@ -691,7 +709,7 @@ app.get("/recognition", async (c) => {
 });
 
 // Get recognition by ID (PUBLIC)
-app.get("/recognition/:id", async (c) => {
+app.get("/server/recognition/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const id = c.req.param('id');
     const recognitionItem = await recognition.getRecognitionById(id);
@@ -708,7 +726,7 @@ app.get("/recognition/:id", async (c) => {
 });
 
 // Create new recognition (ADMIN)
-app.post("/recognition/admin", async (c) => {
+app.post("/server/recognition/admin", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -736,7 +754,7 @@ app.post("/recognition/admin", async (c) => {
 });
 
 // Update recognition (ADMIN)
-app.put("/recognition/admin/:id", async (c) => {
+app.put("/server/recognition/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -766,7 +784,7 @@ app.put("/recognition/admin/:id", async (c) => {
 });
 
 // Delete recognition (ADMIN)
-app.delete("/recognition/admin/:id", async (c) => {
+app.delete("/server/recognition/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -796,12 +814,12 @@ app.delete("/recognition/admin/:id", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  PARTNERSHIPS API ENDPOINTS
+  PARTNERSHIPS API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
 // Get all partnerships (PUBLIC)
-app.get("/partnerships", async (c) => {
+app.get("/server/partnerships", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const partnershipsList = await partnerships.getAllPartnerships();
     return c.json({ partnerships: partnershipsList });
@@ -812,7 +830,7 @@ app.get("/partnerships", async (c) => {
 });
 
 // Get partnership by ID (PUBLIC)
-app.get("/partnerships/:id", async (c) => {
+app.get("/server/partnerships/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const id = c.req.param('id');
     const partnership = await partnerships.getPartnershipById(id);
@@ -829,7 +847,7 @@ app.get("/partnerships/:id", async (c) => {
 });
 
 // Create new partnership (ADMIN)
-app.post("/partnerships/admin", async (c) => {
+app.post("/server/partnerships/admin", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -857,7 +875,7 @@ app.post("/partnerships/admin", async (c) => {
 });
 
 // Update partnership (ADMIN)
-app.put("/partnerships/admin/:id", async (c) => {
+app.put("/server/partnerships/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -887,7 +905,7 @@ app.put("/partnerships/admin/:id", async (c) => {
 });
 
 // Delete partnership (ADMIN)
-app.delete("/partnerships/admin/:id", async (c) => {
+app.delete("/server/partnerships/admin/:id", async (c) => { // <-- ИСПРАВЛЕНО
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
