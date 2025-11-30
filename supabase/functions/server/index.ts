@@ -19,10 +19,10 @@ const supabase = createClient(
 // Enable logger for all requests
 app.use('*', logger(console.log));
 
-// 💥 CRITICAL CORS FIX: List of allowed domains
+// 💥 CRITICAL CORS FIX: List of allowed domains. 
+// We only keep the main domain here, temporary Vercel domains are handled by pattern matching below.
 const ALLOWED_ORIGINS = [
-    'https://linart-realty-llc.vercel.app',
-    'https://linart-realty-agllxdp2y-kowashs-projects.vercel.app', // Your temporary Vercel domain
+    'https://linart-realty-llc.vercel.app', // Your main production domain
 ];
 
 /*
@@ -923,9 +923,23 @@ const handler = async (req: Request) => {
     // Get Origin from the request
     const origin = req.headers.get("Origin");
     
-    // Check if the Origin is allowed (including localhost)
-    const isLocal = origin && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'));
-    const isAllowed = origin && (ALLOWED_ORIGINS.includes(origin) || isLocal);
+    // --- UNIVERSAL CORS CHECK LOGIC ---
+    let isAllowed = false;
+    if (origin) {
+        // 1. Check if it's the main approved domain (e.g., linart-realty-llc.vercel.app)
+        if (ALLOWED_ORIGINS.includes(origin)) {
+            isAllowed = true;
+        } 
+        // 2. Allow any temporary Vercel deployment domain for your project (ending in -kowashs-projects.vercel.app)
+        else if (origin.endsWith('-kowashs-projects.vercel.app')) {
+            isAllowed = true;
+        }
+        // 3. Allow local development
+        else if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+            isAllowed = true;
+        }
+    }
+    // --- END UNIVERSAL CORS CHECK LOGIC ---
     
     // 1. Forceful interception of OPTIONS requests (Preflight)
     if (req.method === "OPTIONS") {
