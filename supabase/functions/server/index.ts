@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import * as kv from "./kv_store.tsx";
 import * as blog from "./blog.tsx";
@@ -20,25 +19,11 @@ const supabase = createClient(
 // Enable logger for all requests
 app.use('*', logger(console.log));
 
-// CORS FIX: Use the specific Vercel domain to allow Authorization headers
-const VERCEL_FRONTEND_DOMAIN = 'https://linart-realty-llc.vercel.app'; 
-
-app.use(
-  "/*",
-  cors({
-    origin: VERCEL_FRONTEND_DOMAIN,
-    allowHeaders: [
-      "Content-Type", 
-      "Authorization",
-      "X-Custom-Header",
-      "apikey",
-    ],
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    exposeHeaders: ["Content-Length"],
-    maxAge: 600,
-    credentials: true,
-  }),
-);
+// 💥 CRITICAL CORS FIX: List of allowed domains
+const ALLOWED_ORIGINS = [
+    'https://linart-realty-llc.vercel.app',
+    'https://linart-realty-agllxdp2y-kowashs-projects.vercel.app', // Your temporary Vercel domain
+];
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -281,17 +266,6 @@ app.delete("/server/favorites/:propertyId", async (c) => {
   BLOG API ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
-
-// Seed initial blog posts (run once on first request)
-app.get("/server/blog/seed", async (c) => {
-  try {
-    await blog.seedInitialPosts();
-    return c.json({ success: true, message: 'Initial posts seeded' });
-  } catch (error) {
-    console.log(`Error seeding blog posts: ${error}`);
-    return c.json({ error: 'Error seeding blog posts' }, 500);
-  }
-});
 
 // Get all published posts (PUBLIC)
 app.get("/server/blog/posts", async (c) => {
@@ -911,7 +885,7 @@ app.put("/server/partnerships/admin/:id", async (c) => {
     return c.json({ success: true, partnership });
   } catch (error) {
     console.log(`Error updating partnership: ${error}`);
-    return c.json({ error: 'Error updating partnership' }, 500);
+    return c.json({ error: 'Internal server error updating partnership' }, 500);
   }
 });
 
@@ -944,21 +918,58 @@ app.delete("/server/partnerships/admin/:id", async (c) => {
   }
 });
 
-// Wrapper handler that bypasses Supabase's default JWT verification
-// This allows public endpoints to work without authentication
+// 💥 FINAL GUARANTEE: Deno.serve handler for forced CORS control
 const handler = async (req: Request) => {
-  try {
-    return await app.fetch(req);
-  } catch (error) {
-    console.log(`Error in request handler: ${error}`);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }), 
-      { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-  }
+    // Get Origin from the request
+    const origin = req.headers.get("Origin");
+    
+    // Check if the Origin is allowed (including localhost)
+    const isLocal = origin && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'));
+    const isAllowed = origin && (ALLOWED_ORIGINS.includes(origin) || isLocal);
+    
+    // 1. Forceful interception of OPTIONS requests (Preflight)
+    if (req.method === "OPTIONS") {
+        
+        if (isAllowed) {
+            // Successful 204 No Content response with all necessary CORS headers
+            return new Response(null, {
+                status: 204,
+                headers: {
+                    // Use the Origin from the request if allowed
+                    "Access-Control-Allow-Origin": origin!, 
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Custom-Header, apikey",
+                    "Access-Control-Max-Age": "86400", // Cache preflight for 24 hours
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            });
+        } else {
+             // Block unauthorized origins for security
+             return new Response(null, { status: 403 }); 
+        }
+    }
+    
+    // 2. Process main requests (GET/POST/PUT/DELETE)
+    try {
+        const response = await app.fetch(req);
+        
+        // Add Access-Control-Allow-Origin header to the successful response
+        if (isAllowed && origin) {
+            response.headers.set("Access-Control-Allow-Origin", origin);
+        }
+        
+        return response;
+        
+    } catch (error) {
+        console.log(`Error in request handler: ${error}`);
+        return new Response(
+            JSON.stringify({ error: 'Internal server error' }), 
+            { 
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            }
+        );
+    }
 };
 
 Deno.serve(handler);
