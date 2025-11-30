@@ -45,10 +45,11 @@ export function AdminTestimonials() {
   const fetchTestimonials = async () => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/testimonials`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/testimonials`,
         {
           headers: {
-            'Authorization': `Bearer ${publicAnonKey}`
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json'
           }
         }
       );
@@ -74,8 +75,8 @@ export function AdminTestimonials() {
       }
 
       const url = editingId
-        ? `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/testimonials/admin/${editingId}`
-        : `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/testimonials/admin`;
+        ? `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/testimonials/admin/${editingId}`
+        : `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/testimonials/admin`;
 
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -112,7 +113,7 @@ export function AdminTestimonials() {
       if (!token) return;
 
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/testimonials/admin/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/testimonials/admin/${id}`,
         {
           method: 'DELETE',
           headers: {

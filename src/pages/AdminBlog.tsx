@@ -69,7 +69,7 @@ export default function AdminBlog() {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/blog/admin/posts`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts`,
         {
           headers: {
             'Authorization': `Bearer ${session?.access_token}`,
@@ -90,16 +90,31 @@ export default function AdminBlog() {
   };
 
   const handleCreate = async () => {
+    const token = session?.access_token;
+    const newPost = {
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      image: formData.image,
+      videoUrl: formData.videoUrl,
+      category: formData.category,
+      type: formData.type,
+      published: formData.published,
+      seoTitle: formData.seoTitle,
+      seoDescription: formData.seoDescription,
+      seoKeywords: formData.seoKeywords
+    };
+
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/blog/admin/posts`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(newPost)
         }
       );
 
@@ -125,16 +140,31 @@ export default function AdminBlog() {
   const handleUpdate = async () => {
     if (!editingPost) return;
 
+    const token = session?.access_token;
+    const updates = {
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      image: formData.image,
+      videoUrl: formData.videoUrl,
+      category: formData.category,
+      type: formData.type,
+      published: formData.published,
+      seoTitle: formData.seoTitle,
+      seoDescription: formData.seoDescription,
+      seoKeywords: formData.seoKeywords
+    };
+
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/blog/admin/posts/${editingPost.id}`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts/${editingPost.id}`,
         {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(updates)
         }
       );
 
@@ -150,14 +180,15 @@ export default function AdminBlog() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
+    const token = session?.access_token;
+
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f/blog/admin/posts/${id}`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/admin/posts/${id}`,
         {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${token}`
           }
         }
       );
