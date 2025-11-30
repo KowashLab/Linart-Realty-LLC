@@ -8,7 +8,7 @@ import { projectId, publicAnonKey } from '../../../utils/supabase/info';
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server`;
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
 
 // Helper function to make authenticated requests
 async function apiRequest(endpoint: string, options: RequestInit = {}) {

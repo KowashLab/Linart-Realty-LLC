@@ -33,7 +33,7 @@ export default function SeedPage() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/seed-all`,
+        `https://${projectId}.supabase.co/functions/v1/server/seed-all`,
         {
           method: 'GET',
           headers: {
@@ -65,7 +65,7 @@ export default function SeedPage() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/server/blog/seed`,
+        `https://${projectId}.supabase.co/functions/v1/server/blog/seed`,
         {
           method: 'GET',
           headers: {
