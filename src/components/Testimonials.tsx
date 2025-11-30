@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { kvGetByPrefix } from '../utils/supabase/kvClient';
+import { fetchTestimonials } from '../utils/api/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -27,19 +27,17 @@ export function Testimonials() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTestimonials();
+    fetchTestimonialsData();
   }, []);
 
-  const fetchTestimonials = async () => {
+  const fetchTestimonialsData = async () => {
     try {
       setLoading(true);
-      const data = await kvGetByPrefix('testimonial_');
+      const data = await fetchTestimonials();
       
       // Show only published testimonials
       const publishedTestimonials = data.filter((t: any) => t.published !== false);
       setTestimonials(publishedTestimonials);
-      
-      console.log('Loaded testimonials:', publishedTestimonials.length);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
       setTestimonials([]);

@@ -112,7 +112,7 @@ export function About() {
               <div className="absolute inset-0 border-2 z-10 pointer-events-none platinum-border" />
 
               <img
-                src="/images/about-image.avif"
+                src="/images/about-image.jpg"
                 alt="Linart Realty - Luxury Real Estate Excellence"
                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
               />

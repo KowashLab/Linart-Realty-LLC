@@ -1,62 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, ArrowLeft, User } from 'lucide-react';
-import { SEO } from '../components/SEO';
+import { Calendar, ArrowLeft, Play } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { SEO } from '../components/SEO';
+import { fetchBlogPosts } from '../utils/api/client';
 
-interface BlogPostData {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  videoUrl?: string;
-  category: string;
-  type: 'article' | 'video';
-  published: boolean;
-  createdAt: string;
-  author?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string;
-}
-
-interface BlogPostProps {
-  slug: string;
-}
-
-export default function BlogPost({ slug }: BlogPostProps) {
-  const [post, setPost] = useState<BlogPostData | null>(null);
+export default function BlogPost({ slug }: { slug: string }) {
+  const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchPost();
+    if (slug) {
+      fetchPost(slug);
+    }
   }, [slug]);
 
-  const fetchPost = async () => {
+  const fetchPost = async (postSlug: string) => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/blog/posts/${slug}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Post not found');
+      const posts = await fetchBlogPosts();
+      
+      // Find post by slug
+      const foundPost = posts.find((p: any) => p.slug === postSlug);
+      
+      if (foundPost) {
+        setPost(foundPost);
+      } else {
+        console.error('Blog post not found:', postSlug);
+        setPost(null);
       }
-
-      const data = await response.json();
-      setPost(data.post);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load post');
+    } catch (error) {
+      console.error('Error fetching blog post:', error);
+      setPost(null);
     } finally {
       setLoading(false);
     }
@@ -76,7 +51,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
     );
   }
 
-  if (error || !post) {
+  if (!post) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0A0A0B] via-[#0F0F0F] to-[#0A0A0B] flex items-center justify-center">
         <div className="text-center">

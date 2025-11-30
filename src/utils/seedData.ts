@@ -8,7 +8,7 @@ import { projectId, publicAnonKey } from './supabase/info';
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f`;
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
 
 export async function seedAllData() {
   try {

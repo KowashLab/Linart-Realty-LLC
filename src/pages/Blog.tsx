@@ -3,20 +3,12 @@ import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, Play, Image as ImageIcon } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { fetchBlogPosts } from '../utils/api/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
   BLOG - Ultra-Premium Royal Content Hub
-═══════════════════════════════════════════════════════════════════
-
-  Premium features:
-  - Luxury header with Cinzel font
-  - Platinum dividers with shimmer effect
-  - Photo and video gallery
-  - Royal accents on cards
-  - Dynamic loading from database
-  
+  - Data loaded directly from KV store
 ═══════════════════════════════════════════════════════════════════
 */
 
@@ -43,24 +35,14 @@ export default function Blog() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/blog/posts`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setBlogPosts(data.posts);
-      } else {
-        console.error('Failed to fetch blog posts');
-      }
+      const data = await fetchBlogPosts();
+      
+      // Show only published posts
+      const publishedPosts = data.filter((p: any) => p.published !== false);
+      setBlogPosts(publishedPosts);
     } catch (error) {
       console.error('Error fetching blog posts:', error);
+      setBlogPosts([]);
     } finally {
       setLoading(false);
     }

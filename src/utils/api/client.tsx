@@ -4,11 +4,11 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 ═══════════════════════════════════════════════════════════════════
   API CLIENT - Fetch data from Edge Function endpoints
   - Uses Edge Function for production-ready data access
-  - All requests go through /make-server-dcec270f endpoints
+  - All requests go through /server endpoints
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server/make-server-dcec270f`;
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
 
 // Helper function to make authenticated requests
 async function apiRequest(endpoint: string, options: RequestInit = {}) {

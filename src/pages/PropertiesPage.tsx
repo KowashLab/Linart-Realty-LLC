@@ -4,12 +4,12 @@ import { MapPin, Bed, Bath, Square, TrendingUp, Building2, Home, Filter } from '
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { PremiumButton } from '../components/PremiumButton';
 import { SEO } from '../components/SEO';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { fetchProperties } from '../utils/api/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
   PROPERTIES PAGE - Full Property Listings
-  - Data loaded from API
+  - Data loaded directly from KV store
 ═══════════════════════════════════════════════════════════════════
 */
 
@@ -19,34 +19,17 @@ export function PropertiesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProperties();
+    fetchPropertiesData();
   }, []);
 
-  const fetchProperties = async () => {
+  const fetchPropertiesData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f/properties`,
-        {
-          headers: {
-            'Authorization': `Bearer ${publicAnonKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        // Check if data.properties exists and is an array
-        if (data.properties && Array.isArray(data.properties)) {
-          // Show only published properties
-          const publishedProperties = data.properties.filter((p: any) => p.published !== false);
-          setProperties(publishedProperties);
-        } else {
-          console.log('Properties data format:', data);
-          setProperties([]);
-        }
-      }
+      const data = await fetchProperties();
+      
+      // Show only published properties
+      const publishedProperties = data.filter((p: any) => p.published !== false);
+      setProperties(publishedProperties);
     } catch (error) {
       console.error('Error fetching properties:', error);
       setProperties([]);

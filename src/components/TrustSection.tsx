@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Building2, Award, Users, CheckCircle2, Handshake } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { kvGetByPrefix } from '../utils/supabase/kvClient';
+import { fetchRecognitions, fetchPartnerships } from '../utils/api/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -107,17 +107,14 @@ export function TrustSection() {
       setLoading(true);
       
       // Fetch Recognition (Awards)
-      const recognitionData = await kvGetByPrefix('recognition_');
+      const recognitionData = await fetchRecognitions();
       const publishedRecognition = recognitionData.filter((r: any) => r.published !== false);
       setRecognition(publishedRecognition);
       
       // Fetch Partnerships
-      const partnershipsData = await kvGetByPrefix('partnership_');
+      const partnershipsData = await fetchPartnerships();
       const publishedPartnerships = partnershipsData.filter((p: any) => p.published !== false);
       setPartnerships(publishedPartnerships);
-      
-      console.log('Loaded recognition:', publishedRecognition.length);
-      console.log('Loaded partnerships:', publishedPartnerships.length);
     } catch (error) {
       console.error('Error fetching data:', error);
       setRecognition([]);
