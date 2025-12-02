@@ -156,7 +156,9 @@ export function ProfilePage() {
                       type="text"
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
-                      className="w-full px-4 py-2 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] focus:border-[#A8A9AD] focus:outline-none"
+                      autoComplete="name"
+                      placeholder="Enter your name"
+                      className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 rounded px-4 py-3 text-[#E5E4E2] font-['Montserrat'] text-center focus:border-[#A8A9AD]/60 focus:outline-none transition-colors"
                       style={{
                         fontSize: '1rem',
                         fontFamily: 'Montserrat'

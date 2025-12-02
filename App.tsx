@@ -27,6 +27,7 @@ import { AdminTestimonials } from './components/AdminTestimonials';
 import { AdminRecognition } from './components/AdminRecognition';
 import { AdminPartnerships } from './components/AdminPartnerships';
 import SeedPage from './pages/SeedPage';
+import { autoSeed } from './utils/seedData';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -68,6 +69,13 @@ export default function App() {
     }
 
     setFavicon();
+    
+    // Auto-seed data on first load
+    autoSeed().then((seeded) => {
+      if (seeded) {
+        console.log('✅ Initial data seeded successfully');
+      }
+    });
   }, []);
 
   useEffect(() => {

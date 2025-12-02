@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import * as kv from "./kv_store.tsx";
 import * as blog from "./blog.tsx";
@@ -10,20 +11,26 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const app = new Hono();
 
-// Create Supabase client using Service Role Key for elevated permissions
+// Create Supabase client
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
 );
 
-// Enable logger for all requests
+// Enable logger
 app.use('*', logger(console.log));
 
-// 💥 CRITICAL CORS FIX: List of allowed domains. 
-// We only keep the main domain here, temporary Vercel domains are handled by pattern matching below.
-const ALLOWED_ORIGINS = [
-    'https://linart-realty-llc.vercel.app', // Your main production domain
-];
+// Enable CORS for all routes and methods
+app.use(
+  "/*",
+  cors({
+    origin: "*",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+  }),
+);
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -32,12 +39,12 @@ const ALLOWED_ORIGINS = [
 */
 
 // Health check endpoint
-app.get("/server/health", (c) => {
+app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });
 
 // Seed all initial data
-app.get("/server/seed-all", async (c) => {
+app.get("/seed-all", async (c) => {
   try {
     await blog.seedInitialPosts();
     await properties.seedInitialProperties();
@@ -47,8 +54,7 @@ app.get("/server/seed-all", async (c) => {
     return c.json({ success: true, message: 'All initial data seeded successfully' });
   } catch (error) {
     console.log(`Error seeding initial data: ${error}`);
-    // Returning the error message for better debugging via logs
-    return c.json({ error: `Error seeding initial data: ${error.message || error}` }, 500); 
+    return c.json({ error: 'Error seeding initial data' }, 500);
   }
 });
 
@@ -58,8 +64,8 @@ app.get("/server/seed-all", async (c) => {
 ═══════════════════════════════════════════════════════════════════
 */
 
-// Sign up endpoint (Admin key is used to bypass RLS)
-app.post("/server/auth/signup", async (c) => {
+// Sign up endpoint
+app.post("/auth/signup", async (c) => {
   try {
     const body = await c.req.json();
     const { email, password, name } = body;
@@ -96,7 +102,7 @@ app.post("/server/auth/signup", async (c) => {
 });
 
 // Get user profile endpoint
-app.get("/server/auth/profile", async (c) => {
+app.get("/auth/profile", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -124,7 +130,7 @@ app.get("/server/auth/profile", async (c) => {
 });
 
 // Update user profile endpoint
-app.put("/server/auth/profile", async (c) => {
+app.put("/auth/profile", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -168,12 +174,12 @@ app.put("/server/auth/profile", async (c) => {
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  FAVORITES ENDPOINTS (Uses kv_store)
+  FAVORITES ENDPOINTS
 ═══════════════════════════════════════════════════════════════════
 */
 
-// Get user favorites
-app.get("/server/favorites", async (c) => {
+// Favorites endpoints
+app.get("/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -195,8 +201,7 @@ app.get("/server/favorites", async (c) => {
   }
 });
 
-// Add property to favorites
-app.post("/server/favorites", async (c) => {
+app.post("/favorites", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -232,8 +237,7 @@ app.post("/server/favorites", async (c) => {
   }
 });
 
-// Delete property from favorites
-app.delete("/server/favorites/:propertyId", async (c) => {
+app.delete("/favorites/:propertyId", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -267,8 +271,19 @@ app.delete("/server/favorites/:propertyId", async (c) => {
 ═══════════════════════════════════════════════════════════════════
 */
 
+// Seed initial blog posts (run once on first request)
+app.get("/blog/seed", async (c) => {
+  try {
+    await blog.seedInitialPosts();
+    return c.json({ success: true, message: 'Initial posts seeded' });
+  } catch (error) {
+    console.log(`Error seeding blog posts: ${error}`);
+    return c.json({ error: 'Error seeding blog posts' }, 500);
+  }
+});
+
 // Get all published posts (PUBLIC)
-app.get("/server/blog/posts", async (c) => {
+app.get("/blog/posts", async (c) => {
   try {
     const posts = await blog.getAllPublishedPosts();
     return c.json({ posts });
@@ -279,7 +294,7 @@ app.get("/server/blog/posts", async (c) => {
 });
 
 // Get post by slug (PUBLIC)
-app.get("/server/blog/posts/:slug", async (c) => {
+app.get("/blog/posts/:slug", async (c) => {
   try {
     const slug = c.req.param('slug');
     const post = await blog.getPostBySlug(slug);
@@ -296,7 +311,7 @@ app.get("/server/blog/posts/:slug", async (c) => {
 });
 
 // Get all posts including drafts (ADMIN - requires auth)
-app.get("/server/blog/admin/posts", async (c) => {
+app.get("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -319,7 +334,7 @@ app.get("/server/blog/admin/posts", async (c) => {
 });
 
 // Get post by ID (ADMIN - for editing)
-app.get("/server/blog/admin/posts/:id", async (c) => {
+app.get("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -348,7 +363,7 @@ app.get("/server/blog/admin/posts/:id", async (c) => {
 });
 
 // Create new post (ADMIN)
-app.post("/server/blog/admin/posts", async (c) => {
+app.post("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -376,7 +391,7 @@ app.post("/server/blog/admin/posts", async (c) => {
 });
 
 // Update post (ADMIN)
-app.put("/server/blog/admin/posts/:id", async (c) => {
+app.put("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -406,7 +421,7 @@ app.put("/server/blog/admin/posts/:id", async (c) => {
 });
 
 // Delete post (ADMIN)
-app.delete("/server/blog/admin/posts/:id", async (c) => {
+app.delete("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -441,7 +456,7 @@ app.delete("/server/blog/admin/posts/:id", async (c) => {
 */
 
 // Get all properties (PUBLIC)
-app.get("/server/properties", async (c) => {
+app.get("/properties", async (c) => {
   try {
     const propertiesList = await properties.getAllProperties();
     return c.json({ properties: propertiesList });
@@ -452,7 +467,7 @@ app.get("/server/properties", async (c) => {
 });
 
 // Get property by ID (PUBLIC)
-app.get("/server/properties/:id", async (c) => {
+app.get("/properties/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const property = await properties.getPropertyById(id);
@@ -469,7 +484,7 @@ app.get("/server/properties/:id", async (c) => {
 });
 
 // Create new property (ADMIN)
-app.post("/server/properties/admin", async (c) => {
+app.post("/properties/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -497,7 +512,7 @@ app.post("/server/properties/admin", async (c) => {
 });
 
 // Update property (ADMIN)
-app.put("/server/properties/admin/:id", async (c) => {
+app.put("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -527,7 +542,7 @@ app.put("/server/properties/admin/:id", async (c) => {
 });
 
 // Delete property (ADMIN)
-app.delete("/server/properties/admin/:id", async (c) => {
+app.delete("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -562,7 +577,7 @@ app.delete("/server/properties/admin/:id", async (c) => {
 */
 
 // Get all testimonials (PUBLIC)
-app.get("/server/testimonials", async (c) => {
+app.get("/testimonials", async (c) => {
   try {
     const testimonialsList = await testimonials.getAllTestimonials();
     return c.json({ testimonials: testimonialsList });
@@ -573,7 +588,7 @@ app.get("/server/testimonials", async (c) => {
 });
 
 // Get testimonial by ID (PUBLIC)
-app.get("/server/testimonials/:id", async (c) => {
+app.get("/testimonials/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const testimonial = await testimonials.getTestimonialById(id);
@@ -590,7 +605,7 @@ app.get("/server/testimonials/:id", async (c) => {
 });
 
 // Create new testimonial (ADMIN)
-app.post("/server/testimonials/admin", async (c) => {
+app.post("/testimonials/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -618,7 +633,7 @@ app.post("/server/testimonials/admin", async (c) => {
 });
 
 // Update testimonial (ADMIN)
-app.put("/server/testimonials/admin/:id", async (c) => {
+app.put("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -648,7 +663,7 @@ app.put("/server/testimonials/admin/:id", async (c) => {
 });
 
 // Delete testimonial (ADMIN)
-app.delete("/server/testimonials/admin/:id", async (c) => {
+app.delete("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -683,7 +698,7 @@ app.delete("/server/testimonials/admin/:id", async (c) => {
 */
 
 // Get all recognitions (PUBLIC)
-app.get("/server/recognition", async (c) => {
+app.get("/recognition", async (c) => {
   try {
     const recognitionsList = await recognition.getAllRecognitions();
     return c.json({ recognitions: recognitionsList });
@@ -694,7 +709,7 @@ app.get("/server/recognition", async (c) => {
 });
 
 // Get recognition by ID (PUBLIC)
-app.get("/server/recognition/:id", async (c) => {
+app.get("/recognition/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const recognitionItem = await recognition.getRecognitionById(id);
@@ -711,7 +726,7 @@ app.get("/server/recognition/:id", async (c) => {
 });
 
 // Create new recognition (ADMIN)
-app.post("/server/recognition/admin", async (c) => {
+app.post("/recognition/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -739,7 +754,7 @@ app.post("/server/recognition/admin", async (c) => {
 });
 
 // Update recognition (ADMIN)
-app.put("/server/recognition/admin/:id", async (c) => {
+app.put("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -769,7 +784,7 @@ app.put("/server/recognition/admin/:id", async (c) => {
 });
 
 // Delete recognition (ADMIN)
-app.delete("/server/recognition/admin/:id", async (c) => {
+app.delete("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -804,7 +819,7 @@ app.delete("/server/recognition/admin/:id", async (c) => {
 */
 
 // Get all partnerships (PUBLIC)
-app.get("/server/partnerships", async (c) => {
+app.get("/partnerships", async (c) => {
   try {
     const partnershipsList = await partnerships.getAllPartnerships();
     return c.json({ partnerships: partnershipsList });
@@ -815,7 +830,7 @@ app.get("/server/partnerships", async (c) => {
 });
 
 // Get partnership by ID (PUBLIC)
-app.get("/server/partnerships/:id", async (c) => {
+app.get("/partnerships/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const partnership = await partnerships.getPartnershipById(id);
@@ -832,7 +847,7 @@ app.get("/server/partnerships/:id", async (c) => {
 });
 
 // Create new partnership (ADMIN)
-app.post("/server/partnerships/admin", async (c) => {
+app.post("/partnerships/admin", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -860,7 +875,7 @@ app.post("/server/partnerships/admin", async (c) => {
 });
 
 // Update partnership (ADMIN)
-app.put("/server/partnerships/admin/:id", async (c) => {
+app.put("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -885,12 +900,12 @@ app.put("/server/partnerships/admin/:id", async (c) => {
     return c.json({ success: true, partnership });
   } catch (error) {
     console.log(`Error updating partnership: ${error}`);
-    return c.json({ error: 'Internal server error updating partnership' }, 500);
+    return c.json({ error: 'Error updating partnership' }, 500);
   }
 });
 
 // Delete partnership (ADMIN)
-app.delete("/server/partnerships/admin/:id", async (c) => {
+app.delete("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
     
@@ -918,72 +933,21 @@ app.delete("/server/partnerships/admin/:id", async (c) => {
   }
 });
 
-// 💥 FINAL GUARANTEE: Deno.serve handler for forced CORS control
+// Wrapper handler that bypasses Supabase's default JWT verification
+// This allows public endpoints to work without authentication
 const handler = async (req: Request) => {
-    // Get Origin from the request
-    const origin = req.headers.get("Origin");
-    
-    // --- UNIVERSAL CORS CHECK LOGIC ---
-    let isAllowed = false;
-    if (origin) {
-        // 1. Check if it's the main approved domain (e.g., linart-realty-llc.vercel.app)
-        if (ALLOWED_ORIGINS.includes(origin)) {
-            isAllowed = true;
-        } 
-        // 2. Allow any temporary Vercel deployment domain for your project (ending in -kowashs-projects.vercel.app)
-        else if (origin.endsWith('-kowashs-projects.vercel.app')) {
-            isAllowed = true;
-        }
-        // 3. Allow local development
-        else if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-            isAllowed = true;
-        }
-    }
-    // --- END UNIVERSAL CORS CHECK LOGIC ---
-    
-    // 1. Forceful interception of OPTIONS requests (Preflight)
-    if (req.method === "OPTIONS") {
-        
-        if (isAllowed) {
-            // Successful 204 No Content response with all necessary CORS headers
-            return new Response(null, {
-                status: 204,
-                headers: {
-                    // Use the Origin from the request if allowed
-                    "Access-Control-Allow-Origin": origin!, 
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Custom-Header, apikey",
-                    "Access-Control-Max-Age": "86400", // Cache preflight for 24 hours
-                    "Access-Control-Allow-Credentials": "true",
-                },
-            });
-        } else {
-             // Block unauthorized origins for security
-             return new Response(null, { status: 403 }); 
-        }
-    }
-    
-    // 2. Process main requests (GET/POST/PUT/DELETE)
-    try {
-        const response = await app.fetch(req);
-        
-        // Add Access-Control-Allow-Origin header to the successful response
-        if (isAllowed && origin) {
-            response.headers.set("Access-Control-Allow-Origin", origin);
-        }
-        
-        return response;
-        
-    } catch (error) {
-        console.log(`Error in request handler: ${error}`);
-        return new Response(
-            JSON.stringify({ error: 'Internal server error' }), 
-            { 
-                status: 500,
-                headers: { 'Content-Type': 'application/json' }
-            }
-        );
-    }
+  try {
+    return await app.fetch(req);
+  } catch (error) {
+    console.log(`Error in request handler: ${error}`);
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }), 
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
 };
 
 Deno.serve(handler);

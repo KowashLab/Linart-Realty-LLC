@@ -272,9 +272,9 @@ export function AuthPage() {
                 
                 {!isLogin && (
                   <div>
-                    <label 
-                      className="block font-['Montserrat'] text-[#E5E4E2] mb-2 uppercase tracking-wider"
-                      style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                    <label
+                      htmlFor="name"
+                      className="block font-['Montserrat'] text-[#E5E4E2]/70 text-sm uppercase tracking-wider mb-3"
                     >
                       Full Name
                     </label>
@@ -284,22 +284,24 @@ export function AuthPage() {
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] focus:border-[#A8A9AD] focus:outline-none transition-colors"
-                        placeholder="Enter your full name"
-                        required={!isLogin}
+                        autoComplete="name"
+                        required
+                        placeholder="John Doe"
+                        className="w-full pl-12 pr-4 py-4 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-all duration-300"
                         style={{
-                          fontSize: '1rem',
-                          fontFamily: 'Montserrat'
+                          fontSize: '0.95rem',
+                          letterSpacing: '0.01em'
                         }}
                       />
                     </div>
                   </div>
                 )}
 
+                {/* Email Field */}
                 <div>
-                  <label 
-                    className="block font-['Montserrat'] text-[#E5E4E2] mb-2 uppercase tracking-wider"
-                    style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                  <label
+                    htmlFor="email"
+                    className="block font-['Montserrat'] text-[#E5E4E2]/70 text-sm uppercase tracking-wider mb-3"
                   >
                     Email Address
                   </label>
@@ -309,21 +311,23 @@ export function AuthPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] focus:border-[#A8A9AD] focus:outline-none transition-colors"
-                      placeholder="Enter your email"
+                      autoComplete="email"
                       required
+                      placeholder="your@email.com"
+                      className="w-full pl-12 pr-4 py-4 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-all duration-300"
                       style={{
-                        fontSize: '1rem',
-                        fontFamily: 'Montserrat'
+                        fontSize: '0.95rem',
+                        letterSpacing: '0.01em'
                       }}
                     />
                   </div>
                 </div>
 
+                {/* Password Field */}
                 <div>
-                  <label 
-                    className="block font-['Montserrat'] text-[#E5E4E2] mb-2 uppercase tracking-wider"
-                    style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                  <label
+                    htmlFor="password"
+                    className="block font-['Montserrat'] text-[#E5E4E2]/70 text-sm uppercase tracking-wider mb-3"
                   >
                     Password
                   </label>
@@ -333,13 +337,13 @@ export function AuthPage() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] focus:border-[#A8A9AD] focus:outline-none transition-colors"
-                      placeholder="Enter your password"
+                      autoComplete={isLogin ? "current-password" : "new-password"}
                       required
-                      minLength={6}
+                      placeholder="••••••••"
+                      className="w-full pl-12 pr-4 py-4 bg-[#0A0A0B] border border-[#E5E4E2]/20 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-all duration-300"
                       style={{
-                        fontSize: '1rem',
-                        fontFamily: 'Montserrat'
+                        fontSize: '0.95rem',
+                        letterSpacing: '0.01em'
                       }}
                     />
                   </div>

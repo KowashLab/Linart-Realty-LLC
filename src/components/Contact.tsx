@@ -158,15 +158,9 @@ export function Contact() {
                 
                 {/* Name */}
                 <div>
-                  <label 
-                    htmlFor="name" 
-                    className="block font-['Montserrat'] text-[#E5E4E2]/80 mb-2"
-                    style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase'
-                    }}
+                  <label
+                    htmlFor="name"
+                    className="block text-[#E5E4E2] mb-2 font-['Montserrat'] tracking-wide text-sm"
                   >
                     Full Name *
                   </label>
@@ -174,28 +168,20 @@ export function Contact() {
                     type="text"
                     id="name"
                     name="name"
-                    required
+                    autoComplete="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 px-4 py-3 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-colors duration-300"
-                    style={{
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.01em'
-                    }}
+                    required
+                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 rounded px-6 py-4 text-[#E5E4E2] font-['Montserrat'] tracking-wide focus:border-[#E5E4E2]/50 focus:outline-none transition-colors placeholder:text-[#A8A9AD]"
+                    placeholder="John Doe"
                   />
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label 
-                    htmlFor="email" 
-                    className="block font-['Montserrat'] text-[#E5E4E2]/80 mb-2"
-                    style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase'
-                    }}
+                  <label
+                    htmlFor="email"
+                    className="block text-[#E5E4E2] mb-2 font-['Montserrat'] tracking-wide text-sm"
                   >
                     Email Address *
                   </label>
@@ -203,28 +189,20 @@ export function Contact() {
                     type="email"
                     id="email"
                     name="email"
-                    required
+                    autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 px-4 py-3 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-colors duration-300"
-                    style={{
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.01em'
-                    }}
+                    required
+                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 rounded px-6 py-4 text-[#E5E4E2] font-['Montserrat'] tracking-wide focus:border-[#E5E4E2]/50 focus:outline-none transition-colors placeholder:text-[#A8A9AD]"
+                    placeholder="john@example.com"
                   />
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label 
-                    htmlFor="phone" 
-                    className="block font-['Montserrat'] text-[#E5E4E2]/80 mb-2"
-                    style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase'
-                    }}
+                  <label
+                    htmlFor="phone"
+                    className="block text-[#E5E4E2] mb-2 font-['Montserrat'] tracking-wide text-sm"
                   >
                     Phone Number
                   </label>
@@ -232,13 +210,11 @@ export function Contact() {
                     type="tel"
                     id="phone"
                     name="phone"
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 px-4 py-3 text-[#E5E4E2] font-['Montserrat'] focus:border-[#A8A9AD]/60 focus:outline-none transition-colors duration-300"
-                    style={{
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.01em'
-                    }}
+                    className="w-full bg-[#0A0A0B] border border-[#E5E4E2]/20 rounded px-6 py-4 text-[#E5E4E2] font-['Montserrat'] tracking-wide focus:border-[#E5E4E2]/50 focus:outline-none transition-colors placeholder:text-[#A8A9AD]"
+                    placeholder="+1 (555) 123-4567"
                   />
                 </div>
 

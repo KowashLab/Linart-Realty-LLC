@@ -61,7 +61,7 @@ export function Hero() {
       </div>
 
       {/* Content Container */}
-      <div className="container-custom relative z-10 text-center px-6">
+      <div className="container-custom relative z-10 text-center px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -87,7 +87,7 @@ export function Hero() {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-12 lg:mb-16"
+            className="mb-12 lg:mb-16 px-4"
           >
             <span className="platinum-shimmer block font-['Cormorant_Garamond']">
               Linart Realty LLC
@@ -107,9 +107,9 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="font-['Montserrat'] uppercase text-[#E5E4E2]/80 mb-20 lg:mb-24 leading-relaxed whitespace-nowrap"
+            className="font-['Montserrat'] uppercase text-[#E5E4E2]/80 mb-20 lg:mb-24 leading-relaxed px-4"
             style={{
-              fontSize: 'clamp(0.75rem, 1.5vw, 1.35rem)',
+              fontSize: 'clamp(0.7rem, 2.5vw, 1.35rem)',
               fontWeight: 500,
               letterSpacing: '0.1em',
             }}
