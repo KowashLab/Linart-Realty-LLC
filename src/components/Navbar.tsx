@@ -99,14 +99,14 @@ export function Navbar() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="hidden 2xl:flex items-center justify-center gap-3 xl:gap-6 flex-1 mx-8"
+              className="hidden 2xl:flex items-center justify-evenly flex-1 mx-8"
             >
               {links.map((link, index) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="group relative font-['Montserrat'] uppercase text-[#E5E4E2]/70 hover:text-[#F2EEE7] transition-all duration-500 whitespace-nowrap px-2.5 xl:px-3 py-2.5"
+                  className="group relative font-['Montserrat'] uppercase text-[#E5E4E2]/70 hover:text-[#F2EEE7] transition-all duration-500 whitespace-nowrap py-2.5"
                   style={{
                     fontSize: '0.65rem',
                     fontWeight: 600,
