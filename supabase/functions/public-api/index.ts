@@ -1,71 +1,36 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import * as kv from "./kv_store.ts";
-import * as blog from "./blog.ts";
-import * as properties from "./properties.ts";
-import * as testimonials from "./testimonials.ts";
-import * as recognition from "./recognition.ts";
-import * as partnerships from "./partnerships.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { Hono } from "npm:hono@^4.0.0";
+import { cors } from "npm:hono/cors";
+import { logger } from "npm:hono/logger";
+
+// Import all modules
+import * as blog from "../server/blog.ts";
+import * as properties from "../server/properties.ts";
+import * as testimonials from "../server/testimonials.ts";
+import * as recognitions from "../server/recognition.ts";
+import * as partnerships from "../server/partnerships.ts";
+
+/*
+═══════════════════════════════════════════════════════════════════
+  PUBLIC API - No JWT verification for public read endpoints
+  - All public GET endpoints are here
+  - Admin endpoints remain in /server function
+═══════════════════════════════════════════════════════════════════
+*/
 
 const app = new Hono();
 
-// Create Supabase client
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-);
-
-// Enable logger
+// Middleware
+app.use('*', cors());
 app.use('*', logger(console.log));
 
-// Enable CORS for all routes and methods
-app.use(
-  "/*",
-  cors({
-    origin: "*",
-    allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    exposeHeaders: ["Content-Length"],
-    maxAge: 600,
-  }),
-);
-
 /*
 ═══════════════════════════════════════════════════════════════════
-  PUBLIC/SETUP ENDPOINTS
+  BLOG ROUTES
 ═══════════════════════════════════════════════════════════════════
 */
 
-// Health check endpoint
-app.get("/health", (c) => {
-  return c.json({ status: "ok" });
-});
-
-// Seed all initial data
-app.get("/seed-all", async (c) => {
-  try {
-    await blog.seedInitialPosts();
-    await properties.seedInitialProperties();
-    await testimonials.seedInitialTestimonials();
-    await recognition.seedInitialRecognitions();
-    await partnerships.seedInitialPartnerships();
-    return c.json({ success: true, message: 'All initial data seeded successfully' });
-  } catch (error) {
-    console.log(`Error seeding initial data: ${error}`);
-    return c.json({ error: 'Error seeding initial data' }, 500);
-  }
-});
-
-/*
-═══════════════════════════════════════════════════════════════════
-  PUBLIC API ENDPOINTS - No authentication required
-═══════════════════════════════════════════════════════════════════
-*/
-
-// Blog Posts - Public
-app.get("/api/blog/posts", async (c) => {
+// Get all blog posts
+app.get("/blog/posts", async (c) => {
   try {
     const posts = await blog.getAllPosts();
     const publishedPosts = posts.filter((p: any) => p.published !== false);
@@ -76,7 +41,8 @@ app.get("/api/blog/posts", async (c) => {
   }
 });
 
-app.get("/api/blog/posts/:slug", async (c) => {
+// Get blog post by slug
+app.get("/blog/posts/:slug", async (c) => {
   try {
     const slug = c.req.param('slug');
     const post = await blog.getPostBySlug(slug);
@@ -92,8 +58,14 @@ app.get("/api/blog/posts/:slug", async (c) => {
   }
 });
 
-// Properties - Public
-app.get("/api/properties", async (c) => {
+/*
+═══════════════════════════════════════════════════════════════════
+  PROPERTIES ROUTES
+═══════════════════════════════════════════════════════════════════
+*/
+
+// Get all properties
+app.get("/properties", async (c) => {
   try {
     const allProperties = await properties.getAllProperties();
     const publishedProperties = allProperties.filter((p: any) => p.published !== false);
@@ -104,7 +76,8 @@ app.get("/api/properties", async (c) => {
   }
 });
 
-app.get("/api/properties/:id", async (c) => {
+// Get property by ID
+app.get("/properties/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const property = await properties.getPropertyById(id);
@@ -120,8 +93,14 @@ app.get("/api/properties/:id", async (c) => {
   }
 });
 
-// Testimonials - Public
-app.get("/api/testimonials", async (c) => {
+/*
+═══════════════════════════════════════════════════════════════════
+  TESTIMONIALS ROUTES
+═══════════════════════════════════════════════════════════════════
+*/
+
+// Get all testimonials
+app.get("/testimonials", async (c) => {
   try {
     const allTestimonials = await testimonials.getAllTestimonials();
     const publishedTestimonials = allTestimonials.filter((t: any) => t.published !== false);
@@ -132,7 +111,8 @@ app.get("/api/testimonials", async (c) => {
   }
 });
 
-app.get("/api/testimonials/:id", async (c) => {
+// Get testimonial by ID
+app.get("/testimonials/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const testimonial = await testimonials.getTestimonialById(id);
@@ -148,10 +128,16 @@ app.get("/api/testimonials/:id", async (c) => {
   }
 });
 
-// Recognition - Public
-app.get("/api/recognition", async (c) => {
+/*
+═══════════════════════════════════════════════════════════════════
+  RECOGNITION ROUTES
+═══════════════════════════════════════════════════════════════════
+*/
+
+// Get all recognitions
+app.get("/recognition", async (c) => {
   try {
-    const allRecognitions = await recognition.getAllRecognitions();
+    const allRecognitions = await recognitions.getAllRecognitions();
     return c.json({ recognitions: allRecognitions });
   } catch (error) {
     console.log(`Error fetching recognitions: ${error}`);
@@ -159,24 +145,31 @@ app.get("/api/recognition", async (c) => {
   }
 });
 
-app.get("/api/recognition/:id", async (c) => {
+// Get recognition by ID
+app.get("/recognition/:id", async (c) => {
   try {
     const id = c.req.param('id');
-    const recognitionItem = await recognition.getRecognitionById(id);
+    const recognition = await recognitions.getRecognitionById(id);
     
-    if (!recognitionItem) {
+    if (!recognition) {
       return c.json({ error: 'Recognition not found' }, 404);
     }
     
-    return c.json({ recognition: recognitionItem });
+    return c.json({ recognition });
   } catch (error) {
     console.log(`Error fetching recognition: ${error}`);
     return c.json({ error: 'Error fetching recognition' }, 500);
   }
 });
 
-// Partnerships - Public
-app.get("/api/partnerships", async (c) => {
+/*
+═══════════════════════════════════════════════════════════════════
+  PARTNERSHIPS ROUTES
+═══════════════════════════════════════════════════════════════════
+*/
+
+// Get all partnerships
+app.get("/partnerships", async (c) => {
   try {
     const allPartnerships = await partnerships.getAllPartnerships();
     return c.json({ partnerships: allPartnerships });
@@ -186,7 +179,8 @@ app.get("/api/partnerships", async (c) => {
   }
 });
 
-app.get("/api/partnerships/:id", async (c) => {
+// Get partnership by ID
+app.get("/partnerships/:id", async (c) => {
   try {
     const id = c.req.param('id');
     const partnership = await partnerships.getPartnershipById(id);
@@ -202,32 +196,10 @@ app.get("/api/partnerships/:id", async (c) => {
   }
 });
 
-// Wrapper handler that bypasses Supabase's default JWT verification
-// This allows public endpoints to work without authentication
-const handler = async (req: Request) => {
-  try {
-    const url = new URL(req.url);
-    console.log(`[DEBUG] Original URL: ${req.url}`);
-    console.log(`[DEBUG] Original pathname: ${url.pathname}`);
-    
-    // Strip the /make-server-dcec270f prefix if present
-    const path = url.pathname.replace(/^\/make-server-dcec270f/, '');
-    console.log(`[DEBUG] Path after prefix removal: ${path}`);
-    
-    const newUrl = new URL(path + url.search, url.origin);
-    const newReq = new Request(newUrl, req);
-    
-    return await app.fetch(newReq);
-  } catch (error) {
-    console.log(`Error in request handler: ${error}`);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }), 
-      { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-  }
-};
+/*
+═══════════════════════════════════════════════════════════════════
+  START SERVER
+═══════════════════════════════════════════════════════════════════
+*/
 
-Deno.serve(handler);
+Deno.serve(app.fetch);

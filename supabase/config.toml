@@ -1,0 +1,8 @@
+# Supabase Configuration
+# https://supabase.com/docs/guides/functions/deploy
+
+[functions.public-api]
+verify_jwt = false
+
+[functions.seed]
+verify_jwt = false

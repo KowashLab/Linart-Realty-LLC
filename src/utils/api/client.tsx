@@ -3,36 +3,37 @@ import { projectId, publicAnonKey } from '../supabase/info';
 /*
 ═══════════════════════════════════════════════════════════════════
   API CLIENT - Fetch data from Edge Function endpoints
-  - Uses Edge Function for production-ready data access
-  - All requests go through /server endpoints
+  - Uses server Edge Function for all API requests
+  - Public endpoints don't require auth but we send token anyway
+  - Admin endpoints require valid user session
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f`;
 
 // Helper function to make authenticated requests
-async function apiRequest(endpoint: string, options: RequestInit = {}) {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
-        ...options.headers,
-      },
-    });
+async function fetchAPI(endpoint: string, options: RequestInit = {}) {
+  const url = `${API_BASE_URL}${endpoint}`;
+  
+  // Always include Authorization header with public anon key
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${publicAnonKey}`,
+    ...options.headers,
+  };
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      console.error(`API Error for ${endpoint}:`, errorData);
-      throw new Error(errorData.error || `HTTP ${response.status}`);
-    }
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
 
-    return await response.json();
-  } catch (error) {
-    console.error(`API Request failed for ${endpoint}:`, error);
-    throw error;
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API Error [${endpoint}]:`, errorText);
+    throw new Error(`API Error: ${response.status} ${response.statusText}`);
   }
+
+  return response.json();
 }
 
 /*
@@ -43,7 +44,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
 
 export async function fetchProperties() {
   try {
-    const data = await apiRequest('/properties');
+    const data = await fetchAPI('/api/properties');
     console.log('Loaded properties:', data.properties?.length || 0);
     return data.properties || [];
   } catch (error) {
@@ -54,7 +55,7 @@ export async function fetchProperties() {
 
 export async function fetchPropertyById(id: string) {
   try {
-    const data = await apiRequest(`/properties/${id}`);
+    const data = await fetchAPI(`/api/properties/${id}`);
     return data.property || null;
   } catch (error) {
     console.error(`Error fetching property ${id}:`, error);
@@ -70,7 +71,7 @@ export async function fetchPropertyById(id: string) {
 
 export async function fetchTestimonials() {
   try {
-    const data = await apiRequest('/testimonials');
+    const data = await fetchAPI('/api/testimonials');
     console.log('Loaded testimonials:', data.testimonials?.length || 0);
     return data.testimonials || [];
   } catch (error) {
@@ -81,7 +82,7 @@ export async function fetchTestimonials() {
 
 export async function fetchTestimonialById(id: string) {
   try {
-    const data = await apiRequest(`/testimonials/${id}`);
+    const data = await fetchAPI(`/api/testimonials/${id}`);
     return data.testimonial || null;
   } catch (error) {
     console.error(`Error fetching testimonial ${id}:`, error);
@@ -97,7 +98,7 @@ export async function fetchTestimonialById(id: string) {
 
 export async function fetchRecognitions() {
   try {
-    const data = await apiRequest('/recognition');
+    const data = await fetchAPI('/api/recognition');
     console.log('Loaded recognition:', data.recognitions?.length || 0);
     return data.recognitions || [];
   } catch (error) {
@@ -108,7 +109,7 @@ export async function fetchRecognitions() {
 
 export async function fetchRecognitionById(id: string) {
   try {
-    const data = await apiRequest(`/recognition/${id}`);
+    const data = await fetchAPI(`/api/recognition/${id}`);
     return data.recognition || null;
   } catch (error) {
     console.error(`Error fetching recognition ${id}:`, error);
@@ -124,7 +125,7 @@ export async function fetchRecognitionById(id: string) {
 
 export async function fetchPartnerships() {
   try {
-    const data = await apiRequest('/partnerships');
+    const data = await fetchAPI('/api/partnerships');
     console.log('Loaded partnerships:', data.partnerships?.length || 0);
     return data.partnerships || [];
   } catch (error) {
@@ -135,7 +136,7 @@ export async function fetchPartnerships() {
 
 export async function fetchPartnershipById(id: string) {
   try {
-    const data = await apiRequest(`/partnerships/${id}`);
+    const data = await fetchAPI(`/api/partnerships/${id}`);
     return data.partnership || null;
   } catch (error) {
     console.error(`Error fetching partnership ${id}:`, error);
@@ -151,7 +152,7 @@ export async function fetchPartnershipById(id: string) {
 
 export async function fetchBlogPosts() {
   try {
-    const data = await apiRequest('/blog/posts');
+    const data = await fetchAPI('/api/blog/posts');
     console.log('Loaded blog posts:', data.posts?.length || 0);
     return data.posts || [];
   } catch (error) {
@@ -162,7 +163,7 @@ export async function fetchBlogPosts() {
 
 export async function fetchBlogPostBySlug(slug: string) {
   try {
-    const data = await apiRequest(`/blog/posts/${slug}`);
+    const data = await fetchAPI(`/api/blog/posts/${slug}`);
     return data.post || null;
   } catch (error) {
     console.error(`Error fetching blog post ${slug}:`, error);
