@@ -1,4 +1,4 @@
-import { projectId, publicAnonKey } from './supabase/info';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 /*
 ═══════════════════════════════════════════════════════════════════
