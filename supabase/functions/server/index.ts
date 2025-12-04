@@ -9,7 +9,7 @@ import * as recognition from "./recognition.ts";
 import * as partnerships from "./partnerships.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const app = new Hono();
+const app = new Hono().basePath('/server');
 
 // Create Supabase client
 const supabase = createClient(
