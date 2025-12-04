@@ -2,11 +2,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import * as kv from "./kv_store.ts";
-import * as blog from "./blog.tsx";
-import * as properties from "./properties.tsx";
-import * as testimonials from "./testimonials.tsx";
-import * as recognition from "./recognition.tsx";
-import * as partnerships from "./partnerships.tsx";
+import * as blog from "./blog.ts";
+import * as properties from "./properties.ts";
+import * as testimonials from "./testimonials.ts";
+import * as recognition from "./recognition.ts";
+import * as partnerships from "./partnerships.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const app = new Hono();
