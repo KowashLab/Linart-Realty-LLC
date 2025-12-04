@@ -14,8 +14,8 @@ import { fetchTestimonials } from '../utils/api/client';
 interface Testimonial {
   id: string;
   name: string;
-  role: string;
-  text: string;
+  title: string;
+  content: string;
   rating: number;
   image: string;
   location: string;
@@ -132,7 +132,7 @@ export function Testimonials() {
               overflow: 'hidden'
             }}
           >
-            "{testimonial.text}"
+            "{testimonial.content}"
           </p>
 
           {/* Client Info */}
@@ -166,7 +166,7 @@ export function Testimonials() {
                   letterSpacing: '0.02em'
                 }}
               >
-                {testimonial.role}
+                {testimonial.title}
               </p>
               <p 
                 className="font-['Montserrat'] text-[#A8A9AD]/60 mt-0.5"
