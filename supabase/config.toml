@@ -38,5 +38,9 @@ double_confirm_changes = true
 enable_confirmations = false
 
 [edge_runtime]
+# Note: Removed `port` from this section because the Supabase CLI
+# schema does not accept a `port` key under `[edge_runtime]`.
+# Ports belong to specific services (e.g. `[api]`, `[db]`).
+# If you need to expose a port for local testing, set it under the
+# corresponding service section above.
 enabled = true
-port = 54321
