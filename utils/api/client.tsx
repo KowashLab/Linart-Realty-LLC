@@ -9,7 +9,7 @@ import { projectId, publicAnonKey } from '../supabase/info';
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-dcec270f`;
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
 
 // Helper function to make authenticated requests
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
@@ -44,7 +44,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
 export async function fetchProperties() {
   try {
-    const data = await fetchAPI('/api/properties');
+    const data = await fetchAPI('/properties');
     console.log('Loaded properties:', data.properties?.length || 0);
     return data.properties || [];
   } catch (error) {
@@ -55,7 +55,7 @@ export async function fetchProperties() {
 
 export async function fetchPropertyById(id: string) {
   try {
-    const data = await fetchAPI(`/api/properties/${id}`);
+    const data = await fetchAPI(`/properties/${id}`);
     return data.property || null;
   } catch (error) {
     console.error(`Error fetching property ${id}:`, error);
@@ -71,7 +71,7 @@ export async function fetchPropertyById(id: string) {
 
 export async function fetchTestimonials() {
   try {
-    const data = await fetchAPI('/api/testimonials');
+    const data = await fetchAPI('/testimonials');
     console.log('Loaded testimonials:', data.testimonials?.length || 0);
     return data.testimonials || [];
   } catch (error) {
@@ -82,7 +82,7 @@ export async function fetchTestimonials() {
 
 export async function fetchTestimonialById(id: string) {
   try {
-    const data = await fetchAPI(`/api/testimonials/${id}`);
+    const data = await fetchAPI(`/testimonials/${id}`);
     return data.testimonial || null;
   } catch (error) {
     console.error(`Error fetching testimonial ${id}:`, error);
@@ -98,7 +98,7 @@ export async function fetchTestimonialById(id: string) {
 
 export async function fetchRecognitions() {
   try {
-    const data = await fetchAPI('/api/recognition');
+    const data = await fetchAPI('/recognition');
     console.log('Loaded recognition:', data.recognitions?.length || 0);
     return data.recognitions || [];
   } catch (error) {
@@ -109,7 +109,7 @@ export async function fetchRecognitions() {
 
 export async function fetchRecognitionById(id: string) {
   try {
-    const data = await fetchAPI(`/api/recognition/${id}`);
+    const data = await fetchAPI(`/recognition/${id}`);
     return data.recognition || null;
   } catch (error) {
     console.error(`Error fetching recognition ${id}:`, error);
@@ -125,7 +125,7 @@ export async function fetchRecognitionById(id: string) {
 
 export async function fetchPartnerships() {
   try {
-    const data = await fetchAPI('/api/partnerships');
+    const data = await fetchAPI('/partnerships');
     console.log('Loaded partnerships:', data.partnerships?.length || 0);
     return data.partnerships || [];
   } catch (error) {
@@ -136,7 +136,7 @@ export async function fetchPartnerships() {
 
 export async function fetchPartnershipById(id: string) {
   try {
-    const data = await fetchAPI(`/api/partnerships/${id}`);
+    const data = await fetchAPI(`/partnerships/${id}`);
     return data.partnership || null;
   } catch (error) {
     console.error(`Error fetching partnership ${id}:`, error);
@@ -152,7 +152,7 @@ export async function fetchPartnershipById(id: string) {
 
 export async function fetchBlogPosts() {
   try {
-    const data = await fetchAPI('/api/blog/posts');
+    const data = await fetchAPI('/blog/posts');
     console.log('Loaded blog posts:', data.posts?.length || 0);
     return data.posts || [];
   } catch (error) {
@@ -163,7 +163,7 @@ export async function fetchBlogPosts() {
 
 export async function fetchBlogPostBySlug(slug: string) {
   try {
-    const data = await fetchAPI(`/api/blog/posts/${slug}`);
+    const data = await fetchAPI(`/blog/posts/${slug}`);
     return data.post || null;
   } catch (error) {
     console.error(`Error fetching blog post ${slug}:`, error);
