@@ -107,8 +107,22 @@ export async function deleteProperty(id: string): Promise<boolean> {
 }
 
 export async function seedInitialProperties(): Promise<void> {
+  // Check if seeding has already been completed (using KV flag)
+  const seedFlag = await kv.get('seed:completed:properties');
+  if (seedFlag) {
+    console.log('Properties already seeded (flag exists), skipping...');
+    return; // Already seeded
+  }
+  
   const existing = await getAllProperties();
-  if (existing.length > 0) return;
+  if (existing.length > 0) {
+    console.log('Properties already exist, setting flag...');
+    // Set flag to prevent future seeding
+    await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
+    return;
+  }
+  
+  console.log('Starting properties seeding...');
   
   const initialProperties = [
     {
@@ -326,4 +340,8 @@ export async function seedInitialProperties(): Promise<void> {
   for (const propertyData of initialProperties) {
     await createProperty(propertyData);
   }
+  
+  // Set flag to prevent future seeding
+  await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
+  console.log('Properties seeding completed.');
 }

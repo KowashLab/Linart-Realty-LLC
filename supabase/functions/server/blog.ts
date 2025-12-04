@@ -115,8 +115,22 @@ export async function deletePost(id: string): Promise<boolean> {
 
 // Seed initial data (if database is empty)
 export async function seedInitialPosts(): Promise<void> {
+  // Check if seeding has already been completed (using KV flag)
+  const seedFlag = await kv.get('seed:completed:blog');
+  if (seedFlag) {
+    console.log('Blog posts already seeded (flag exists), skipping...');
+    return; // Already seeded
+  }
+  
   const existingPosts = await getAllPosts();
-  if (existingPosts.length > 0) return; // Already have posts
+  if (existingPosts.length > 0) {
+    console.log('Blog posts already exist, setting flag...');
+    // Set flag to prevent future seeding
+    await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
+    return; // Already have posts
+  }
+  
+  console.log('Starting blog posts seeding...');
   
   const initialPosts = [
     {
@@ -280,4 +294,8 @@ export async function seedInitialPosts(): Promise<void> {
   for (const postData of initialPosts) {
     await createPost(postData);
   }
+  
+  // Set flag to prevent future seeding
+  await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
+  console.log('Blog posts seeding completed.');
 }

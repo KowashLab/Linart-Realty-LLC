@@ -82,8 +82,22 @@ export async function deleteRecognition(id: string): Promise<boolean> {
 }
 
 export async function seedInitialRecognitions(): Promise<void> {
+  // Check if seeding has already been completed (using KV flag)
+  const seedFlag = await kv.get('seed:completed:recognition');
+  if (seedFlag) {
+    console.log('Recognition already seeded (flag exists), skipping...');
+    return; // Already seeded
+  }
+  
   const existing = await getAllRecognitions();
-  if (existing.length > 0) return;
+  if (existing.length > 0) {
+    console.log('Recognition already exists, setting flag...');
+    // Set flag to prevent future seeding
+    await kv.set('seed:completed:recognition', { completed: true, timestamp: new Date().toISOString() });
+    return;
+  }
+  
+  console.log('Starting recognition seeding...');
   
   const initialRecognitions = [
     {
@@ -146,4 +160,8 @@ export async function seedInitialRecognitions(): Promise<void> {
   for (const recognitionData of initialRecognitions) {
     await createRecognition(recognitionData);
   }
+  
+  // Set flag to prevent future seeding
+  await kv.set('seed:completed:recognition', { completed: true, timestamp: new Date().toISOString() });
+  console.log('Recognition seeding completed.');
 }

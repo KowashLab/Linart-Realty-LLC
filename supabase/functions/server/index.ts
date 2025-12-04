@@ -2,11 +2,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import * as kv from "./kv_store.ts";
-import * as blog from "./blog.ts";
-import * as properties from "./properties.ts";
-import * as testimonials from "./testimonials.ts";
-import * as recognition from "./recognition.ts";
-import * as partnerships from "./partnerships.ts";
+import * as blog from "./blog.tsx";
+import * as properties from "./properties.tsx";
+import * as testimonials from "./testimonials.tsx";
+import * as recognition from "./recognition.tsx";
+import * as partnerships from "./partnerships.tsx";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const app = new Hono();
@@ -46,12 +46,34 @@ app.get("/health", (c) => {
 // Seed all initial data
 app.get("/seed-all", async (c) => {
   try {
-    await blog.seedInitialPosts();
-    await properties.seedInitialProperties();
-    await testimonials.seedInitialTestimonials();
-    await recognition.seedInitialRecognitions();
-    await partnerships.seedInitialPartnerships();
-    return c.json({ success: true, message: 'All initial data seeded successfully' });
+    // Check if seeding is already in progress (lock mechanism)
+    const seedLock = await kv.get('seed:lock');
+    if (seedLock) {
+      return c.json({ 
+        success: false, 
+        message: 'Seeding already in progress. Please wait.' 
+      }, 429);
+    }
+
+    // Set lock
+    await kv.set('seed:lock', { locked: true, timestamp: new Date().toISOString() });
+
+    try {
+      await blog.seedInitialPosts();
+      await properties.seedInitialProperties();
+      await testimonials.seedInitialTestimonials();
+      await recognition.seedInitialRecognitions();
+      await partnerships.seedInitialPartnerships();
+      
+      // Remove lock after successful seeding
+      await kv.del('seed:lock');
+      
+      return c.json({ success: true, message: 'All initial data seeded successfully' });
+    } catch (seedError) {
+      // Remove lock even if seeding fails
+      await kv.del('seed:lock');
+      throw seedError;
+    }
   } catch (error) {
     console.log(`Error seeding initial data: ${error}`);
     return c.json({ error: 'Error seeding initial data' }, 500);

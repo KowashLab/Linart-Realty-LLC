@@ -81,8 +81,22 @@ export async function deletePartnership(id: string): Promise<boolean> {
 }
 
 export async function seedInitialPartnerships(): Promise<void> {
+  // Check if seeding has already been completed (using KV flag)
+  const seedFlag = await kv.get('seed:completed:partnerships');
+  if (seedFlag) {
+    console.log('Partnerships already seeded (flag exists), skipping...');
+    return; // Already seeded
+  }
+  
   const existing = await getAllPartnerships();
-  if (existing.length > 0) return;
+  if (existing.length > 0) {
+    console.log('Partnerships already exist, setting flag...');
+    // Set flag to prevent future seeding
+    await kv.set('seed:completed:partnerships', { completed: true, timestamp: new Date().toISOString() });
+    return;
+  }
+  
+  console.log('Starting partnerships seeding...');
   
   const initialPartnerships = [
     {
@@ -150,4 +164,8 @@ export async function seedInitialPartnerships(): Promise<void> {
   for (const partnershipData of initialPartnerships) {
     await createPartnership(partnershipData);
   }
+  
+  // Set flag to prevent future seeding
+  await kv.set('seed:completed:partnerships', { completed: true, timestamp: new Date().toISOString() });
+  console.log('Partnerships seeding completed.');
 }

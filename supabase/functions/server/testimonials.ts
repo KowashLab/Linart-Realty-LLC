@@ -82,8 +82,22 @@ export async function deleteTestimonial(id: string): Promise<boolean> {
 }
 
 export async function seedInitialTestimonials(): Promise<void> {
+  // Check if seeding has already been completed (using KV flag)
+  const seedFlag = await kv.get('seed:completed:testimonials');
+  if (seedFlag) {
+    console.log('Testimonials already seeded (flag exists), skipping...');
+    return; // Already seeded
+  }
+  
   const existing = await getAllTestimonials();
-  if (existing.length > 0) return;
+  if (existing.length > 0) {
+    console.log('Testimonials already exist, setting flag...');
+    // Set flag to prevent future seeding
+    await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
+    return;
+  }
+  
+  console.log('Starting testimonials seeding...');
   
   const initialTestimonials = [
     {
@@ -135,4 +149,8 @@ export async function seedInitialTestimonials(): Promise<void> {
   for (const testimonialData of initialTestimonials) {
     await createTestimonial(testimonialData);
   }
+  
+  console.log('Testimonials seeding completed, setting flag...');
+  // Set flag to prevent future seeding
+  await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
 }
