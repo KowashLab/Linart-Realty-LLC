@@ -9,7 +9,8 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       'vaul@1.1.2': 'vaul',
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './'),
+      '@styles': path.resolve(__dirname, './styles'),
     },
   },
   css: {
