@@ -1,6 +1,15 @@
+import { Hono } from 'npm:hono@^4.0.0';
+import { cors } from 'npm:hono/cors';
+import { logger } from 'npm:hono/logger';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import * as kvStore from './kv_store.ts';
+import * as blog from './blog.ts';
+import * as properties from './properties.ts';
+import * as testimonials from './testimonials.ts';
+import * as recognition from './recognition.ts';
 import * as partnerships from './partnerships.ts';
 
-const app = new Hono(); // REMOVED basePath
+const app = new Hono();
 
 // Create Supabase client
 const supabase = createClient(
@@ -38,7 +47,7 @@ app.get("/health", (c) => {
 app.get("/seed-all", async (c) => {
   try {
     // Check if seeding is already in progress (lock mechanism)
-    const seedLock = await kv.get('seed:lock');
+    const seedLock = await kvStore.get('seed:lock');
     if (seedLock) {
       return c.json({ 
         success: false, 
@@ -47,7 +56,7 @@ app.get("/seed-all", async (c) => {
     }
 
     // Set lock
-    await kv.set('seed:lock', { locked: true, timestamp: new Date().toISOString() });
+    await kvStore.set('seed:lock', { locked: true, timestamp: new Date().toISOString() });
 
     try {
       await blog.seedInitialPosts();
@@ -57,12 +66,12 @@ app.get("/seed-all", async (c) => {
       await partnerships.seedInitialPartnerships();
       
       // Remove lock after successful seeding
-      await kv.del('seed:lock');
+      await kvStore.del('seed:lock');
       
       return c.json({ success: true, message: 'All initial data seeded successfully' });
     } catch (seedError) {
       // Remove lock even if seeding fails
-      await kv.del('seed:lock');
+      await kvStore.del('seed:lock');
       throw seedError;
     }
   } catch (error) {
@@ -77,23 +86,23 @@ app.get("/force-reseed", async (c) => {
     console.log('🔥 FORCE RESET: Starting complete database reset...');
     
     // Delete ALL seed flags
-    await kv.del('seed:completed:blog');
-    await kv.del('seed:completed:properties');
-    await kv.del('seed:completed:testimonials');
-    await kv.del('seed:completed:recognition');
-    await kv.del('seed:completed:partnerships');
-    await kv.del('seed:lock');
+    await kvStore.del('seed:completed:blog');
+    await kvStore.del('seed:completed:properties');
+    await kvStore.del('seed:completed:testimonials');
+    await kvStore.del('seed:completed:recognition');
+    await kvStore.del('seed:completed:partnerships');
+    await kvStore.del('seed:lock');
     console.log('✅ Deleted all seed flags');
     
     // Delete ALL old data with various prefixes
     const prefixes = ['blog:', 'blog_', 'property:', 'property_', 'testimonial:', 'testimonial_', 'recognition:', 'recognition_', 'partnership:', 'partnership_'];
     
     for (const prefix of prefixes) {
-      const items = await kv.getByPrefix(prefix);
+      const items = await kvStore.getByPrefix(prefix);
       console.log(`🧹 Found ${items.length} items with prefix "${prefix}"`);
       for (const item of items) {
         if (item && typeof item === 'object' && 'id' in item) {
-          await kv.del(`${prefix}${item.id}`);
+          await kvStore.del(`${prefix}${item.id}`);
         }
       }
     }
@@ -258,7 +267,7 @@ app.get("/favorites", async (c) => {
       return c.json({ error: 'Unauthorized - Invalid token' }, 401);
     }
 
-    const favorites = await kv.get(`favorites_${user.id}`);
+    const favorites = await kvStore.get(`favorites_${user.id}`);
     return c.json({ favorites: favorites || [] });
   } catch (error) {
     console.log(`Server error getting favorites: ${error}`);
@@ -283,7 +292,7 @@ app.post("/favorites", async (c) => {
     const body = await c.req.json();
     const { propertyId, propertyData } = body;
 
-    const currentFavorites = await kv.get(`favorites_${user.id}`) || [];
+    const currentFavorites = await kvStore.get(`favorites_${user.id}`) || [];
     const favorites = Array.isArray(currentFavorites) ? currentFavorites : [];
     
     const exists = favorites.some((fav: any) => fav.id === propertyId);
@@ -293,7 +302,7 @@ app.post("/favorites", async (c) => {
     }
 
     favorites.push({ id: propertyId, ...propertyData, addedAt: new Date().toISOString() });
-    await kv.set(`favorites_${user.id}`, favorites);
+    await kvStore.set(`favorites_${user.id}`, favorites);
 
     return c.json({ success: true, favorites });
   } catch (error) {
@@ -317,11 +326,11 @@ app.delete("/favorites/:propertyId", async (c) => {
     }
 
     const propertyId = c.req.param('propertyId');
-    const currentFavorites = await kv.get(`favorites_${user.id}`) || [];
+    const currentFavorites = await kvStore.get(`favorites_${user.id}`) || [];
     const favorites = Array.isArray(currentFavorites) ? currentFavorites : [];
     
     const filtered = favorites.filter((fav: any) => fav.id !== propertyId);
-    await kv.set(`favorites_${user.id}`, filtered);
+    await kvStore.set(`favorites_${user.id}`, filtered);
 
     return c.json({ success: true, favorites: filtered });
   } catch (error) {

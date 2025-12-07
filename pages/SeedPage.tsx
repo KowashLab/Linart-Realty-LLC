@@ -90,6 +90,43 @@ export default function SeedPage() {
     }
   };
 
+  const handleForceReseed = async () => {
+    if (!confirm('⚠️ WARNING: This will DELETE ALL data and reseed with fresh data. Continue?')) {
+      return;
+    }
+    
+    setLoading(true);
+    setSuccess(false);
+    setError('');
+    setResults(null);
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/server/force-reseed`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess(true);
+        setResults(data);
+      } else {
+        setError(data.error || 'Failed to force reseed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Network error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <SEO 
@@ -219,6 +256,18 @@ export default function SeedPage() {
                 >
                   <span className="font-['Montserrat'] uppercase text-sm tracking-wider">
                     Initialize Blog Only
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  onClick={handleForceReseed}
+                  disabled={loading}
+                  whileHover={{ scale: loading ? 1 : 1.01 }}
+                  whileTap={{ scale: loading ? 1 : 0.99 }}
+                  className="w-full px-8 py-3 border border-[#E5E4E2]/20 text-[#E5E4E2] hover:border-[#E5E4E2]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                >
+                  <span className="font-['Montserrat'] uppercase text-sm tracking-wider">
+                    Force Reseed All Data
                   </span>
                 </motion.button>
 
