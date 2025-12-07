@@ -31,768 +31,438 @@ async function kvGet(key: string) {
   return data ? JSON.parse(data.value) : null;
 }
 
-// Seed functions
-async function seedBlogPosts() {
-  console.log('🧹 Clearing old blog posts...');
+async function kvDel(key: string) {
+  const { error } = await supabase
+    .from('kv_store_dcec270f')
+    .delete()
+    .eq('key', key);
   
-  // Clear both old formats: blog_${id} and blog:${id}
-  const oldIds = await kvGet('blog_all_ids') || [];
-  for (const oldId of oldIds) {
-    // Delete old underscore format
-    await supabase.from('kv_store_dcec270f').delete().eq('key', `blog_${oldId}`);
-    // Delete colon format (just in case)
-    await supabase.from('kv_store_dcec270f').delete().eq('key', `blog:${oldId}`);
+  if (error) {
+    throw new Error(`KV delete error for key ${key}: ${error.message}`);
   }
+}
+
+// Helper to clear ALL keys with a prefix
+async function clearPrefix(prefix: string) {
+  const { data, error } = await supabase
+    .from('kv_store_dcec270f')
+    .select('key')
+    .like('key', `${prefix}%`);
+  
+  if (error) {
+    console.log(`Error fetching keys with prefix ${prefix}:`, error);
+    return;
+  }
+  
+  if (data && data.length > 0) {
+    console.log(`🧹 Deleting ${data.length} keys with prefix "${prefix}"...`);
+    for (const row of data) {
+      await kvDel(row.key);
+    }
+  }
+}
+
+// Generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Seed blog posts
+async function seedBlogPosts() {
+  console.log('🌱 Seeding blog posts...');
+  
+  // Clear ALL blog posts (both formats)
+  await clearPrefix('blog:');
+  await clearPrefix('blog_');
+  await kvDel('blog_all_ids');
+  await kvDel('seed:completed:blog');
   
   const posts = [
     {
-      id: "miami-luxury-market-2024",
-      title: "Miami Luxury Real Estate Market Trends 2024",
-      slug: "miami-luxury-market-2024",
-      excerpt: "Discover the latest trends shaping Miami's ultra-luxury real estate landscape, from waterfront penthouses to exclusive gated communities.",
-      content: "Miami's luxury real estate market continues to attract high-net-worth individuals from around the globe. With its pristine beaches, world-class amenities, and favorable tax environment, South Florida remains a premier destination for luxury property investments. The market has seen unprecedented growth in ultra-luxury condominiums and waterfront estates, with record-breaking sales continuing to reshape the landscape.",
-      author: "Linart Realty Team",
-      category: "Market Insights",
-      tags: ["Miami", "Luxury Market", "Investment", "Trends"],
-      featured_image: "/images/blog-miami-market.jpg",
+      id: 'art-of-luxury-real-estate-investment',
+      title: 'The Art of Luxury Real Estate Investment',
+      slug: 'art-of-luxury-real-estate-investment',
+      excerpt: 'Discover the secrets to investing in premium properties that appreciate in value and provide unparalleled returns.',
+      content: `
+        <p>Luxury real estate investment represents one of the most stable and prestigious forms of wealth preservation and growth. In this comprehensive guide, we explore the fundamental principles that distinguish successful luxury property investors.</p>
+        
+        <h2>Understanding Market Dynamics</h2>
+        <p>The luxury real estate market operates on different principles than conventional property markets. Location, exclusivity, and unique architectural features play crucial roles in determining value appreciation.</p>
+        
+        <h2>Key Investment Strategies</h2>
+        <ul>
+          <li>Focus on prime locations with limited supply</li>
+          <li>Seek properties with unique architectural significance</li>
+          <li>Consider long-term appreciation over short-term gains</li>
+          <li>Evaluate rental yield potential for income generation</li>
+        </ul>
+        
+        <h2>Due Diligence Essentials</h2>
+        <p>Thorough market research, property inspections, and financial analysis are non-negotiable elements of luxury real estate investment. Working with experienced advisors ensures informed decision-making.</p>
+      `,
+      image: '/images/blog/investment.jpg',
+      category: 'Investment',
+      type: 'article',
       published: true,
-      publishedAt: "2024-01-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "florida-waterfront-investment",
-      title: "The Ultimate Guide to Florida Waterfront Properties",
-      slug: "florida-waterfront-investment",
-      excerpt: "Explore the benefits of investing in Florida's most prestigious waterfront estates and what makes them exceptional.",
-      content: "Florida waterfront properties represent the pinnacle of luxury living. From private yacht access to panoramic ocean views, these estates offer unparalleled lifestyle benefits. Waterfront real estate continues to appreciate at rates that exceed inland properties, making it not just a lifestyle choice but a smart investment strategy.",
-      author: "Linart Realty Team",
-      category: "Investment Guide",
-      tags: ["Waterfront", "Florida", "Luxury Estates", "Investment"],
-      featured_image: "/images/blog-waterfront.jpg",
-      published: true,
-      publishedAt: "2024-02-01T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "palm-beach-luxury-living",
-      title: "Palm Beach: Where Luxury Meets Elegance",
-      slug: "palm-beach-luxury-living",
-      excerpt: "Discover why Palm Beach remains one of America's most exclusive addresses for ultra-high-net-worth families.",
-      content: "Palm Beach has long been synonymous with wealth, sophistication, and refined living. This barrier island paradise offers more than just stunning ocean views. With its world-class dining, exclusive shopping on Worth Avenue, and a community of global leaders, Palm Beach represents the epitome of American luxury.",
-      author: "Linart Realty Team",
-      category: "Lifestyle",
-      tags: ["Palm Beach", "Luxury Living", "Exclusive Communities"],
-      featured_image: "/images/blog-palm-beach.jpg",
-      published: true,
-      publishedAt: "2024-02-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "smart-home-luxury-estates",
-      title: "Smart Home Technology in Modern Luxury Estates",
-      slug: "smart-home-luxury-estates",
-      excerpt: "How cutting-edge technology is transforming luxury real estate in Florida, from automated systems to AI-powered security.",
-      content: "Today's luxury estates are technological marvels, seamlessly blending sophistication with innovation. Smart home systems have become essential features, offering everything from climate control to advanced security systems, all controlled from a single interface.",
-      author: "Linart Realty Team",
-      category: "Technology",
-      tags: ["Smart Homes", "Technology", "Modern Luxury", "Innovation"],
-      featured_image: "/images/blog-smart-home.jpg",
-      published: true,
-      publishedAt: "2024-03-01T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "tampa-bay-emerging-market",
-      title: "Tampa Bay: Florida's Emerging Luxury Market",
-      slug: "tampa-bay-emerging-market",
-      excerpt: "Why Tampa Bay is becoming the next hotspot for luxury real estate investment in Florida.",
-      content: "While Miami and Palm Beach have traditionally dominated Florida's luxury market, Tampa Bay is rapidly emerging as a premier destination for discerning buyers seeking exclusivity and value.",
-      author: "Linart Realty Team",
-      category: "Market Insights",
-      tags: ["Tampa", "Emerging Markets", "Investment Opportunity"],
-      featured_image: "/images/blog-tampa.jpg",
-      published: true,
-      publishedAt: "2024-03-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "architectural-masterpieces-florida",
-      title: "Architectural Masterpieces: Florida's Most Stunning Estates",
-      slug: "architectural-masterpieces-florida",
-      excerpt: "A showcase of Florida's most breathtaking architectural designs, where art meets luxury living.",
-      content: "Florida's luxury real estate market features some of the world's most stunning architectural achievements. From contemporary minimalist designs to classical Mediterranean villas, these properties represent the pinnacle of architectural excellence.",
-      author: "Linart Realty Team",
-      category: "Architecture",
-      tags: ["Architecture", "Design", "Luxury Estates", "Florida"],
-      featured_image: "/images/blog-architecture.jpg",
-      published: true,
-      publishedAt: "2024-04-01T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "luxury-estate-amenities",
-      title: "Essential Amenities in Today's Luxury Estates",
-      slug: "luxury-estate-amenities",
-      excerpt: "Discover the must-have features that define ultra-luxury properties in the Florida market.",
-      content: "Modern luxury estates go beyond traditional opulence. Today's discerning buyers expect resort-style amenities, from infinity pools and private spas to wine cellars and home theaters.",
-      author: "Linart Realty Team",
-      category: "Lifestyle",
-      tags: ["Amenities", "Luxury Features", "Modern Living"],
-      featured_image: "/images/blog-amenities.jpg",
-      published: true,
-      publishedAt: "2024-04-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "florida-tax-benefits",
-      title: "Tax Advantages of Florida Luxury Real Estate",
-      slug: "florida-tax-benefits",
-      excerpt: "Understanding the significant tax benefits that make Florida an attractive destination for high-net-worth individuals.",
-      content: "Florida offers substantial tax advantages for luxury property owners, including no state income tax, favorable estate planning opportunities, and homestead exemptions that make it one of the most tax-friendly states in the nation.",
-      author: "Linart Realty Team",
-      category: "Investment Guide",
-      tags: ["Tax Benefits", "Florida", "Investment Strategy"],
-      featured_image: "/images/blog-tax-benefits.jpg",
-      published: true,
-      publishedAt: "2024-05-01T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "luxury-condo-vs-estate",
-      title: "Luxury Condos vs. Private Estates: Making the Right Choice",
-      slug: "luxury-condo-vs-estate",
-      excerpt: "A comprehensive comparison to help you decide between a high-rise luxury condo and a private estate.",
-      content: "Choosing between a luxury condominium and a private estate depends on lifestyle preferences, maintenance considerations, and long-term investment goals. Each offers unique advantages for different buyer profiles.",
-      author: "Linart Realty Team",
-      category: "Buyer's Guide",
-      tags: ["Condos", "Estates", "Buying Guide", "Comparison"],
-      featured_image: "/images/blog-condo-vs-estate.jpg",
-      published: true,
-      publishedAt: "2024-05-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "naples-luxury-market",
-      title: "Naples: Southwest Florida's Crown Jewel",
-      slug: "naples-luxury-market",
-      excerpt: "Exploring Naples' prestigious communities and why it attracts the world's elite.",
-      content: "Naples has emerged as one of Florida's most desirable luxury markets, offering pristine beaches, world-class golf courses, and an unparalleled quality of life that attracts international buyers.",
-      author: "Linart Realty Team",
-      category: "Market Insights",
-      tags: ["Naples", "Southwest Florida", "Luxury Communities"],
-      featured_image: "/images/blog-naples.jpg",
-      published: true,
-      publishedAt: "2024-06-01T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "sustainable-luxury-homes",
-      title: "Sustainable Luxury: The Future of High-End Real Estate",
-      slug: "sustainable-luxury-homes",
-      excerpt: "How eco-friendly features and sustainable design are reshaping the luxury real estate market.",
-      content: "Sustainability and luxury are no longer mutually exclusive. Today's ultra-high-net-worth buyers increasingly demand properties that combine opulence with environmental responsibility, from solar energy systems to sustainable building materials.",
-      author: "Linart Realty Team",
-      category: "Trends",
-      tags: ["Sustainability", "Green Homes", "Future Trends", "Innovation"],
-      featured_image: "/images/blog-sustainable.jpg",
-      published: true,
-      publishedAt: "2024-06-15T10:00:00Z",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "international-buyers-guide",
-      title: "A Guide for International Buyers: Investing in Florida Luxury Real Estate",
-      slug: "international-buyers-guide",
-      excerpt: "Everything international buyers need to know about purchasing luxury property in Florida.",
-      content: "Florida's luxury market attracts buyers from around the world. Understanding the unique aspects of purchasing as an international buyer, from financing to legal considerations, ensures a smooth transaction process.",
-      author: "Linart Realty Team",
-      category: "Buyer's Guide",
-      tags: ["International Buyers", "Investment", "Florida", "Guide"],
-      featured_image: "/images/blog-international.jpg",
-      published: true,
-      publishedAt: "2024-07-01T10:00:00Z",
+      author: 'Linart Realty Team',
+      seoTitle: 'Luxury Real Estate Investment Guide 2025',
+      seoDescription: 'Expert insights on luxury property investment strategies, market analysis, and wealth preservation through premium real estate.',
+      seoKeywords: 'luxury real estate investment, premium property, wealth preservation',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
   ];
-
+  
   for (const post of posts) {
-    await kvSet(`blog_${post.id}`, post);
+    await kvSet(`blog:post:${post.id}`, post);
   }
   
-  await kvSet('blog_all_ids', posts.map(p => p.id));
   console.log(`✅ Seeded ${posts.length} blog posts`);
 }
 
+// Seed properties
 async function seedProperties() {
-  console.log('🧹 Clearing old properties...');
+  console.log('🌱 Seeding properties...');
   
-  // Clear both old formats: property_${id} and property:${id}
-  const oldIds = await kvGet('properties_all_ids') || [];
-  for (const oldId of oldIds) {
-    // Delete old underscore format
-    await supabase.from('kv_store_dcec270f').delete().eq('key', `property_${oldId}`);
-    // Delete colon format
-    await supabase.from('kv_store_dcec270f').delete().eq('key', `property:${oldId}`);
-  }
+  // Clear ALL properties (both formats)
+  await clearPrefix('property:');
+  await clearPrefix('property_');
+  await kvDel('properties_all_ids');
+  await kvDel('seed:completed:properties');
   
   const properties = [
     {
-      id: "waterfront-penthouse-estate",
-      slug: "waterfront-penthouse-estate",
-      title: "Waterfront Penthouse Estate",
-      location: "Miami Beach, FL",
-      price: "$12,500,000",
+      id: 'waterfront-penthouse-estate',
+      slug: 'waterfront-penthouse-estate',
+      title: 'Waterfront Penthouse Estate',
+      description: 'Spectacular waterfront penthouse featuring floor-to-ceiling windows, private terrace with infinity pool, and breathtaking panoramic views. This architectural masterpiece combines sophisticated design with unparalleled luxury amenities.',
+      price: '$12,500,000',
+      location: 'Miami Beach, FL',
       bedrooms: 5,
       bathrooms: 6,
       sqft: 8500,
-      propertyType: "Penthouse",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Spectacular waterfront penthouse featuring floor-to-ceiling windows, private terrace with infinity pool, and breathtaking panoramic views. This architectural masterpiece combines sophisticated design with unparalleled luxury amenities.",
-      features: ["Infinity Pool", "Private Beach Access", "Smart Home System", "Wine Cellar", "Home Theater", "Private Elevator"],
+      features: ['Infinity Pool', 'Private Beach Access', 'Smart Home System', 'Wine Cellar', 'Home Theater', 'Private Elevator'],
       images: [
-        "/images/property-1.jpg",
-        "/images/property-2.jpg",
-        "/images/property-3.jpg"
+        '/images/property-1.jpg',
+        '/images/property-2.jpg',
+        '/images/property-3.jpg'
       ],
-      mainImage: "/images/property-1.jpg",
+      mainImage: '/images/property-1.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Waterfront Penthouse Estate - $12.5M Miami Beach',
+      seoDescription: 'Luxury waterfront penthouse in Miami Beach. 5 bed, 6 bath, 8500 sqft with infinity pool and private beach access.',
+      seoKeywords: 'waterfront penthouse, miami beach luxury, infinity pool estate',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "oceanfront-mediterranean-estate",
-      slug: "oceanfront-mediterranean-estate",
-      title: "Oceanfront Mediterranean Estate",
-      location: "Palm Beach, FL",
-      price: "$18,900,000",
+      id: 'oceanfront-mediterranean-estate',
+      slug: 'oceanfront-mediterranean-estate',
+      title: 'Oceanfront Mediterranean Estate',
+      description: 'Magnificent Mediterranean-style estate with direct ocean views. This exquisite property features hand-crafted details, imported Italian marble, and expansive outdoor entertaining spaces overlooking the Atlantic Ocean.',
+      price: '$18,900,000',
+      location: 'Palm Beach, FL',
       bedrooms: 6,
       bathrooms: 8,
       sqft: 12000,
-      propertyType: "Waterfront",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Magnificent Mediterranean-style estate with direct ocean views. This exquisite property features hand-crafted details, imported Italian marble, and expansive outdoor entertaining spaces overlooking the Atlantic Ocean.",
-      features: ["Private Beach", "Tennis Court", "Infinity Pool", "Guest Cottage", "Ocean Views", "Wine Cellar"],
+      features: ['Private Beach', 'Tennis Court', 'Infinity Pool', 'Guest Cottage', 'Ocean Views', 'Wine Cellar'],
       images: [
-        "/images/property-1.jpg",
-        "/images/property-4.jpg",
-        "/images/property-3.jpg"
+        '/images/property-1.jpg',
+        '/images/property-4.jpg',
+        '/images/property-3.jpg'
       ],
-      mainImage: "/images/property-1.jpg",
+      mainImage: '/images/property-1.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Oceanfront Mediterranean Estate - $18.9M Palm Beach',
+      seoDescription: 'Spectacular Mediterranean estate in Palm Beach. 6 bed, 8 bath, 12000 sqft with private beach access.',
+      seoKeywords: 'palm beach estate, oceanfront property, mediterranean villa, luxury beach house florida',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "modern-architectural-masterpiece",
-      slug: "modern-architectural-masterpiece",
-      title: "Modern Architectural Masterpiece",
-      location: "Naples, FL",
-      price: "$8,750,000",
+      id: 'modern-architectural-masterpiece',
+      slug: 'modern-architectural-masterpiece',
+      title: 'Modern Architectural Masterpiece',
+      description: 'Contemporary architectural masterpiece designed by award-winning architects. Features open-concept living spaces, premium finishes throughout, and seamless indoor-outdoor integration with stunning Gulf views.',
+      price: '$8,750,000',
+      location: 'Naples, FL',
       bedrooms: 4,
       bathrooms: 5,
       sqft: 6200,
-      propertyType: "Waterfront",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Contemporary architectural masterpiece designed by award-winning architects. Features open-concept living spaces, premium finishes throughout, and seamless indoor-outdoor integration with stunning Gulf views.",
-      features: ["Gulf Views", "Outdoor Kitchen", "Spa & Sauna", "Guest House", "Solar Panels", "Smart Home"],
+      features: ['Gulf Views', 'Outdoor Kitchen', 'Spa & Sauna', 'Guest House', 'Solar Panels', 'Smart Home'],
       images: [
-        "/images/property-4.jpg",
-        "/images/property-5.jpg"
+        '/images/property-4.jpg',
+        '/images/property-5.jpg'
       ],
-      mainImage: "/images/property-4.jpg",
+      mainImage: '/images/property-4.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Modern Architectural Masterpiece - $8.75M Naples',
+      seoDescription: 'Award-winning contemporary villa in Naples. 4 bed, 5 bath, 6200 sqft with Gulf views.',
+      seoKeywords: 'naples luxury home, architectural masterpiece, contemporary florida estate',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "boca-raton-golf-estate",
-      slug: "boca-raton-golf-estate",
-      title: "Boca Raton Golf Estate",
-      location: "Boca Raton, FL",
-      price: "$6,950,000",
+      id: 'boca-raton-golf-estate',
+      slug: 'boca-raton-golf-estate',
+      title: 'Boca Raton Golf Estate',
+      description: 'Rare opportunity to own this pristine estate on championship golf course. This meticulously renovated residence blends classic elegance with modern luxury, featuring stunning fairway and water views.',
+      price: '$6,950,000',
+      location: 'Boca Raton, FL',
       bedrooms: 5,
       bathrooms: 6,
       sqft: 7800,
-      propertyType: "Residential",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Rare opportunity to own this pristine estate on championship golf course. This meticulously renovated residence blends classic elegance with modern luxury, featuring stunning fairway and water views.",
-      features: ["Golf Course Views", "Pool & Spa", "Private Office", "Chef's Kitchen", "Wine Room", "Smart Home"],
+      features: ['Golf Course Views', 'Pool & Spa', 'Private Office', 'Chef\'s Kitchen', 'Wine Room', 'Smart Home'],
       images: [
-        "/images/property-6.jpg",
-        "/images/property-2.jpg"
+        '/images/property-6.jpg',
+        '/images/property-2.jpg'
       ],
-      mainImage: "/images/property-6.jpg",
+      mainImage: '/images/property-6.jpg',
+      propertyType: 'Residential',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Boca Raton Golf Estate - $6.95M',
+      seoDescription: 'Luxury golf course estate in Boca Raton. 5 bed, 6 bath, 7800 sqft with fairway views.',
+      seoKeywords: 'boca raton estate, golf course property, luxury florida home',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "key-west-island-paradise",
-      slug: "key-west-island-paradise",
-      title: "Key West Island Paradise",
-      location: "Key West, FL",
-      price: "$9,800,000",
+      id: 'key-west-island-paradise',
+      slug: 'key-west-island-paradise',
+      title: 'Key West Island Paradise',
+      description: 'Exclusive island retreat in the heart of Key West. This stunning contemporary residence features panoramic ocean views, private dock, and the ultimate Florida Keys lifestyle with world-class amenities.',
+      price: '$9,800,000',
+      location: 'Key West, FL',
       bedrooms: 4,
       bathrooms: 5,
       sqft: 5800,
-      propertyType: "Waterfront",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Exclusive island retreat in the heart of Key West. This stunning contemporary residence features panoramic ocean views, private dock, and the ultimate Florida Keys lifestyle with world-class amenities.",
-      features: ["Ocean Views", "Private Dock", "Infinity Pool", "Rooftop Deck", "Beach Access", "Smart Home"],
+      features: ['Ocean Views', 'Private Dock', 'Infinity Pool', 'Rooftop Deck', 'Beach Access', 'Smart Home'],
       images: [
-        "/images/property-2.jpg",
-        "/images/property-6.jpg"
+        '/images/property-2.jpg',
+        '/images/property-6.jpg'
       ],
-      mainImage: "/images/property-2.jpg",
+      mainImage: '/images/property-2.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Key West Island Paradise - $9.8M',
+      seoDescription: 'Luxury island home in Key West. 4 bed, 5 bath, 5800 sqft with private dock and ocean views.',
+      seoKeywords: 'key west property, island estate, florida keys luxury, waterfront key west',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "gated-equestrian-estate",
-      slug: "gated-equestrian-estate",
-      title: "Gated Equestrian Estate",
-      location: "Wellington, FL",
-      price: "$14,200,000",
+      id: 'gated-equestrian-estate',
+      slug: 'gated-equestrian-estate',
+      title: 'Gated Equestrian Estate',
+      description: 'Sprawling estate on 25 acres featuring a magnificent main residence, professional equestrian center, and multiple guest houses. Perfect for the discerning equestrian enthusiast seeking privacy and luxury.',
+      price: '$14,200,000',
+      location: 'Wellington, FL',
       bedrooms: 7,
       bathrooms: 9,
       sqft: 15000,
-      propertyType: "Residential",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Sprawling estate on 25 acres featuring a magnificent main residence, professional equestrian center, and multiple guest houses. Perfect for the discerning equestrian enthusiast seeking privacy and luxury.",
-      features: ["Equestrian Center", "Guest Houses", "Heated Pool", "Tennis Court", "25 Acres", "Security Gate"],
+      features: ['Equestrian Center', 'Guest Houses', 'Heated Pool', 'Tennis Court', '25 Acres', 'Security Gate'],
       images: [
-        "/images/property-4.jpg",
-        "/images/property-1.jpg",
-        "/images/property-5.jpg"
+        '/images/property-4.jpg',
+        '/images/property-1.jpg',
+        '/images/property-5.jpg'
       ],
-      mainImage: "/images/property-4.jpg",
+      mainImage: '/images/property-4.jpg',
+      propertyType: 'Residential',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Gated Equestrian Estate - $14.2M Wellington',
+      seoDescription: 'Luxury equestrian estate in Wellington. 7 bed, 9 bath, 15000 sqft on 25 acres with full facilities.',
+      seoKeywords: 'wellington equestrian estate, florida horse farm, luxury acreage florida',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "sarasota-bay-waterfront-villa",
-      slug: "sarasota-bay-waterfront-villa",
-      title: "Sarasota Bay Waterfront Villa",
-      location: "Sarasota, FL",
-      price: "$7,200,000",
+      id: 'sarasota-bay-waterfront-villa',
+      slug: 'sarasota-bay-waterfront-villa',
+      title: 'Sarasota Bay Waterfront Villa',
+      description: 'Sleek contemporary villa on Sarasota Bay with breathtaking water views. Floor-to-ceiling glass walls, minimalist design, and cutting-edge smart home technology create an unparalleled coastal living experience.',
+      price: '$7,200,000',
+      location: 'Sarasota, FL',
       bedrooms: 5,
       bathrooms: 6,
       sqft: 7800,
-      propertyType: "Waterfront",
-      status: "For Sale",
-      featured: true,
-      published: true,
-      description: "Sleek contemporary villa on Sarasota Bay with breathtaking water views. Floor-to-ceiling glass walls, minimalist design, and cutting-edge smart home technology create an unparalleled coastal living experience.",
-      features: ["Bay Views", "Private Dock", "Infinity Pool", "Home Theater", "Gym & Spa", "Smart Home"],
+      features: ['Bay Views', 'Private Dock', 'Infinity Pool', 'Home Theater', 'Gym & Spa', 'Smart Home'],
       images: [
-        "/images/property-5.jpg",
-        "/images/property-2.jpg"
+        '/images/property-5.jpg',
+        '/images/property-2.jpg'
       ],
-      mainImage: "/images/property-5.jpg",
+      mainImage: '/images/property-5.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: true,
+      virtualTourUrl: '',
+      seoTitle: 'Sarasota Bay Waterfront Villa - $7.2M',
+      seoDescription: 'Contemporary waterfront villa in Sarasota. 5 bed, 6 bath, 7800 sqft with bay views and private dock.',
+      seoKeywords: 'sarasota waterfront, bay front property, luxury sarasota home',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "fort-lauderdale-intracoastal-estate",
-      slug: "fort-lauderdale-intracoastal-estate",
-      title: "Fort Lauderdale Intracoastal Estate",
-      location: "Fort Lauderdale, FL",
-      price: "$11,500,000",
+      id: 'fort-lauderdale-intracoastal-estate',
+      slug: 'fort-lauderdale-intracoastal-estate',
+      title: 'Fort Lauderdale Intracoastal Estate',
+      description: 'Stunning estate on the Intracoastal Waterway with 150 feet of water frontage. Features a private yacht dock, resort-style pool, and sophisticated interiors with imported finishes throughout.',
+      price: '$11,500,000',
+      location: 'Fort Lauderdale, FL',
       bedrooms: 6,
       bathrooms: 7,
       sqft: 9200,
-      propertyType: "Waterfront",
-      status: "For Sale",
-      featured: false,
-      published: true,
-      description: "Stunning estate on the Intracoastal Waterway with 150 feet of water frontage. Features a private yacht dock, resort-style pool, and sophisticated interiors with imported finishes throughout.",
-      features: ["Yacht Dock", "Intracoastal Views", "Resort Pool", "Summer Kitchen", "Wine Cellar", "Smart Home"],
+      features: ['Yacht Dock', 'Intracoastal Views', 'Resort Pool', 'Summer Kitchen', 'Wine Cellar', 'Smart Home'],
       images: [
-        "/images/property-3.jpg",
-        "/images/property-1.jpg"
+        '/images/property-3.jpg',
+        '/images/property-1.jpg'
       ],
-      mainImage: "/images/property-3.jpg",
+      mainImage: '/images/property-3.jpg',
+      propertyType: 'Waterfront',
+      status: 'For Sale',
+      published: true,
+      featured: false,
+      virtualTourUrl: '',
+      seoTitle: 'Fort Lauderdale Intracoastal Estate - $11.5M',
+      seoDescription: 'Luxury intracoastal estate in Fort Lauderdale. 6 bed, 7 bath, 9200 sqft with yacht dock.',
+      seoKeywords: 'fort lauderdale estate, intracoastal property, yacht dock florida',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
-      id: "jupiter-island-oceanfront",
-      slug: "jupiter-island-oceanfront",
-      title: "Jupiter Island Oceanfront",
-      location: "Jupiter Island, FL",
-      price: "$16,800,000",
+      id: 'jupiter-island-oceanfront',
+      slug: 'jupiter-island-oceanfront',
+      title: 'Jupiter Island Oceanfront',
+      description: 'Exclusive oceanfront residence on prestigious Jupiter Island. This architectural gem offers unobstructed Atlantic views, private beach access, and the ultimate in sophisticated coastal living.',
+      price: '$16,800,000',
+      location: 'Jupiter Island, FL',
       bedrooms: 5,
       bathrooms: 7,
       sqft: 10500,
-      propertyType: "Waterfront",
-      status: "Pending",
-      featured: false,
-      published: true,
-      description: "Exclusive oceanfront residence on prestigious Jupiter Island. This architectural gem offers unobstructed Atlantic views, private beach access, and the ultimate in sophisticated coastal living.",
-      features: ["Ocean Views", "Private Beach", "Infinity Pool", "Guest House", "Elevator", "Hurricane Impact Glass"],
+      features: ['Ocean Views', 'Private Beach', 'Infinity Pool', 'Guest House', 'Elevator', 'Hurricane Impact Glass'],
       images: [
-        "/images/property-6.jpg",
-        "/images/property-3.jpg"
+        '/images/property-6.jpg',
+        '/images/property-3.jpg'
       ],
-      mainImage: "/images/property-6.jpg",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "coconut-grove-tropical-oasis",
-      slug: "coconut-grove-tropical-oasis",
-      title: "Coconut Grove Tropical Oasis",
-      location: "Coconut Grove, FL",
-      price: "$10,200,000",
-      bedrooms: 5,
-      bathrooms: 6,
-      sqft: 8400,
-      propertyType: "Residential",
-      status: "For Sale",
-      featured: false,
+      mainImage: '/images/property-6.jpg',
+      propertyType: 'Waterfront',
+      status: 'Pending',
       published: true,
-      description: "Enchanting tropical estate in prestigious Coconut Grove. Lush landscaping, Mediterranean architecture, and bay views create a private paradise minutes from downtown Miami.",
-      features: ["Bay Views", "Tropical Gardens", "Pool & Spa", "Guest Suite", "Gourmet Kitchen", "Wine Storage"],
-      images: [
-        "/images/property-2.jpg",
-        "/images/property-4.jpg"
-      ],
-      mainImage: "/images/property-2.jpg",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "coral-gables-mediterranean-villa",
-      slug: "coral-gables-mediterranean-villa",
-      title: "Coral Gables Mediterranean Villa",
-      location: "Coral Gables, FL",
-      price: "$8,900,000",
-      bedrooms: 6,
-      bathrooms: 7,
-      sqft: 9500,
-      propertyType: "Residential",
-      status: "For Sale",
       featured: false,
-      published: true,
-      description: "Stunning Mediterranean villa in exclusive Coral Gables. Classic architecture meets modern luxury with hand-painted tiles, marble flooring, and resort-style amenities throughout.",
-      features: ["Pool & Cabana", "Outdoor Kitchen", "Wine Cellar", "Library", "Master Suite Balcony", "3-Car Garage"],
-      images: [
-        "/images/property-5.jpg",
-        "/images/property-6.jpg"
-      ],
-      mainImage: "/images/property-5.jpg",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      id: "tampa-waterfront-contemporary",
-      slug: "tampa-waterfront-contemporary",
-      title: "Tampa Waterfront Contemporary",
-      location: "Tampa, FL",
-      price: "$5,800,000",
-      bedrooms: 4,
-      bathrooms: 5,
-      sqft: 6800,
-      propertyType: "Residential",
-      status: "For Sale",
-      featured: false,
-      published: true,
-      description: "Sleek contemporary home on Tampa Bay with stunning water views. Open floor plan, floor-to-ceiling windows, and premium finishes create the perfect waterfront retreat.",
-      features: ["Waterfront", "Private Dock", "Modern Kitchen", "Home Office", "Pool", "Smart Home"],
-      images: [
-        "/images/property-3.jpg",
-        "/images/property-5.jpg"
-      ],
-      mainImage: "/images/property-3.jpg",
+      virtualTourUrl: '',
+      seoTitle: 'Jupiter Island Oceanfront - $16.8M',
+      seoDescription: 'Exclusive oceanfront estate on Jupiter Island. 5 bed, 7 bath, 10500 sqft with private beach.',
+      seoKeywords: 'jupiter island property, oceanfront florida, exclusive beach estate',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
   ];
-
+  
   for (const property of properties) {
     await kvSet(`property:${property.id}`, property);
   }
   
-  await kvSet('properties_all_ids', properties.map(p => p.id));
   console.log(`✅ Seeded ${properties.length} properties`);
 }
 
+// Seed testimonials
 async function seedTestimonials() {
-  // First, clear old testimonials
-  const oldIds = await kvGet('testimonials_all_ids') || [];
-  for (const oldId of oldIds) {
-    const { error } = await supabase
-      .from('kv_store_dcec270f')
-      .delete()
-      .eq('key', `testimonial_${oldId}`);
-    if (error) console.log(`Note: Could not delete testimonial_${oldId}`);
-  }
+  console.log('🌱 Seeding testimonials...');
+  
+  // Clear ALL testimonials (both formats)
+  await clearPrefix('testimonial:');
+  await clearPrefix('testimonial_');
+  await kvDel('testimonials_all_ids');
+  await kvDel('seed:completed:testimonials');
   
   const testimonials = [
     {
-      id: "testimonial-1",
-      name: "Victoria Hamilton",
-      title: "CEO, Hamilton Enterprises",
-      content: "Linart Realty exceeded all expectations in finding our Miami Beach estate. Their attention to detail, market knowledge, and dedication to excellence is unmatched.",
+      id: 'sarah-mitchell',
+      name: 'Sarah Mitchell',
+      title: 'CEO, Tech Innovations Inc.',
+      content: 'Working with Linart Realty was an absolute pleasure. Their professionalism, market knowledge, and dedication to finding the perfect property exceeded all expectations. They truly understand luxury real estate.',
       rating: 5,
-      location: "Miami Beach, FL",
-      image: "/images/testimonials/client-1.jpg",
+      image: '/images/testimonial-1.jpg',
+      location: 'Miami Beach, FL',
+      propertyType: 'Waterfront Estate',
       published: true,
-      createdAt: new Date().toISOString()
+      featured: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     },
     {
-      id: "testimonial-2",
-      name: "Alexander Morrison",
-      title: "International Investor",
-      content: "The team at Linart Realty demonstrated exceptional professionalism throughout our property acquisition. Their expertise in luxury real estate is truly world-class.",
+      id: 'michael-chen',
+      name: 'Michael Chen',
+      title: 'Entrepreneur & Investor',
+      content: 'The team at Linart Realty provided exceptional service throughout our property search. Their attention to detail and understanding of our needs made the entire process seamless and enjoyable.',
       rating: 5,
-      location: "Palm Beach, FL",
-      image: "/images/testimonials/client-2.jpg",
+      image: '/images/testimonial-2.jpg',
+      location: 'Scottsdale, AZ',
+      propertyType: 'Modern Villa',
       published: true,
-      createdAt: new Date().toISOString()
+      featured: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     },
     {
-      id: "testimonial-3",
-      name: "Isabella Rothschild",
-      title: "Art Collector & Philanthropist",
-      content: "Working with Linart Realty was an absolute pleasure. They understood our vision perfectly and delivered a property that surpassed our dreams.",
+      id: 'elizabeth-harrison',
+      name: 'Elizabeth Harrison',
+      title: 'Medical Director',
+      content: 'Exceptional expertise in luxury real estate. Linart Realty helped us find our dream home with patience and professionalism. Their market insights and negotiation skills are unmatched.',
       rating: 5,
-      location: "Coral Gables, FL",
-      image: "/images/testimonials/client-3.jpg",
+      image: '/images/testimonial-3.jpg',
+      location: 'New York, NY',
+      propertyType: 'Penthouse',
       published: true,
-      createdAt: new Date().toISOString()
+      featured: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     },
     {
-      id: "testimonial-4",
-      name: "Robert Chen",
-      title: "Tech Entrepreneur",
-      content: "Linart Realty's knowledge of the Florida luxury market is unparalleled. They made our property search seamless and enjoyable.",
+      id: 'david-rodriguez',
+      name: 'David Rodriguez',
+      title: 'Investment Banker',
+      content: 'Outstanding service from start to finish. The Linart team understood exactly what we were looking for and delivered beyond our expectations. Highly recommended for luxury property investments.',
       rating: 5,
-      location: "Fort Lauderdale, FL",
-      image: "/images/testimonials/client-4.jpg",
+      image: '/images/testimonial-4.jpg',
+      location: 'Los Angeles, CA',
+      propertyType: 'Contemporary Estate',
       published: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "testimonial-5",
-      name: "Sophia Laurent",
-      title: "Fashion Executive",
-      content: "The attention to detail and personalized service we received was extraordinary. Linart Realty truly understands luxury.",
-      rating: 5,
-      location: "Naples, FL",
-      image: "/images/testimonials/client-5.jpg",
-      published: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "testimonial-6",
-      name: "Marcus Wellington",
-      title: "Private Equity Partner",
-      content: "Exceptional service from start to finish. Linart Realty made our transition to Florida seamless and stress-free.",
-      rating: 5,
-      location: "Tampa, FL",
-      image: "/images/testimonials/client-6.jpg",
-      published: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "testimonial-7",
-      name: "Catherine Beaumont",
-      title: "Luxury Brand Director",
-      content: "From our first meeting to closing day, Linart Realty provided impeccable white-glove service. Their deep understanding of the luxury market is extraordinary.",
-      rating: 5,
-      location: "Boca Raton, FL",
-      image: "/images/testimonials/client-7.jpg",
-      published: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "testimonial-8",
-      name: "David Richardson",
-      title: "Hedge Fund Manager",
-      content: "Linart Realty's market expertise and negotiation skills resulted in finding us the perfect waterfront estate. A truly exceptional experience from start to finish.",
-      rating: 5,
-      location: "Key Biscayne, FL",
-      image: "/images/testimonials/client-8.jpg",
-      published: true,
-      createdAt: new Date().toISOString()
+      featured: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
   ];
-
+  
   for (const testimonial of testimonials) {
-    await kvSet(`testimonial_${testimonial.id}`, testimonial);
+    await kvSet(`testimonial:${testimonial.id}`, testimonial);
   }
   
-  await kvSet('testimonials_all_ids', testimonials.map(t => t.id));
   console.log(`✅ Seeded ${testimonials.length} testimonials`);
-}
-
-async function seedRecognitions() {
-  // First, clear ALL old recognitions
-  const oldIds = await kvGet('recognitions_all_ids') || [];
-  for (const oldId of oldIds) {
-    const { error } = await supabase
-      .from('kv_store_dcec270f')
-      .delete()
-      .eq('key', `recognition_${oldId}`);
-    if (error) console.log(`Note: Could not delete recognition_${oldId}`);
-  }
-  
-  const recognitions = [
-    {
-      id: "recognition-1",
-      title: "Forbes Top 100 Luxury Brokerages",
-      organization: "Forbes",
-      year: 2024,
-      description: "Recognized as one of the nation's premier luxury real estate firms",
-      icon: "Award",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-2",
-      title: "Wall Street Journal Top Agent",
-      organization: "WSJ Real Trends",
-      year: 2024,
-      description: "Ranked among the top 1% of agents nationwide",
-      icon: "Trophy",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-3",
-      title: "Luxury Real Estate Excellence Award",
-      organization: "International Luxury Alliance",
-      year: 2023,
-      description: "Awarded for outstanding achievement in luxury property transactions",
-      icon: "Star",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-4",
-      title: "Best Luxury Brokerage - Florida",
-      organization: "Luxury Real Estate Magazine",
-      year: 2024,
-      description: "Top-rated luxury real estate firm in Florida",
-      icon: "Award",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-5",
-      title: "Forbes Top 100 Luxury Brokerages",
-      organization: "Forbes",
-      year: 2024,
-      description: "Recognized as one of the nation's premier luxury real estate firms",
-      icon: "Award",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-6",
-      title: "Wall Street Journal Top Agent",
-      organization: "WSJ Real Trends",
-      year: 2024,
-      description: "Ranked among the top 1% of agents nationwide",
-      icon: "Trophy",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-7",
-      title: "Luxury Real Estate Excellence Award",
-      organization: "International Luxury Alliance",
-      year: 2023,
-      description: "Awarded for outstanding achievement in luxury property transactions",
-      icon: "Star",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "recognition-8",
-      title: "Best Luxury Brokerage - Florida",
-      organization: "Luxury Real Estate Magazine",
-      year: 2024,
-      description: "Top-rated luxury real estate firm in Florida",
-      icon: "Award",
-      featured: true,
-      createdAt: new Date().toISOString()
-    }
-  ];
-
-  for (const recognition of recognitions) {
-    await kvSet(`recognition_${recognition.id}`, recognition);
-  }
-  
-  await kvSet('recognitions_all_ids', recognitions.map(r => r.id));
-  console.log(`✅ Seeded ${recognitions.length} recognitions`);
-}
-
-async function seedPartnerships() {
-  // First, clear ALL old partnerships
-  const oldIds = await kvGet('partnerships_all_ids') || [];
-  for (const oldId of oldIds) {
-    const { error } = await supabase
-      .from('kv_store_dcec270f')
-      .delete()
-      .eq('key', `partnership_${oldId}`);
-    if (error) console.log(`Note: Could not delete partnership_${oldId}`);
-  }
-  
-  const partnerships = [
-    {
-      id: "partnership-1",
-      name: "Sotheby's International Realty",
-      description: "Global luxury real estate network",
-      logo: "Building2",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "partnership-2",
-      name: "Christie's Real Estate",
-      description: "International luxury property auctions",
-      logo: "Home",
-      featured: true,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "partnership-3",
-      name: "Luxury Portfolio International",
-      description: "Premier luxury property marketing",
-      logo: "Crown",
-      featured: true,
-      createdAt: new Date().toISOString()
-    }
-  ];
-
-  for (const partnership of partnerships) {
-    await kvSet(`partnership_${partnership.id}`, partnership);
-  }
-  
-  await kvSet('partnerships_all_ids', partnerships.map(p => p.id));
-  console.log(`✅ Seeded ${partnerships.length} partnerships`);
 }
 
 // Main handler
@@ -814,8 +484,6 @@ Deno.serve(async (req) => {
     await seedBlogPosts();
     await seedProperties();
     await seedTestimonials();
-    await seedRecognitions();
-    await seedPartnerships();
     
     console.log('✅ All data seeded successfully!');
     
@@ -824,11 +492,9 @@ Deno.serve(async (req) => {
         success: true, 
         message: 'All initial data seeded successfully',
         counts: {
-          blog: 12,
-          properties: 12,
-          testimonials: 8,
-          recognitions: 8,
-          partnerships: 3
+          blog: 1,
+          properties: 9,
+          testimonials: 4
         },
         timestamp: new Date().toISOString()
       }),
