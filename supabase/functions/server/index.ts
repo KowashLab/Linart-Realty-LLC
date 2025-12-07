@@ -1,15 +1,17 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import * as kv from "./kv_store.ts";
-import * as blog from "./blog.ts";
-import * as properties from "./properties.ts";
-import * as testimonials from "./testimonials.ts";
-import * as recognition from "./recognition.ts";
-import * as partnerships from "./partnerships.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { Hono } from "npm:hono@4";
+import { cors } from "npm:hono/cors";
+import { logger } from "npm:hono/logger";
 
-const app = new Hono().basePath('/server');
+// Import all data modules
+import * as kv from './kv_store.ts';
+import * as blog from './blog.ts';
+import * as properties from './properties.ts';
+import * as testimonials from './testimonials.ts';
+import * as recognition from './recognition.ts';
+import * as partnerships from './partnerships.ts';
+
+const app = new Hono().basePath('/make-server-dcec270f');
 
 // Create Supabase client
 const supabase = createClient(
@@ -77,6 +79,58 @@ app.get("/seed-all", async (c) => {
   } catch (error) {
     console.log(`Error seeding initial data: ${error}`);
     return c.json({ error: 'Error seeding initial data' }, 500);
+  }
+});
+
+// FORCE RESET - Clear ALL data and reseed
+app.get("/force-reseed", async (c) => {
+  try {
+    console.log('🔥 FORCE RESET: Starting complete database reset...');
+    
+    // Delete ALL seed flags
+    await kv.del('seed:completed:blog');
+    await kv.del('seed:completed:properties');
+    await kv.del('seed:completed:testimonials');
+    await kv.del('seed:completed:recognition');
+    await kv.del('seed:completed:partnerships');
+    await kv.del('seed:lock');
+    console.log('✅ Deleted all seed flags');
+    
+    // Delete ALL old data with various prefixes
+    const prefixes = ['blog:', 'blog_', 'property:', 'property_', 'testimonial:', 'testimonial_', 'recognition:', 'recognition_', 'partnership:', 'partnership_'];
+    
+    for (const prefix of prefixes) {
+      const items = await kv.getByPrefix(prefix);
+      console.log(`🧹 Found ${items.length} items with prefix "${prefix}"`);
+      for (const item of items) {
+        if (item && typeof item === 'object' && 'id' in item) {
+          await kv.del(`${prefix}${item.id}`);
+        }
+      }
+    }
+    console.log('✅ Deleted all old data');
+    
+    // Now run fresh seed
+    console.log('🌱 Starting fresh seed...');
+    await blog.seedInitialPosts();
+    console.log('✅ Blog seeded');
+    await properties.seedInitialProperties();
+    console.log('✅ Properties seeded');
+    await testimonials.seedInitialTestimonials();
+    console.log('✅ Testimonials seeded');
+    await recognition.seedInitialRecognitions();
+    console.log('✅ Recognition seeded');
+    await partnerships.seedInitialPartnerships();
+    console.log('✅ Partnerships seeded');
+    
+    return c.json({ 
+      success: true, 
+      message: 'FORCE RESET completed! All data cleared and reseeded with fresh data.',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error(`❌ Error in force reseed: ${error}`);
+    return c.json({ error: `Force reseed error: ${error}` }, 500);
   }
 });
 

@@ -101,59 +101,48 @@ export async function seedInitialRecognitions(): Promise<void> {
   
   const initialRecognitions = [
     {
-      title: 'Top Luxury Agency',
-      organization: 'Forbes Real Estate Council',
-      year: '2025',
-      description: 'Recognized as a leading luxury real estate agency for exceptional service and market performance.',
-      icon: 'Award',
+      title: 'Top Luxury Brokerage',
+      organization: 'Florida Real Estate',
+      year: '2024',
+      description: 'Recognized as the leading luxury real estate brokerage in Florida for exceptional service, market expertise, and record-breaking sales performance.',
+      icon: 'Trophy',
       category: 'Industry Award',
       published: true,
       featured: true,
       displayOrder: 1
     },
     {
-      title: 'Excellence in Service',
-      organization: 'Luxury Real Estate Association',
+      title: 'Excellence in Design',
+      organization: 'Architectural Digest',
       year: '2024',
-      description: 'Awarded for outstanding client service and dedication to excellence in luxury property transactions.',
-      icon: 'Trophy',
+      description: 'Honored for exceptional property presentation, marketing design excellence, and innovative approaches to showcasing luxury real estate.',
+      icon: 'Award',
       category: 'Recognition',
       published: true,
       featured: true,
       displayOrder: 2
     },
     {
-      title: 'Certified Luxury Specialist',
-      organization: 'Institute for Luxury Home Marketing',
-      year: '2023',
-      description: 'Professional certification demonstrating expertise in luxury real estate marketing and sales.',
-      icon: 'Medal',
-      category: 'Certification',
+      title: 'Best Commercial Portfolio',
+      organization: 'Real Estate Weekly',
+      year: '2025',
+      description: 'Awarded for outstanding commercial real estate portfolio management and strategic investment advisory services.',
+      icon: 'Star',
+      category: 'Industry Award',
       published: true,
       featured: true,
       displayOrder: 3
     },
     {
-      title: 'Best in Market Innovation',
-      organization: 'National Association of Realtors',
-      year: '2024',
-      description: 'Recognition for innovative marketing strategies and cutting-edge technology implementation.',
-      icon: 'Star',
-      category: 'Industry Award',
-      published: true,
-      featured: false,
-      displayOrder: 4
-    },
-    {
-      title: 'Client Choice Award',
-      organization: 'Real Estate Excellence Board',
-      year: '2025',
-      description: 'Voted by clients as the preferred luxury real estate agency for exceptional results.',
-      icon: 'Heart',
+      title: 'Platinum Service Award',
+      organization: 'Luxury Real Estate',
+      year: '2023',
+      description: 'Distinguished recognition for exceptional client service, dedication to excellence, and commitment to exceeding client expectations.',
+      icon: 'Medal',
       category: 'Recognition',
       published: true,
-      featured: false,
-      displayOrder: 5
+      featured: true,
+      displayOrder: 4
     }
   ];
   
