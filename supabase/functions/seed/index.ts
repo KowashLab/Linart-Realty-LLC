@@ -241,22 +241,24 @@ async function seedProperties() {
     const { error } = await supabase
       .from('kv_store_dcec270f')
       .delete()
-      .eq('key', `property_${oldId}`);
-    if (error) console.log(`Note: Could not delete property_${oldId}`);
+      .eq('key', `property:${oldId}`);
+    if (error) console.log(`Note: Could not delete property:${oldId}`);
   }
   
   const properties = [
     {
       id: "waterfront-penthouse-estate",
+      slug: "waterfront-penthouse-estate",
       title: "Waterfront Penthouse Estate",
       location: "Miami Beach, FL",
-      price: 12500000,
+      price: "$12,500,000",
       bedrooms: 5,
       bathrooms: 6,
       sqft: 8500,
-      type: "Penthouse",
-      status: "Available",
+      propertyType: "Penthouse",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Spectacular waterfront penthouse featuring floor-to-ceiling windows, private terrace with infinity pool, and breathtaking panoramic views. This architectural masterpiece combines sophisticated design with unparalleled luxury amenities.",
       features: ["Infinity Pool", "Private Beach Access", "Smart Home System", "Wine Cellar", "Home Theater", "Private Elevator"],
       images: [
@@ -264,21 +266,23 @@ async function seedProperties() {
         "/images/property-2.jpg",
         "/images/property-3.jpg"
       ],
-      yearBuilt: 2023,
+      mainImage: "/images/property-1.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "oceanfront-mediterranean-estate",
+      slug: "oceanfront-mediterranean-estate",
       title: "Oceanfront Mediterranean Estate",
       location: "Palm Beach, FL",
-      price: 18900000,
+      price: "$18,900,000",
       bedrooms: 6,
       bathrooms: 8,
       sqft: 12000,
-      type: "Estate",
-      status: "Available",
+      propertyType: "Waterfront",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Magnificent Mediterranean-style estate with direct ocean views. This exquisite property features hand-crafted details, imported Italian marble, and expansive outdoor entertaining spaces overlooking the Atlantic Ocean.",
       features: ["Private Beach", "Tennis Court", "Infinity Pool", "Guest Cottage", "Ocean Views", "Wine Cellar"],
       images: [
@@ -286,84 +290,92 @@ async function seedProperties() {
         "/images/property-4.jpg",
         "/images/property-3.jpg"
       ],
-      yearBuilt: 2022,
+      mainImage: "/images/property-1.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "modern-architectural-masterpiece",
+      slug: "modern-architectural-masterpiece",
       title: "Modern Architectural Masterpiece",
       location: "Naples, FL",
-      price: 8750000,
+      price: "$8,750,000",
       bedrooms: 4,
       bathrooms: 5,
       sqft: 6200,
-      type: "Villa",
-      status: "Available",
+      propertyType: "Waterfront",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Contemporary architectural masterpiece designed by award-winning architects. Features open-concept living spaces, premium finishes throughout, and seamless indoor-outdoor integration with stunning Gulf views.",
       features: ["Gulf Views", "Outdoor Kitchen", "Spa & Sauna", "Guest House", "Solar Panels", "Smart Home"],
       images: [
         "/images/property-4.jpg",
         "/images/property-5.jpg"
       ],
-      yearBuilt: 2023,
+      mainImage: "/images/property-4.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "boca-raton-golf-estate",
+      slug: "boca-raton-golf-estate",
       title: "Boca Raton Golf Estate",
       location: "Boca Raton, FL",
-      price: 6950000,
+      price: "$6,950,000",
       bedrooms: 5,
       bathrooms: 6,
       sqft: 7800,
-      type: "Estate",
-      status: "Available",
+      propertyType: "Residential",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Rare opportunity to own this pristine estate on championship golf course. This meticulously renovated residence blends classic elegance with modern luxury, featuring stunning fairway and water views.",
       features: ["Golf Course Views", "Pool & Spa", "Private Office", "Chef's Kitchen", "Wine Room", "Smart Home"],
       images: [
         "/images/property-6.jpg",
         "/images/property-2.jpg"
       ],
-      yearBuilt: 2022,
+      mainImage: "/images/property-6.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "key-west-island-paradise",
+      slug: "key-west-island-paradise",
       title: "Key West Island Paradise",
       location: "Key West, FL",
-      price: 9800000,
+      price: "$9,800,000",
       bedrooms: 4,
       bathrooms: 5,
       sqft: 5800,
-      type: "Waterfront",
-      status: "Available",
+      propertyType: "Waterfront",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Exclusive island retreat in the heart of Key West. This stunning contemporary residence features panoramic ocean views, private dock, and the ultimate Florida Keys lifestyle with world-class amenities.",
       features: ["Ocean Views", "Private Dock", "Infinity Pool", "Rooftop Deck", "Beach Access", "Smart Home"],
       images: [
         "/images/property-2.jpg",
         "/images/property-6.jpg"
       ],
-      yearBuilt: 2023,
+      mainImage: "/images/property-2.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "gated-equestrian-estate",
+      slug: "gated-equestrian-estate",
       title: "Gated Equestrian Estate",
       location: "Wellington, FL",
-      price: 14200000,
+      price: "$14,200,000",
       bedrooms: 7,
       bathrooms: 9,
       sqft: 15000,
-      type: "Estate",
-      status: "Available",
+      propertyType: "Residential",
+      status: "For Sale",
       featured: true,
+      published: true,
       description: "Sprawling estate on 25 acres featuring a magnificent main residence, professional equestrian center, and multiple guest houses. Perfect for the discerning equestrian enthusiast seeking privacy and luxury.",
       features: ["Equestrian Center", "Guest Houses", "Heated Pool", "Tennis Court", "25 Acres", "Security Gate"],
       images: [
@@ -371,140 +383,152 @@ async function seedProperties() {
         "/images/property-1.jpg",
         "/images/property-5.jpg"
       ],
-      yearBuilt: 2021,
+      mainImage: "/images/property-4.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "sarasota-bay-waterfront-villa",
+      slug: "sarasota-bay-waterfront-villa",
       title: "Sarasota Bay Waterfront Villa",
       location: "Sarasota, FL",
-      price: 7200000,
+      price: "$7,200,000",
       bedrooms: 5,
       bathrooms: 6,
       sqft: 7800,
-      type: "Villa",
-      status: "Available",
-      featured: false,
+      propertyType: "Waterfront",
+      status: "For Sale",
+      featured: true,
+      published: true,
       description: "Sleek contemporary villa on Sarasota Bay with breathtaking water views. Floor-to-ceiling glass walls, minimalist design, and cutting-edge smart home technology create an unparalleled coastal living experience.",
       features: ["Bay Views", "Private Dock", "Infinity Pool", "Home Theater", "Gym & Spa", "Smart Home"],
       images: [
         "/images/property-5.jpg",
         "/images/property-2.jpg"
       ],
-      yearBuilt: 2023,
+      mainImage: "/images/property-5.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "fort-lauderdale-intracoastal-estate",
+      slug: "fort-lauderdale-intracoastal-estate",
       title: "Fort Lauderdale Intracoastal Estate",
       location: "Fort Lauderdale, FL",
-      price: 11500000,
+      price: "$11,500,000",
       bedrooms: 6,
       bathrooms: 7,
       sqft: 9200,
-      type: "Estate",
-      status: "Available",
+      propertyType: "Waterfront",
+      status: "For Sale",
       featured: false,
+      published: true,
       description: "Stunning estate on the Intracoastal Waterway with 150 feet of water frontage. Features a private yacht dock, resort-style pool, and sophisticated interiors with imported finishes throughout.",
       features: ["Yacht Dock", "Intracoastal Views", "Resort Pool", "Summer Kitchen", "Wine Cellar", "Smart Home"],
       images: [
         "/images/property-3.jpg",
         "/images/property-1.jpg"
       ],
-      yearBuilt: 2022,
+      mainImage: "/images/property-3.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "jupiter-island-oceanfront",
+      slug: "jupiter-island-oceanfront",
       title: "Jupiter Island Oceanfront",
       location: "Jupiter Island, FL",
-      price: 16800000,
+      price: "$16,800,000",
       bedrooms: 5,
       bathrooms: 7,
       sqft: 10500,
-      type: "Waterfront",
+      propertyType: "Waterfront",
       status: "Pending",
       featured: false,
+      published: true,
       description: "Exclusive oceanfront residence on prestigious Jupiter Island. This architectural gem offers unobstructed Atlantic views, private beach access, and the ultimate in sophisticated coastal living.",
       features: ["Ocean Views", "Private Beach", "Infinity Pool", "Guest House", "Elevator", "Hurricane Impact Glass"],
       images: [
         "/images/property-6.jpg",
         "/images/property-3.jpg"
       ],
-      yearBuilt: 2021,
+      mainImage: "/images/property-6.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "coconut-grove-tropical-oasis",
+      slug: "coconut-grove-tropical-oasis",
       title: "Coconut Grove Tropical Oasis",
       location: "Coconut Grove, FL",
-      price: 10200000,
+      price: "$10,200,000",
       bedrooms: 5,
       bathrooms: 6,
       sqft: 8400,
-      type: "Residential",
-      status: "Available",
+      propertyType: "Residential",
+      status: "For Sale",
       featured: false,
+      published: true,
       description: "Enchanting tropical estate in prestigious Coconut Grove. Lush landscaping, Mediterranean architecture, and bay views create a private paradise minutes from downtown Miami.",
       features: ["Bay Views", "Tropical Gardens", "Pool & Spa", "Guest Suite", "Gourmet Kitchen", "Wine Storage"],
       images: [
         "/images/property-2.jpg",
         "/images/property-4.jpg"
       ],
-      yearBuilt: 2020,
+      mainImage: "/images/property-2.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "coral-gables-mediterranean-villa",
+      slug: "coral-gables-mediterranean-villa",
       title: "Coral Gables Mediterranean Villa",
       location: "Coral Gables, FL",
-      price: 8900000,
+      price: "$8,900,000",
       bedrooms: 6,
       bathrooms: 7,
       sqft: 9500,
-      type: "Villa",
-      status: "Available",
+      propertyType: "Residential",
+      status: "For Sale",
       featured: false,
+      published: true,
       description: "Stunning Mediterranean villa in exclusive Coral Gables. Classic architecture meets modern luxury with hand-painted tiles, marble flooring, and resort-style amenities throughout.",
       features: ["Pool & Cabana", "Outdoor Kitchen", "Wine Cellar", "Library", "Master Suite Balcony", "3-Car Garage"],
       images: [
         "/images/property-5.jpg",
         "/images/property-6.jpg"
       ],
-      yearBuilt: 2019,
+      mainImage: "/images/property-5.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
     {
       id: "tampa-waterfront-contemporary",
+      slug: "tampa-waterfront-contemporary",
       title: "Tampa Waterfront Contemporary",
       location: "Tampa, FL",
-      price: 5800000,
+      price: "$5,800,000",
       bedrooms: 4,
       bathrooms: 5,
       sqft: 6800,
-      type: "Residential",
-      status: "Available",
+      propertyType: "Residential",
+      status: "For Sale",
       featured: false,
+      published: true,
       description: "Sleek contemporary home on Tampa Bay with stunning water views. Open floor plan, floor-to-ceiling windows, and premium finishes create the perfect waterfront retreat.",
       features: ["Waterfront", "Private Dock", "Modern Kitchen", "Home Office", "Pool", "Smart Home"],
       images: [
         "/images/property-3.jpg",
         "/images/property-5.jpg"
       ],
-      yearBuilt: 2024,
+      mainImage: "/images/property-3.jpg",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
   ];
 
   for (const property of properties) {
-    await kvSet(`property_${property.id}`, property);
+    await kvSet(`property:${property.id}`, property);
   }
   
   await kvSet('properties_all_ids', properties.map(p => p.id));
