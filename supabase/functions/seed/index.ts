@@ -33,14 +33,15 @@ async function kvGet(key: string) {
 
 // Seed functions
 async function seedBlogPosts() {
-  // First, clear ALL old blog posts
+  console.log('🧹 Clearing old blog posts...');
+  
+  // Clear both old formats: blog_${id} and blog:${id}
   const oldIds = await kvGet('blog_all_ids') || [];
   for (const oldId of oldIds) {
-    const { error } = await supabase
-      .from('kv_store_dcec270f')
-      .delete()
-      .eq('key', `blog_${oldId}`);
-    if (error) console.log(`Note: Could not delete blog_${oldId}`);
+    // Delete old underscore format
+    await supabase.from('kv_store_dcec270f').delete().eq('key', `blog_${oldId}`);
+    // Delete colon format (just in case)
+    await supabase.from('kv_store_dcec270f').delete().eq('key', `blog:${oldId}`);
   }
   
   const posts = [
@@ -235,14 +236,15 @@ async function seedBlogPosts() {
 }
 
 async function seedProperties() {
-  // First, clear ALL old properties
+  console.log('🧹 Clearing old properties...');
+  
+  // Clear both old formats: property_${id} and property:${id}
   const oldIds = await kvGet('properties_all_ids') || [];
   for (const oldId of oldIds) {
-    const { error } = await supabase
-      .from('kv_store_dcec270f')
-      .delete()
-      .eq('key', `property:${oldId}`);
-    if (error) console.log(`Note: Could not delete property:${oldId}`);
+    // Delete old underscore format
+    await supabase.from('kv_store_dcec270f').delete().eq('key', `property_${oldId}`);
+    // Delete colon format
+    await supabase.from('kv_store_dcec270f').delete().eq('key', `property:${oldId}`);
   }
   
   const properties = [
