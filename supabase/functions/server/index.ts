@@ -1,17 +1,6 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
-import { Hono } from "npm:hono@4";
-import { cors } from "npm:hono/cors";
-import { logger } from "npm:hono/logger";
-
-// Import all data modules
-import * as kv from './kv_store.ts';
-import * as blog from './blog.ts';
-import * as properties from './properties.ts';
-import * as testimonials from './testimonials.ts';
-import * as recognition from './recognition.ts';
 import * as partnerships from './partnerships.ts';
 
-const app = new Hono().basePath('/make-server-dcec270f');
+const app = new Hono(); // REMOVED basePath
 
 // Create Supabase client
 const supabase = createClient(
