@@ -148,11 +148,7 @@ async function seedProperties() {
       bathrooms: 8,
       sqft: 11000,
       features: ['Private Beach', 'Deep Water Dock', 'Ocean Views', 'Smart Home System', 'Wine Cellar', 'Home Theater', 'Infinity Pool', 'Guest House'],
-      images: [
-        '/images/property-apartment-building.jpg',
-        '/images/property-1.jpg',
-        '/images/property-2.jpg'
-      ],
+      images: ['/images/property-apartment-building.jpg'],
       mainImage: '/images/property-apartment-building.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -176,11 +172,7 @@ async function seedProperties() {
       bathrooms: 0,
       sqft: 85400,
       features: ['Class A Office', 'Smart Building', 'High-Speed Elevators', 'Executive Parking', 'Rooftop Terrace', 'Conference Center', 'Fiber Optic', 'Security System'],
-      images: [
-        '/images/property-office-building.jpg',
-        '/images/commercial-tower-lobby.jpg',
-        '/images/property-3.jpg'
-      ],
+      images: ['/images/property-office-building.jpg'],
       mainImage: '/images/property-office-building.jpg',
       propertyType: 'Commercial',
       status: 'For Sale',
@@ -204,11 +196,7 @@ async function seedProperties() {
       bathrooms: 9,
       sqft: 13850,
       features: ['Ocean Views', 'Infinity Pool', 'Private Beach Access', 'Wine Cellar', 'Home Automation', 'Guest Cottage', 'Outdoor Kitchen', 'Spa & Sauna'],
-      images: [
-        '/images/property-island-beach-house.jpg',
-        '/images/property-4.jpg',
-        '/images/property-5.jpg'
-      ],
+      images: ['/images/property-island-beach-house.jpg'],
       mainImage: '/images/property-island-beach-house.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -232,11 +220,7 @@ async function seedProperties() {
       bathrooms: 0,
       sqft: 124500,
       features: ['Mixed Use', 'Premium Retail', 'High Traffic Location', 'Parking Garage', 'Upscale Dining', 'Professional Offices', 'Prime Location', 'Investment Opportunity'],
-      images: [
-        '/images/property-shopping-plaza.jpg',
-        '/images/property-6.jpg',
-        '/images/commercial-lobby.jpg'
-      ],
+      images: ['/images/property-shopping-plaza.jpg'],
       mainImage: '/images/property-shopping-plaza.jpg',
       propertyType: 'Commercial',
       status: 'For Sale',
@@ -260,11 +244,7 @@ async function seedProperties() {
       bathrooms: 6,
       sqft: 8900,
       features: ['Marina Access', 'Rooftop Terrace', 'Intracoastal Views', 'Private Dock', 'Infinity Pool', 'Smart Home', 'Wine Cellar', 'Home Theater'],
-      images: [
-        '/images/property-modern-house.jpg',
-        '/images/property-1.jpg',
-        '/images/property-waterfront-mansion.jpg'
-      ],
+      images: ['/images/property-modern-house.jpg'],
       mainImage: '/images/property-modern-house.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -288,11 +268,7 @@ async function seedProperties() {
       bathrooms: 0,
       sqft: 95300,
       features: ['Waterfront', 'Multi-Tenant', 'Harbor Views', 'Class A Office', 'Retail Space', 'Executive Parking', 'Modern Design', 'Investment Grade'],
-      images: [
-        '/images/property-corporate-headquarters.jpg',
-        '/images/commercial-tower-lobby.jpg',
-        '/images/property-2.jpg'
-      ],
+      images: ['/images/property-corporate-headquarters.jpg'],
       mainImage: '/images/property-corporate-headquarters.jpg',
       propertyType: 'Commercial',
       status: 'For Sale',
@@ -320,11 +296,7 @@ async function seedProperties() {
       bathrooms: 7,
       sqft: 10200,
       features: ['Mediterranean Style', 'Ocean Access', 'Italian Marble', 'Gourmet Kitchen', 'Wine Cellar', 'Pool & Spa', 'Guest House', 'Formal Gardens'],
-      images: [
-        '/images/property-mediterranean-villa.jpg',
-        '/images/property-3.jpg',
-        '/images/property-4.jpg'
-      ],
+      images: ['/images/property-mediterranean-villa.jpg'],
       mainImage: '/images/property-mediterranean-villa.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -348,11 +320,7 @@ async function seedProperties() {
       bathrooms: 5,
       sqft: 6800,
       features: ['Rooftop Terrace', 'Private Pool', 'Bay Views', 'Ocean Views', 'Smart Home', 'Concierge Service', 'Wine Storage', 'Private Elevator'],
-      images: [
-        '/images/property-miami-penthouse.jpg',
-        '/images/property-5.jpg',
-        '/images/property-1.jpg'
-      ],
+      images: ['/images/property-miami-penthouse.jpg'],
       mainImage: '/images/property-miami-penthouse.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -376,11 +344,7 @@ async function seedProperties() {
       bathrooms: 9,
       sqft: 14500,
       features: ['Private Yacht Dock', 'Water Frontage', 'Resort Pool', 'Home Theater', 'Wine Room', 'Guest Wing', 'Outdoor Kitchen', 'Smart Technology'],
-      images: [
-        '/images/property-waterfront-mansion.jpg',
-        '/images/property-6.jpg',
-        '/images/property-2.jpg'
-      ],
+      images: ['/images/property-waterfront-mansion.jpg'],
       mainImage: '/images/property-waterfront-mansion.jpg',
       propertyType: 'Residential',
       status: 'Pending',
@@ -404,11 +368,7 @@ async function seedProperties() {
       bathrooms: 5,
       sqft: 5600,
       features: ['Beach Access', 'Ocean Views', 'Contemporary Design', 'Infinity Pool', 'Outdoor Living', 'Smart Home', 'Hurricane Impact Glass', 'Private Paradise'],
-      images: [
-        '/images/property-1.jpg',
-        '/images/property-island-beach-house.jpg',
-        '/images/property-3.jpg'
-      ],
+      images: ['/images/property-1.jpg'],
       mainImage: '/images/property-1.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -432,11 +392,7 @@ async function seedProperties() {
       bathrooms: 6,
       sqft: 9200,
       features: ['Golf Course Views', 'Championship Course', 'Resort Amenities', 'Pool & Spa', 'Outdoor Kitchen', 'Wine Cellar', 'Home Office', 'Guest Suite'],
-      images: [
-        '/images/property-2.jpg',
-        '/images/property-4.jpg',
-        '/images/property-5.jpg'
-      ],
+      images: ['/images/property-2.jpg'],
       mainImage: '/images/property-2.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
@@ -460,11 +416,7 @@ async function seedProperties() {
       bathrooms: 5,
       sqft: 7400,
       features: ['Bay Views', 'Private Dock', 'Smart Home', 'Contemporary Design', 'Infinity Pool', 'Sunset Views', 'Gourmet Kitchen', 'Rooftop Deck'],
-      images: [
-        '/images/property-3.jpg',
-        '/images/property-modern-house.jpg',
-        '/images/property-6.jpg'
-      ],
+      images: ['/images/property-3.jpg'],
       mainImage: '/images/property-3.jpg',
       propertyType: 'Residential',
       status: 'For Sale',
