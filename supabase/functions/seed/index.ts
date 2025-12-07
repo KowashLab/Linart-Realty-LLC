@@ -33,6 +33,16 @@ async function kvGet(key: string) {
 
 // Seed functions
 async function seedBlogPosts() {
+  // First, clear ALL old blog posts
+  const oldIds = await kvGet('blog_all_ids') || [];
+  for (const oldId of oldIds) {
+    const { error } = await supabase
+      .from('kv_store_dcec270f')
+      .delete()
+      .eq('key', `blog_${oldId}`);
+    if (error) console.log(`Note: Could not delete blog_${oldId}`);
+  }
+  
   const posts = [
     {
       id: "miami-luxury-market-2024",
@@ -225,6 +235,16 @@ async function seedBlogPosts() {
 }
 
 async function seedProperties() {
+  // First, clear ALL old properties
+  const oldIds = await kvGet('properties_all_ids') || [];
+  for (const oldId of oldIds) {
+    const { error } = await supabase
+      .from('kv_store_dcec270f')
+      .delete()
+      .eq('key', `property_${oldId}`);
+    if (error) console.log(`Note: Could not delete property_${oldId}`);
+  }
+  
   const properties = [
     {
       id: "waterfront-penthouse-estate",
@@ -602,6 +622,16 @@ async function seedTestimonials() {
 }
 
 async function seedRecognitions() {
+  // First, clear ALL old recognitions
+  const oldIds = await kvGet('recognitions_all_ids') || [];
+  for (const oldId of oldIds) {
+    const { error } = await supabase
+      .from('kv_store_dcec270f')
+      .delete()
+      .eq('key', `recognition_${oldId}`);
+    if (error) console.log(`Note: Could not delete recognition_${oldId}`);
+  }
+  
   const recognitions = [
     {
       id: "recognition-1",
@@ -694,6 +724,16 @@ async function seedRecognitions() {
 }
 
 async function seedPartnerships() {
+  // First, clear ALL old partnerships
+  const oldIds = await kvGet('partnerships_all_ids') || [];
+  for (const oldId of oldIds) {
+    const { error } = await supabase
+      .from('kv_store_dcec270f')
+      .delete()
+      .eq('key', `partnership_${oldId}`);
+    if (error) console.log(`Note: Could not delete partnership_${oldId}`);
+  }
+  
   const partnerships = [
     {
       id: "partnership-1",
