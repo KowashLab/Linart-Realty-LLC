@@ -39,12 +39,12 @@ app.use(
 */
 
 // Health check endpoint
-app.get("/health", (c) => {
+app.get("/server/health", (c) => {
   return c.json({ status: "ok" });
 });
 
 // Seed all initial data
-app.get("/seed-all", async (c) => {
+app.get("/server/seed-all", async (c) => {
   try {
     // Check if seeding is already in progress (lock mechanism)
     const seedLock = await kvStore.get("seed:lock");
@@ -65,11 +65,31 @@ app.get("/seed-all", async (c) => {
     });
 
     try {
-      await blog.seedInitialPosts();
-      await properties.seedInitialProperties();
-      await testimonials.seedInitialTestimonials();
-      await recognition.seedInitialRecognitions();
-      await partnerships.seedInitialPartnerships();
+      console.log('[SEEDING] Starting seed-all...');
+      
+      const blogResult = await blog.seedInitialPosts();
+      console.log(`[SEEDING] Blog: ${blogResult ? 'SUCCESS' : 'FAILED'}`);
+      
+      const propsResult = await properties.seedInitialProperties();
+      console.log(`[SEEDING] Properties: ${propsResult ? 'SUCCESS' : 'FAILED'}`);
+      
+      const testimonialsResult = await testimonials.seedInitialTestimonials();
+      console.log(`[SEEDING] Testimonials: ${testimonialsResult ? 'SUCCESS' : 'FAILED'}`);
+      
+      const recognitionResult = await recognition.seedInitialRecognitions();
+      console.log(`[SEEDING] Recognition: ${recognitionResult ? 'SUCCESS' : 'FAILED'}`);
+      
+      const partnershipsResult = await partnerships.seedInitialPartnerships();
+      console.log(`[SEEDING] Partnerships: ${partnershipsResult ? 'SUCCESS' : 'FAILED'}`);
+
+      // Check if all seeding was successful
+      const allSuccess = blogResult && propsResult && testimonialsResult && recognitionResult && partnershipsResult;
+      
+      if (!allSuccess) {
+        console.log('[SEEDING] ❌ Some seeding failed');
+      } else {
+        console.log('[SEEDING] ✅ All seeding successful');
+      }
 
       // Remove lock after successful seeding
       await kvStore.del("seed:lock");
@@ -77,6 +97,13 @@ app.get("/seed-all", async (c) => {
       return c.json({
         success: true,
         message: "All initial data seeded successfully",
+        details: {
+          blog: blogResult,
+          properties: propsResult,
+          testimonials: testimonialsResult,
+          recognition: recognitionResult,
+          partnerships: partnershipsResult,
+        }
       });
     } catch (seedError) {
       // Remove lock even if seeding fails
@@ -90,7 +117,7 @@ app.get("/seed-all", async (c) => {
 });
 
 // FORCE RESET - Clear ALL data and reseed
-app.get("/force-reseed", async (c) => {
+app.get("/server/force-reseed", async (c) => {
   try {
     console.log("🔥 FORCE RESET: Starting complete database reset...");
 
@@ -132,21 +159,28 @@ app.get("/force-reseed", async (c) => {
 
     // Now run fresh seed
     console.log("🌱 Starting fresh seed...");
-    await blog.seedInitialPosts();
-    console.log("✅ Blog seeded");
-    await properties.seedInitialProperties();
-    console.log("✅ Properties seeded");
-    await testimonials.seedInitialTestimonials();
-    console.log("✅ Testimonials seeded");
-    await recognition.seedInitialRecognitions();
-    console.log("✅ Recognition seeded");
-    await partnerships.seedInitialPartnerships();
-    console.log("✅ Partnerships seeded");
+    const blogResult = await blog.seedInitialPosts();
+    console.log(`✅ Blog seeded: ${blogResult}`);
+    const propsResult = await properties.seedInitialProperties();
+    console.log(`✅ Properties seeded: ${propsResult}`);
+    const testimonialsResult = await testimonials.seedInitialTestimonials();
+    console.log(`✅ Testimonials seeded: ${testimonialsResult}`);
+    const recognitionResult = await recognition.seedInitialRecognitions();
+    console.log(`✅ Recognition seeded: ${recognitionResult}`);
+    const partnershipsResult = await partnerships.seedInitialPartnerships();
+    console.log(`✅ Partnerships seeded: ${partnershipsResult}`);
 
     return c.json({
       success: true,
       message: "FORCE RESET completed! All data cleared and reseeded with fresh data.",
       timestamp: new Date().toISOString(),
+      details: {
+        blog: blogResult,
+        properties: propsResult,
+        testimonials: testimonialsResult,
+        recognition: recognitionResult,
+        partnerships: partnershipsResult,
+      }
     });
   } catch (error) {
     console.error(`❌ Error in force reseed: ${error}`);
@@ -161,7 +195,7 @@ app.get("/force-reseed", async (c) => {
 */
 
 // Sign up endpoint
-app.post("/auth/signup", async (c) => {
+app.post("/server/auth/signup", async (c) => {
   try {
     const body = await c.req.json();
     const { email, password, name } = body;
@@ -205,7 +239,7 @@ app.post("/auth/signup", async (c) => {
 });
 
 // Get user profile endpoint
-app.get("/auth/profile", async (c) => {
+app.get("/server/auth/profile", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -249,7 +283,7 @@ app.get("/auth/profile", async (c) => {
 });
 
 // Update user profile endpoint
-app.put("/auth/profile", async (c) => {
+app.put("/server/auth/profile", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -316,7 +350,7 @@ app.put("/auth/profile", async (c) => {
 */
 
 // Favorites endpoints
-app.get("/favorites", async (c) => {
+app.get("/server/favorites", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -352,7 +386,7 @@ app.get("/favorites", async (c) => {
   }
 });
 
-app.post("/favorites", async (c) => {
+app.post("/server/favorites", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -414,7 +448,7 @@ app.post("/favorites", async (c) => {
   }
 });
 
-app.delete("/favorites/:propertyId", async (c) => {
+app.delete("/server/favorites/:propertyId", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -468,7 +502,7 @@ app.delete("/favorites/:propertyId", async (c) => {
 */
 
 // Seed initial blog posts (run once on first request)
-app.get("/blog/seed", async (c) => {
+app.get("/server/blog/seed", async (c) => {
   try {
     await blog.seedInitialPosts();
     return c.json({
@@ -482,7 +516,7 @@ app.get("/blog/seed", async (c) => {
 });
 
 // Get all published posts (PUBLIC)
-app.get("/blog/posts", async (c) => {
+app.get("/server/blog/posts", async (c) => {
   try {
     const posts = await blog.getAllPublishedPosts();
     return c.json({ posts });
@@ -493,7 +527,7 @@ app.get("/blog/posts", async (c) => {
 });
 
 // Get post by slug (PUBLIC)
-app.get("/blog/posts/:slug", async (c) => {
+app.get("/server/blog/posts/:slug", async (c) => {
   try {
     const slug = c.req.param("slug");
     const post = await blog.getPostBySlug(slug);
@@ -510,7 +544,7 @@ app.get("/blog/posts/:slug", async (c) => {
 });
 
 // Get all posts including drafts (ADMIN - requires auth)
-app.get("/blog/admin/posts", async (c) => {
+app.get("/server/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -547,7 +581,7 @@ app.get("/blog/admin/posts", async (c) => {
 });
 
 // Get post by ID (ADMIN - for editing)
-app.get("/blog/admin/posts/:id", async (c) => {
+app.get("/server/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -587,7 +621,7 @@ app.get("/blog/admin/posts/:id", async (c) => {
 });
 
 // Create new post (ADMIN)
-app.post("/blog/admin/posts", async (c) => {
+app.post("/server/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -626,7 +660,7 @@ app.post("/blog/admin/posts", async (c) => {
 });
 
 // Update post (ADMIN)
-app.put("/blog/admin/posts/:id", async (c) => {
+app.put("/server/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -667,7 +701,7 @@ app.put("/blog/admin/posts/:id", async (c) => {
 });
 
 // Delete post (ADMIN)
-app.delete("/blog/admin/posts/:id", async (c) => {
+app.delete("/server/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -713,7 +747,7 @@ app.delete("/blog/admin/posts/:id", async (c) => {
 */
 
 // Get all properties (PUBLIC)
-app.get("/properties", async (c) => {
+app.get("/server/properties", async (c) => {
   try {
     const propertiesList = await properties.getAllProperties();
     return c.json({ properties: propertiesList });
@@ -724,7 +758,7 @@ app.get("/properties", async (c) => {
 });
 
 // Get property by ID (PUBLIC)
-app.get("/properties/:id", async (c) => {
+app.get("/server/properties/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const property = await properties.getPropertyById(id);
@@ -741,7 +775,7 @@ app.get("/properties/:id", async (c) => {
 });
 
 // Create new property (ADMIN)
-app.post("/properties/admin", async (c) => {
+app.post("/server/properties/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -780,7 +814,7 @@ app.post("/properties/admin", async (c) => {
 });
 
 // Update property (ADMIN)
-app.put("/properties/admin/:id", async (c) => {
+app.put("/server/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -821,7 +855,7 @@ app.put("/properties/admin/:id", async (c) => {
 });
 
 // Delete property (ADMIN)
-app.delete("/properties/admin/:id", async (c) => {
+app.delete("/server/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -870,7 +904,7 @@ app.delete("/properties/admin/:id", async (c) => {
 */
 
 // Get all testimonials (PUBLIC)
-app.get("/testimonials", async (c) => {
+app.get("/server/testimonials", async (c) => {
   try {
     const testimonialsList =
       await testimonials.getAllTestimonials();
@@ -885,7 +919,7 @@ app.get("/testimonials", async (c) => {
 });
 
 // Get testimonial by ID (PUBLIC)
-app.get("/testimonials/:id", async (c) => {
+app.get("/server/testimonials/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const testimonial =
@@ -903,7 +937,7 @@ app.get("/testimonials/:id", async (c) => {
 });
 
 // Create new testimonial (ADMIN)
-app.post("/testimonials/admin", async (c) => {
+app.post("/server/testimonials/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -942,7 +976,7 @@ app.post("/testimonials/admin", async (c) => {
 });
 
 // Update testimonial (ADMIN)
-app.put("/testimonials/admin/:id", async (c) => {
+app.put("/server/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -986,7 +1020,7 @@ app.put("/testimonials/admin/:id", async (c) => {
 });
 
 // Delete testimonial (ADMIN)
-app.delete("/testimonials/admin/:id", async (c) => {
+app.delete("/server/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1035,7 +1069,7 @@ app.delete("/testimonials/admin/:id", async (c) => {
 */
 
 // Get all recognitions (PUBLIC)
-app.get("/recognition", async (c) => {
+app.get("/server/recognition", async (c) => {
   try {
     const recognitionsList =
       await recognition.getAllRecognitions();
@@ -1050,7 +1084,7 @@ app.get("/recognition", async (c) => {
 });
 
 // Get recognition by ID (PUBLIC)
-app.get("/recognition/:id", async (c) => {
+app.get("/server/recognition/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const recognitionItem =
@@ -1068,7 +1102,7 @@ app.get("/recognition/:id", async (c) => {
 });
 
 // Create new recognition (ADMIN)
-app.post("/recognition/admin", async (c) => {
+app.post("/server/recognition/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1112,7 +1146,7 @@ app.post("/recognition/admin", async (c) => {
 });
 
 // Update recognition (ADMIN)
-app.put("/recognition/admin/:id", async (c) => {
+app.put("/server/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1159,7 +1193,7 @@ app.put("/recognition/admin/:id", async (c) => {
 });
 
 // Delete recognition (ADMIN)
-app.delete("/recognition/admin/:id", async (c) => {
+app.delete("/server/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1208,7 +1242,7 @@ app.delete("/recognition/admin/:id", async (c) => {
 */
 
 // Get all partnerships (PUBLIC)
-app.get("/partnerships", async (c) => {
+app.get("/server/partnerships", async (c) => {
   try {
     const partnershipsList =
       await partnerships.getAllPartnerships();
@@ -1223,7 +1257,7 @@ app.get("/partnerships", async (c) => {
 });
 
 // Get partnership by ID (PUBLIC)
-app.get("/partnerships/:id", async (c) => {
+app.get("/server/partnerships/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const partnership =
@@ -1241,7 +1275,7 @@ app.get("/partnerships/:id", async (c) => {
 });
 
 // Create new partnership (ADMIN)
-app.post("/partnerships/admin", async (c) => {
+app.post("/server/partnerships/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1280,7 +1314,7 @@ app.post("/partnerships/admin", async (c) => {
 });
 
 // Update partnership (ADMIN)
-app.put("/partnerships/admin/:id", async (c) => {
+app.put("/server/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1324,7 +1358,7 @@ app.put("/partnerships/admin/:id", async (c) => {
 });
 
 // Delete partnership (ADMIN)
-app.delete("/partnerships/admin/:id", async (c) => {
+app.delete("/server/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1366,65 +1400,58 @@ app.delete("/partnerships/admin/:id", async (c) => {
   }
 });
 
-// Wrapper handler that bypasses Supabase's default JWT verification
-// This allows public endpoints to work without authentication
+/*
+═══════════════════════════════════════════════════════════════════
+  CUSTOM REQUEST HANDLER - Bypasses JWT for public endpoints
+═══════════════════════════════════════════════════════════════════
+*/
+
 const handler = async (req: Request) => {
-  try {
-    const url = new URL(req.url);
-    console.log(`[DEBUG] Original URL: ${req.url}`);
-    console.log(`[DEBUG] Original pathname: ${url.pathname}`);
-    console.log(`[DEBUG] Method: ${req.method}`);
+  const url = new URL(req.url);
+  console.log(`[REQUEST] ${req.method} ${url.pathname}`);
 
-    // Public endpoints that don't require authentication
-    const publicPaths = [
-      "/health",
-      "/seed-all",
-      "/force-reseed",
-      "/blog/posts",
-      "/properties",
-      "/testimonials",
-      "/recognition",
-      "/partnerships",
-    ];
+  // List of public endpoints that don't require authentication
+  const publicPaths = [
+    "/server/health",
+    "/server/seed-all",
+    "/server/force-reseed",
+    "/server/blog/posts",
+    "/server/blog/seed",
+    "/server/properties",
+    "/server/testimonials",
+    "/server/recognition",
+    "/server/partnerships",
+  ];
 
-    // Check if this is a public endpoint
-    const isPublicEndpoint = publicPaths.some((path) =>
-      url.pathname.includes(path),
-    );
+  // Check if this is a public endpoint (exact match or starts with public path)
+  const isPublicEndpoint = publicPaths.some((path) => {
+    // Exact match
+    if (url.pathname === path) return true;
+    // Starts with path and next char is / or end of string (e.g. /server/properties/123)
+    if (url.pathname.startsWith(path + '/')) return true;
+    return false;
+  });
 
-    // If it's a public endpoint and no auth header, add a dummy one to bypass Supabase JWT check
-    const authHeader = req.headers.get("Authorization");
-    if (isPublicEndpoint && !authHeader) {
-      console.log(
-        "[DEBUG] Public endpoint - bypassing auth requirement",
-      );
-      // Clone request with anon key to satisfy Supabase's requirement
-      const headers = new Headers(req.headers);
-      headers.set(
-        "Authorization",
-        `Bearer ${Deno.env.get("SUPABASE_ANON_KEY") ?? ""}`,
-      );
+  const authHeader = req.headers.get("Authorization");
 
-      const newReq = new Request(req.url, {
-        method: req.method,
-        headers,
-        body: req.body,
-      });
+  // If it's a public endpoint and no auth header, add anon key to bypass Supabase JWT check
+  if (isPublicEndpoint && !authHeader) {
+    console.log(`[PUBLIC] Bypassing JWT for ${url.pathname}`);
+    const headers = new Headers(req.headers);
+    headers.set("Authorization", `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`);
 
-      return await app.fetch(newReq);
-    }
+    const modifiedRequest = new Request(req.url, {
+      method: req.method,
+      headers: headers,
+      body: req.body,
+    });
 
-    return await app.fetch(req);
-  } catch (error) {
-    console.log(`Error in request handler: ${error}`);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    return app.fetch(modifiedRequest);
   }
+
+  // For all other requests, pass through as-is
+  return app.fetch(req);
 };
 
+// Start the server with custom handler
 Deno.serve(handler);
