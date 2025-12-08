@@ -1,43 +1,46 @@
-import { projectId, publicAnonKey } from '../supabase/info';
+import { getSupabaseClient } from '../supabase/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  API CLIENT - Fetch data from Edge Function endpoints
-  - Uses server Edge Function for all API requests
-  - Public endpoints don't require auth but we send token anyway
-  - Admin endpoints require valid user session
+  API CLIENT - Read data directly from Supabase KV store
+  - Fetches data from kv_store_dcec270f table
+  - Uses .like() to find items by prefix
+  - No server edge function calls
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
+const KV_TABLE = 'kv_store_dcec270f';
+const supabase = getSupabaseClient();
 
-// Helper function to make authenticated requests
-async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${publicAnonKey}`,
-      'apikey': publicAnonKey,
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-  }
-
-  // Безопасный парсинг JSON
-  const text = await response.text();
-  
+// Helper to get items by prefix (like getByPrefix from server)
+async function getByPrefix<T = any>(prefix: string): Promise<T[]> {
   try {
-    return text ? JSON.parse(text) : {};
+    const { data, error } = await supabase
+      .from(KV_TABLE)
+      .select('key, value')
+      .like('key', prefix + '%');
+
+    if (error) {
+      console.error(`Error fetching prefix "${prefix}":`, error);
+      return [];
+    }
+
+    return (data || [])
+      .map(item => {
+        try {
+          const parsed = typeof item.value === 'string' 
+            ? JSON.parse(item.value) 
+            : item.value;
+          return parsed;
+        } catch (e) {
+          console.error(`Error parsing KV value for key ${item.key}:`, e);
+          return null;
+        }
+      })
+      .filter((item): item is T => item !== null);
   } catch (error) {
-    console.error('JSON Parse Error:', error);
-    console.error('Response text:', text);
-    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+    console.error(`Unexpected error fetching prefix "${prefix}":`, error);
+    return [];
   }
 }
 
@@ -49,9 +52,10 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
 export async function fetchProperties() {
   try {
-    const data = await fetchAPI('/properties');
-    console.log('Loaded properties:', data.properties?.length || 0);
-    return data.properties || [];
+    const properties = await getByPrefix<any>('property:');
+    const published = properties.filter(p => p.published !== false);
+    console.log('Loaded properties:', published.length);
+    return published;
   } catch (error) {
     console.error('Error fetching properties:', error);
     return [];
@@ -60,8 +64,8 @@ export async function fetchProperties() {
 
 export async function fetchPropertyById(id: string) {
   try {
-    const data = await fetchAPI(`/properties/${id}`);
-    return data.property || null;
+    const properties = await getByPrefix<any>('property:');
+    return properties.find(p => p.id === id) || null;
   } catch (error) {
     console.error(`Error fetching property ${id}:`, error);
     return null;
@@ -76,9 +80,10 @@ export async function fetchPropertyById(id: string) {
 
 export async function fetchTestimonials() {
   try {
-    const data = await fetchAPI('/testimonials');
-    console.log('Loaded testimonials:', data.testimonials?.length || 0);
-    return data.testimonials || [];
+    const testimonials = await getByPrefix<any>('testimonial:');
+    const published = testimonials.filter(t => t.published !== false);
+    console.log('Loaded testimonials:', published.length);
+    return published;
   } catch (error) {
     console.error('Error fetching testimonials:', error);
     return [];
@@ -87,8 +92,8 @@ export async function fetchTestimonials() {
 
 export async function fetchTestimonialById(id: string) {
   try {
-    const data = await fetchAPI(`/testimonials/${id}`);
-    return data.testimonial || null;
+    const testimonials = await getByPrefix<any>('testimonial:');
+    return testimonials.find(t => t.id === id) || null;
   } catch (error) {
     console.error(`Error fetching testimonial ${id}:`, error);
     return null;
@@ -103,9 +108,10 @@ export async function fetchTestimonialById(id: string) {
 
 export async function fetchRecognitions() {
   try {
-    const data = await fetchAPI('/recognition');
-    console.log('Loaded recognition:', data.recognitions?.length || 0);
-    return data.recognitions || [];
+    const recognitions = await getByPrefix<any>('recognition:');
+    const published = recognitions.filter(r => r.published !== false);
+    console.log('Loaded recognition:', published.length);
+    return published;
   } catch (error) {
     console.error('Error fetching recognitions:', error);
     return [];
@@ -114,8 +120,8 @@ export async function fetchRecognitions() {
 
 export async function fetchRecognitionById(id: string) {
   try {
-    const data = await fetchAPI(`/recognition/${id}`);
-    return data.recognition || null;
+    const recognitions = await getByPrefix<any>('recognition:');
+    return recognitions.find(r => r.id === id) || null;
   } catch (error) {
     console.error(`Error fetching recognition ${id}:`, error);
     return null;
@@ -130,9 +136,10 @@ export async function fetchRecognitionById(id: string) {
 
 export async function fetchPartnerships() {
   try {
-    const data = await fetchAPI('/partnerships');
-    console.log('Loaded partnerships:', data.partnerships?.length || 0);
-    return data.partnerships || [];
+    const partnerships = await getByPrefix<any>('partnership:');
+    const published = partnerships.filter(p => p.published !== false);
+    console.log('Loaded partnerships:', published.length);
+    return published;
   } catch (error) {
     console.error('Error fetching partnerships:', error);
     return [];
@@ -141,8 +148,8 @@ export async function fetchPartnerships() {
 
 export async function fetchPartnershipById(id: string) {
   try {
-    const data = await fetchAPI(`/partnerships/${id}`);
-    return data.partnership || null;
+    const partnerships = await getByPrefix<any>('partnership:');
+    return partnerships.find(p => p.id === id) || null;
   } catch (error) {
     console.error(`Error fetching partnership ${id}:`, error);
     return null;
@@ -157,9 +164,10 @@ export async function fetchPartnershipById(id: string) {
 
 export async function fetchBlogPosts() {
   try {
-    const data = await fetchAPI('/blog/posts');
-    console.log('Loaded blog posts:', data.posts?.length || 0);
-    return data.posts || [];
+    const posts = await getByPrefix<any>('blog:post:');
+    const published = posts.filter(p => p.published !== false);
+    console.log('Loaded blog posts:', published.length);
+    return published;
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     return [];
@@ -168,8 +176,8 @@ export async function fetchBlogPosts() {
 
 export async function fetchBlogPostBySlug(slug: string) {
   try {
-    const data = await fetchAPI(`/blog/posts/${slug}`);
-    return data.post || null;
+    const posts = await getByPrefix<any>('blog:post:');
+    return posts.find(p => p.slug === slug && p.published !== false) || null;
   } catch (error) {
     console.error(`Error fetching blog post ${slug}:`, error);
     return null;
