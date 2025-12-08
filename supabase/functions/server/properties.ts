@@ -114,15 +114,7 @@ export async function seedInitialProperties(): Promise<boolean> {
     return true; // Already seeded
   }
   
-  const existing = await getAllProperties();
-  if (existing.length > 0) {
-    console.log('Properties already exist, setting flag...');
-    // Set flag to prevent future seeding
-    await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
-    return true;
-  }
-  
-  console.log('Starting properties seeding...');
+  console.log('Starting properties seeding (will create all 12 properties)...');
   
   const initialProperties = [
     // ═══════════════════════════════════════════════════════════════

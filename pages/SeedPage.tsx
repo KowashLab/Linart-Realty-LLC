@@ -91,7 +91,7 @@ export default function SeedPage() {
   };
 
   const handleForceReseed = async () => {
-    if (!confirm('⚠️ WARNING: This will DELETE ALL data and reseed with fresh data. Continue?')) {
+    if (!confirm('⚠️ WARNING: This will DELETE ALL existing seed flags and reseed. Continue?')) {
       return;
     }
     
@@ -101,8 +101,19 @@ export default function SeedPage() {
     setResults(null);
 
     try {
+      // Step 1: Delete seed completion flags via direct KV access
+      const supabase = (await import('../utils/supabase/client')).getSupabaseClient();
+      
+      await supabase
+        .from('kv_store_dcec270f')
+        .delete()
+        .like('key', 'seed:completed:%');
+      
+      console.log('✅ Deleted all seed flags');
+
+      // Step 2: Call seed function
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/force-reseed`,
+        `https://${projectId}.supabase.co/functions/v1/seed`,
         {
           method: 'GET',
           headers: {
@@ -118,10 +129,10 @@ export default function SeedPage() {
         setSuccess(true);
         setResults(data);
       } else {
-        setError(data.error || 'Failed to force reseed');
+        setError(data.error || 'Failed to reseed');
       }
     } catch (err: any) {
-      setError(err.message || 'Network error occurred');
+      setError(err.message || 'Force reseed failed');
     } finally {
       setLoading(false);
     }

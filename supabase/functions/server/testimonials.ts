@@ -89,15 +89,7 @@ export async function seedInitialTestimonials(): Promise<boolean> {
     return true; // Already seeded
   }
   
-  const existing = await getAllTestimonials();
-  if (existing.length > 0) {
-    console.log('Testimonials already exist, setting flag...');
-    // Set flag to prevent future seeding
-    await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
-    return true;
-  }
-  
-  console.log('Starting testimonials seeding...');
+  console.log('Starting testimonials seeding (will create all 8 testimonials)...');
   
   const initialTestimonials = [
     {
