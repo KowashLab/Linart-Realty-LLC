@@ -15,25 +15,28 @@ const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  // Always include Authorization header with public anon key
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${publicAnonKey}`,
-    ...options.headers,
-  };
-
   const response = await fetch(url, {
     ...options,
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`API Error [${endpoint}]:`, errorText);
     throw new Error(`API Error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  // Безопасный парсинг JSON
+  const text = await response.text();
+  
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch (error) {
+    console.error('JSON Parse Error:', error);
+    console.error('Response text:', text);
+    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+  }
 }
 
 /*

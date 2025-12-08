@@ -46,8 +46,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (response.ok) {
-        const profile = await response.json();
-        setUser(profile);
+        const text = await response.text();
+        try {
+          const profile = text ? JSON.parse(text) : null;
+          setUser(profile);
+        } catch (parseError) {
+          console.error('JSON parse error in profile:', parseError, text);
+          setUser(null);
+        }
       } else {
         console.error('Failed to fetch user profile');
         setUser(null);
@@ -176,7 +182,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password, name })
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('JSON parse error in signUp:', parseError, text);
+        throw new Error(`Server returned invalid response: ${text.substring(0, 100)}`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to sign up');
@@ -216,7 +229,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ name })
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('JSON parse error in updateProfile:', parseError, text);
+        throw new Error(`Server returned invalid response: ${text.substring(0, 100)}`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to update profile');
