@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -21,13 +21,15 @@ import { InvestmentAdvisoryPage } from './pages/InvestmentAdvisoryPage';
 import { AuthPage } from './pages/AuthPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AuthProvider } from './contexts/AuthContext';
-import AdminBlog from './pages/AdminBlog';
-import { AdminProperties } from './components/AdminProperties';
-import { AdminTestimonials } from './components/AdminTestimonials';
-import { AdminRecognition } from './components/AdminRecognition';
-import { AdminPartnerships } from './components/AdminPartnerships';
-import SeedPage from './pages/SeedPage';
 import { autoSeed } from './utils/seedData';
+
+// Lazy load admin pages for better performance
+const AdminBlog = lazy(() => import('./pages/AdminBlog'));
+const AdminProperties = lazy(() => import('./components/AdminProperties').then(m => ({ default: m.AdminProperties })));
+const AdminTestimonials = lazy(() => import('./components/AdminTestimonials').then(m => ({ default: m.AdminTestimonials })));
+const AdminRecognition = lazy(() => import('./components/AdminRecognition').then(m => ({ default: m.AdminRecognition })));
+const AdminPartnerships = lazy(() => import('./components/AdminPartnerships').then(m => ({ default: m.AdminPartnerships })));
+const SeedPage = lazy(() => import('./pages/SeedPage'));
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -106,6 +108,16 @@ export default function App() {
 
   // Route rendering
   const renderPage = () => {
+    // Loading fallback component
+    const LoadingFallback = () => (
+      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0B]">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#B8860B] mb-4"></div>
+          <p className="text-[#F2EEE7]">Loading...</p>
+        </div>
+      </div>
+    );
+
     switch (currentPath) {
       case '/':
         return <HomePage />;
@@ -140,17 +152,17 @@ export default function App() {
       case '/blog':
         return <BlogPage />;
       case '/admin/blog':
-        return <AdminBlog />;
+        return <Suspense fallback={<LoadingFallback />}><AdminBlog /></Suspense>;
       case '/admin/properties':
-        return <AdminProperties />;
+        return <Suspense fallback={<LoadingFallback />}><AdminProperties /></Suspense>;
       case '/admin/testimonials':
-        return <AdminTestimonials />;
+        return <Suspense fallback={<LoadingFallback />}><AdminTestimonials /></Suspense>;
       case '/admin/recognition':
-        return <AdminRecognition />;
+        return <Suspense fallback={<LoadingFallback />}><AdminRecognition /></Suspense>;
       case '/admin/partnerships':
-        return <AdminPartnerships />;
+        return <Suspense fallback={<LoadingFallback />}><AdminPartnerships /></Suspense>;
       case '/seed':
-        return <SeedPage />;
+        return <Suspense fallback={<LoadingFallback />}><SeedPage /></Suspense>;
       default:
         return <HomePage />;
     }
