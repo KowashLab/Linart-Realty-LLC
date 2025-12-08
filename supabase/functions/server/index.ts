@@ -39,12 +39,12 @@ app.use(
 */
 
 // Health check endpoint
-app.get("/server/health", (c) => {
+app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });
 
 // Seed all initial data
-app.get("/server/seed-all", async (c) => {
+app.get("/seed-all", async (c) => {
   try {
     // Check if seeding is already in progress (lock mechanism)
     const seedLock = await kvStore.get("seed:lock");
@@ -117,7 +117,7 @@ app.get("/server/seed-all", async (c) => {
 });
 
 // FORCE RESET - Clear ALL data and reseed
-app.get("/server/force-reseed", async (c) => {
+app.get("/force-reseed", async (c) => {
   try {
     console.log("🔥 FORCE RESET: Starting complete database reset...");
 
@@ -195,7 +195,7 @@ app.get("/server/force-reseed", async (c) => {
 */
 
 // Sign up endpoint
-app.post("/server/auth/signup", async (c) => {
+app.post("/auth/signup", async (c) => {
   try {
     const body = await c.req.json();
     const { email, password, name } = body;
@@ -239,7 +239,7 @@ app.post("/server/auth/signup", async (c) => {
 });
 
 // Get user profile endpoint
-app.get("/server/auth/profile", async (c) => {
+app.get("/auth/profile", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -283,7 +283,7 @@ app.get("/server/auth/profile", async (c) => {
 });
 
 // Update user profile endpoint
-app.put("/server/auth/profile", async (c) => {
+app.put("/auth/profile", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -350,7 +350,7 @@ app.put("/server/auth/profile", async (c) => {
 */
 
 // Favorites endpoints
-app.get("/server/favorites", async (c) => {
+app.get("/favorites", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -386,7 +386,7 @@ app.get("/server/favorites", async (c) => {
   }
 });
 
-app.post("/server/favorites", async (c) => {
+app.post("/favorites", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -448,7 +448,7 @@ app.post("/server/favorites", async (c) => {
   }
 });
 
-app.delete("/server/favorites/:propertyId", async (c) => {
+app.delete("/favorites/:propertyId", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -502,7 +502,7 @@ app.delete("/server/favorites/:propertyId", async (c) => {
 */
 
 // Seed initial blog posts (run once on first request)
-app.get("/server/blog/seed", async (c) => {
+app.get("/blog/seed", async (c) => {
   try {
     await blog.seedInitialPosts();
     return c.json({
@@ -516,7 +516,7 @@ app.get("/server/blog/seed", async (c) => {
 });
 
 // Get all published posts (PUBLIC)
-app.get("/server/blog/posts", async (c) => {
+app.get("/blog/posts", async (c) => {
   try {
     const posts = await blog.getAllPublishedPosts();
     return c.json({ posts });
@@ -527,7 +527,7 @@ app.get("/server/blog/posts", async (c) => {
 });
 
 // Get post by slug (PUBLIC)
-app.get("/server/blog/posts/:slug", async (c) => {
+app.get("/blog/posts/:slug", async (c) => {
   try {
     const slug = c.req.param("slug");
     const post = await blog.getPostBySlug(slug);
@@ -544,7 +544,7 @@ app.get("/server/blog/posts/:slug", async (c) => {
 });
 
 // Get all posts including drafts (ADMIN - requires auth)
-app.get("/server/blog/admin/posts", async (c) => {
+app.get("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -581,7 +581,7 @@ app.get("/server/blog/admin/posts", async (c) => {
 });
 
 // Get post by ID (ADMIN - for editing)
-app.get("/server/blog/admin/posts/:id", async (c) => {
+app.get("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -621,7 +621,7 @@ app.get("/server/blog/admin/posts/:id", async (c) => {
 });
 
 // Create new post (ADMIN)
-app.post("/server/blog/admin/posts", async (c) => {
+app.post("/blog/admin/posts", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -660,7 +660,7 @@ app.post("/server/blog/admin/posts", async (c) => {
 });
 
 // Update post (ADMIN)
-app.put("/server/blog/admin/posts/:id", async (c) => {
+app.put("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -701,7 +701,7 @@ app.put("/server/blog/admin/posts/:id", async (c) => {
 });
 
 // Delete post (ADMIN)
-app.delete("/server/blog/admin/posts/:id", async (c) => {
+app.delete("/blog/admin/posts/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -747,7 +747,7 @@ app.delete("/server/blog/admin/posts/:id", async (c) => {
 */
 
 // Get all properties (PUBLIC)
-app.get("/server/properties", async (c) => {
+app.get("/properties", async (c) => {
   try {
     const propertiesList = await properties.getAllProperties();
     return c.json({ properties: propertiesList });
@@ -758,7 +758,7 @@ app.get("/server/properties", async (c) => {
 });
 
 // Get property by ID (PUBLIC)
-app.get("/server/properties/:id", async (c) => {
+app.get("/properties/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const property = await properties.getPropertyById(id);
@@ -775,7 +775,7 @@ app.get("/server/properties/:id", async (c) => {
 });
 
 // Create new property (ADMIN)
-app.post("/server/properties/admin", async (c) => {
+app.post("/properties/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -814,7 +814,7 @@ app.post("/server/properties/admin", async (c) => {
 });
 
 // Update property (ADMIN)
-app.put("/server/properties/admin/:id", async (c) => {
+app.put("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -855,7 +855,7 @@ app.put("/server/properties/admin/:id", async (c) => {
 });
 
 // Delete property (ADMIN)
-app.delete("/server/properties/admin/:id", async (c) => {
+app.delete("/properties/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -904,7 +904,7 @@ app.delete("/server/properties/admin/:id", async (c) => {
 */
 
 // Get all testimonials (PUBLIC)
-app.get("/server/testimonials", async (c) => {
+app.get("/testimonials", async (c) => {
   try {
     const testimonialsList =
       await testimonials.getAllTestimonials();
@@ -919,7 +919,7 @@ app.get("/server/testimonials", async (c) => {
 });
 
 // Get testimonial by ID (PUBLIC)
-app.get("/server/testimonials/:id", async (c) => {
+app.get("/testimonials/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const testimonial =
@@ -937,7 +937,7 @@ app.get("/server/testimonials/:id", async (c) => {
 });
 
 // Create new testimonial (ADMIN)
-app.post("/server/testimonials/admin", async (c) => {
+app.post("/testimonials/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -976,7 +976,7 @@ app.post("/server/testimonials/admin", async (c) => {
 });
 
 // Update testimonial (ADMIN)
-app.put("/server/testimonials/admin/:id", async (c) => {
+app.put("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1020,7 +1020,7 @@ app.put("/server/testimonials/admin/:id", async (c) => {
 });
 
 // Delete testimonial (ADMIN)
-app.delete("/server/testimonials/admin/:id", async (c) => {
+app.delete("/testimonials/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1069,7 +1069,7 @@ app.delete("/server/testimonials/admin/:id", async (c) => {
 */
 
 // Get all recognitions (PUBLIC)
-app.get("/server/recognition", async (c) => {
+app.get("/recognition", async (c) => {
   try {
     const recognitionsList =
       await recognition.getAllRecognitions();
@@ -1084,7 +1084,7 @@ app.get("/server/recognition", async (c) => {
 });
 
 // Get recognition by ID (PUBLIC)
-app.get("/server/recognition/:id", async (c) => {
+app.get("/recognition/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const recognitionItem =
@@ -1102,7 +1102,7 @@ app.get("/server/recognition/:id", async (c) => {
 });
 
 // Create new recognition (ADMIN)
-app.post("/server/recognition/admin", async (c) => {
+app.post("/recognition/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1146,7 +1146,7 @@ app.post("/server/recognition/admin", async (c) => {
 });
 
 // Update recognition (ADMIN)
-app.put("/server/recognition/admin/:id", async (c) => {
+app.put("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1193,7 +1193,7 @@ app.put("/server/recognition/admin/:id", async (c) => {
 });
 
 // Delete recognition (ADMIN)
-app.delete("/server/recognition/admin/:id", async (c) => {
+app.delete("/recognition/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1242,7 +1242,7 @@ app.delete("/server/recognition/admin/:id", async (c) => {
 */
 
 // Get all partnerships (PUBLIC)
-app.get("/server/partnerships", async (c) => {
+app.get("/partnerships", async (c) => {
   try {
     const partnershipsList =
       await partnerships.getAllPartnerships();
@@ -1257,7 +1257,7 @@ app.get("/server/partnerships", async (c) => {
 });
 
 // Get partnership by ID (PUBLIC)
-app.get("/server/partnerships/:id", async (c) => {
+app.get("/partnerships/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const partnership =
@@ -1275,7 +1275,7 @@ app.get("/server/partnerships/:id", async (c) => {
 });
 
 // Create new partnership (ADMIN)
-app.post("/server/partnerships/admin", async (c) => {
+app.post("/partnerships/admin", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1314,7 +1314,7 @@ app.post("/server/partnerships/admin", async (c) => {
 });
 
 // Update partnership (ADMIN)
-app.put("/server/partnerships/admin/:id", async (c) => {
+app.put("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1358,7 +1358,7 @@ app.put("/server/partnerships/admin/:id", async (c) => {
 });
 
 // Delete partnership (ADMIN)
-app.delete("/server/partnerships/admin/:id", async (c) => {
+app.delete("/partnerships/admin/:id", async (c) => {
   try {
     const accessToken = c.req
       .header("Authorization")
@@ -1412,15 +1412,15 @@ const handler = async (req: Request) => {
 
   // List of public endpoints that don't require authentication
   const publicPaths = [
-    "/server/health",
-    "/server/seed-all",
-    "/server/force-reseed",
-    "/server/blog/posts",
-    "/server/blog/seed",
-    "/server/properties",
-    "/server/testimonials",
-    "/server/recognition",
-    "/server/partnerships",
+    "/health",
+    "/seed-all",
+    "/force-reseed",
+    "/blog/posts",
+    "/blog/seed",
+    "/properties",
+    "/testimonials",
+    "/recognition",
+    "/partnerships",
   ];
 
   // Check if this is a public endpoint (exact match or starts with public path)
