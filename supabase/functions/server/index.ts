@@ -66,44 +66,71 @@ app.get("/seed-all", async (c) => {
 
     try {
       console.log('[SEEDING] Starting seed-all...');
-      
-      const blogResult = await blog.seedInitialPosts();
-      console.log(`[SEEDING] Blog: ${blogResult ? 'SUCCESS' : 'FAILED'}`);
-      
-      const propsResult = await properties.seedInitialProperties();
-      console.log(`[SEEDING] Properties: ${propsResult ? 'SUCCESS' : 'FAILED'}`);
-      
-      const testimonialsResult = await testimonials.seedInitialTestimonials();
-      console.log(`[SEEDING] Testimonials: ${testimonialsResult ? 'SUCCESS' : 'FAILED'}`);
-      
-      const recognitionResult = await recognition.seedInitialRecognitions();
-      console.log(`[SEEDING] Recognition: ${recognitionResult ? 'SUCCESS' : 'FAILED'}`);
-      
-      const partnershipsResult = await partnerships.seedInitialPartnerships();
-      console.log(`[SEEDING] Partnerships: ${partnershipsResult ? 'SUCCESS' : 'FAILED'}`);
 
-      // Check if all seeding was successful
-      const allSuccess = blogResult && propsResult && testimonialsResult && recognitionResult && partnershipsResult;
-      
+      const results: Record<string, { success: boolean; error?: string | null }> = {
+        blog: { success: false, error: null },
+        properties: { success: false, error: null },
+        testimonials: { success: false, error: null },
+        recognition: { success: false, error: null },
+        partnerships: { success: false, error: null },
+      };
+
+      // Run each seed with its own try/catch so we can report per-module failures
+      try {
+        results.blog.success = !!(await blog.seedInitialPosts());
+      } catch (e) {
+        results.blog.success = false;
+        results.blog.error = String(e);
+        console.error('[SEEDING] Blog error:', e);
+      }
+
+      try {
+        results.properties.success = !!(await properties.seedInitialProperties());
+      } catch (e) {
+        results.properties.success = false;
+        results.properties.error = String(e);
+        console.error('[SEEDING] Properties error:', e);
+      }
+
+      try {
+        results.testimonials.success = !!(await testimonials.seedInitialTestimonials());
+      } catch (e) {
+        results.testimonials.success = false;
+        results.testimonials.error = String(e);
+        console.error('[SEEDING] Testimonials error:', e);
+      }
+
+      try {
+        results.recognition.success = !!(await recognition.seedInitialRecognitions());
+      } catch (e) {
+        results.recognition.success = false;
+        results.recognition.error = String(e);
+        console.error('[SEEDING] Recognition error:', e);
+      }
+
+      try {
+        results.partnerships.success = !!(await partnerships.seedInitialPartnerships());
+      } catch (e) {
+        results.partnerships.success = false;
+        results.partnerships.error = String(e);
+        console.error('[SEEDING] Partnerships error:', e);
+      }
+
+      const allSuccess = Object.values(results).every((r) => r.success === true);
+
       if (!allSuccess) {
-        console.log('[SEEDING] ❌ Some seeding failed');
+        console.log('[SEEDING] ❌ Some seeding failed — check details');
       } else {
         console.log('[SEEDING] ✅ All seeding successful');
       }
 
-      // Remove lock after successful seeding
+      // Remove lock after seeding attempt (success or partial failure)
       await kvStore.del("seed:lock");
 
       return c.json({
-        success: true,
-        message: "All initial data seeded successfully",
-        details: {
-          blog: blogResult,
-          properties: propsResult,
-          testimonials: testimonialsResult,
-          recognition: recognitionResult,
-          partnerships: partnershipsResult,
-        }
+        success: allSuccess,
+        message: allSuccess ? "All initial data seeded successfully" : "Some seeding tasks failed",
+        details: results,
       });
     } catch (seedError) {
       // Remove lock even if seeding fails
@@ -1406,52 +1433,10 @@ app.delete("/partnerships/admin/:id", async (c) => {
 ═══════════════════════════════════════════════════════════════════
 */
 
-const handler = async (req: Request) => {
-  const url = new URL(req.url);
-  console.log(`[REQUEST] ${req.method} ${url.pathname}`);
-
-  // List of public endpoints that don't require authentication
-  const publicPaths = [
-    "/health",
-    "/seed-all",
-    "/force-reseed",
-    "/blog/posts",
-    "/blog/seed",
-    "/properties",
-    "/testimonials",
-    "/recognition",
-    "/partnerships",
-  ];
-
-  // Check if this is a public endpoint (exact match or starts with public path)
-  const isPublicEndpoint = publicPaths.some((path) => {
-    // Exact match
-    if (url.pathname === path) return true;
-    // Starts with path and next char is / or end of string (e.g. /server/properties/123)
-    if (url.pathname.startsWith(path + '/')) return true;
-    return false;
-  });
-
-  const authHeader = req.headers.get("Authorization");
-
-  // If it's a public endpoint and no auth header, add anon key to bypass Supabase JWT check
-  if (isPublicEndpoint && !authHeader) {
-    console.log(`[PUBLIC] Bypassing JWT for ${url.pathname}`);
-    const headers = new Headers(req.headers);
-    headers.set("Authorization", `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`);
-
-    const modifiedRequest = new Request(req.url, {
-      method: req.method,
-      headers: headers,
-      body: req.body,
-    });
-
-    return app.fetch(modifiedRequest);
-  }
-
-  // For all other requests, pass through as-is
-  return app.fetch(req);
+// Export the handler for Supabase Edge Functions
+export default async (req: Request) => {
+  console.log(`[REQUEST] ${req.method} ${req.url}`);
+  
+  // Pass request directly to Hono app
+  return await app.fetch(req);
 };
-
-// Start the server with custom handler
-Deno.serve(handler);

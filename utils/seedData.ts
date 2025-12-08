@@ -8,13 +8,15 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 ═══════════════════════════════════════════════════════════════════
 */
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/server`;
+// Use the dedicated `seed` function endpoint (reliable and tested).
+// The `server` function has issues with cold starts/timeouts.
+const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/seed`;
 
 export async function seedAllData() {
   try {
     console.log('🌱 Seeding initial data...');
     
-    const response = await fetch(`${API_BASE_URL}/seed-all`, {
+    const response = await fetch(API_BASE_URL, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${publicAnonKey}`,
