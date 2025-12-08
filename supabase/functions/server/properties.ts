@@ -1,8 +1,8 @@
-import * as kv from './kv_store.ts';
+import * as kv from './kv_store.tsx';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  PROPERTIES API - Luxury Real Estate Management
+  PROPERTIES API - Real Estate Listings Management
 ═══════════════════════════════════════════════════════════════════
 */
 
@@ -106,12 +106,12 @@ export async function deleteProperty(id: string): Promise<boolean> {
   return true;
 }
 
-export async function seedInitialProperties(): Promise<void> {
+export async function seedInitialProperties(): Promise<boolean> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:properties');
   if (seedFlag) {
     console.log('Properties already seeded (flag exists), skipping...');
-    return; // Already seeded
+    return true; // Already seeded
   }
   
   const existing = await getAllProperties();
@@ -119,7 +119,7 @@ export async function seedInitialProperties(): Promise<void> {
     console.log('Properties already exist, setting flag...');
     // Set flag to prevent future seeding
     await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
-    return;
+    return true;
   }
   
   console.log('Starting properties seeding...');
@@ -381,4 +381,5 @@ export async function seedInitialProperties(): Promise<void> {
   // Set flag to prevent future seeding
   await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
   console.log('Properties seeding completed.');
+  return true;
 }

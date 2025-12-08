@@ -1,4 +1,4 @@
-import * as kv from './kv_store.ts';
+import * as kv from './kv_store.tsx';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -81,12 +81,12 @@ export async function deleteTestimonial(id: string): Promise<boolean> {
   return true;
 }
 
-export async function seedInitialTestimonials(): Promise<void> {
+export async function seedInitialTestimonials(): Promise<boolean> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:testimonials');
   if (seedFlag) {
     console.log('Testimonials already seeded (flag exists), skipping...');
-    return; // Already seeded
+    return true; // Already seeded
   }
   
   const existing = await getAllTestimonials();
@@ -94,7 +94,7 @@ export async function seedInitialTestimonials(): Promise<void> {
     console.log('Testimonials already exist, setting flag...');
     // Set flag to prevent future seeding
     await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
-    return;
+    return true;
   }
   
   console.log('Starting testimonials seeding...');
@@ -197,4 +197,5 @@ export async function seedInitialTestimonials(): Promise<void> {
   console.log('Testimonials seeding completed, setting flag...');
   // Set flag to prevent future seeding
   await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
+  return true;
 }

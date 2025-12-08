@@ -1,4 +1,4 @@
-import * as kv from './kv_store.ts';
+import * as kv from './kv_store.tsx';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -81,12 +81,12 @@ export async function deleteRecognition(id: string): Promise<boolean> {
   return true;
 }
 
-export async function seedInitialRecognitions(): Promise<void> {
+export async function seedInitialRecognitions(): Promise<boolean> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:recognition');
   if (seedFlag) {
     console.log('Recognition already seeded (flag exists), skipping...');
-    return; // Already seeded
+    return true; // Already seeded
   }
   
   const existing = await getAllRecognitions();
@@ -94,7 +94,7 @@ export async function seedInitialRecognitions(): Promise<void> {
     console.log('Recognition already exists, setting flag...');
     // Set flag to prevent future seeding
     await kv.set('seed:completed:recognition', { completed: true, timestamp: new Date().toISOString() });
-    return;
+    return true;
   }
   
   console.log('Starting recognition seeding...');
@@ -153,4 +153,5 @@ export async function seedInitialRecognitions(): Promise<void> {
   // Set flag to prevent future seeding
   await kv.set('seed:completed:recognition', { completed: true, timestamp: new Date().toISOString() });
   console.log('Recognition seeding completed.');
+  return true;
 }

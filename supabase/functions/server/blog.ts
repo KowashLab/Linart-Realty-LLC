@@ -1,8 +1,8 @@
-import * as kv from './kv_store.ts';
+import * as kv from './kv_store.tsx';
 
 /*
 ═══════════════════════════════════════════════════════════════════
-  BLOG API - Content Management System for Linart Realty
+  BLOG API - Posts Management
 ═══════════════════════════════════════════════════════════════════
 
   Endpoints:
@@ -114,12 +114,12 @@ export async function deletePost(id: string): Promise<boolean> {
 }
 
 // Seed initial data (if database is empty)
-export async function seedInitialPosts(): Promise<void> {
+export async function seedInitialPosts(): Promise<boolean> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:blog');
   if (seedFlag) {
     console.log('Blog posts already seeded (flag exists), skipping...');
-    return; // Already seeded
+    return true; // Already seeded
   }
   
   const existingPosts = await getAllPosts();
@@ -127,7 +127,7 @@ export async function seedInitialPosts(): Promise<void> {
     console.log('Blog posts already exist, setting flag...');
     // Set flag to prevent future seeding
     await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
-    return; // Already have posts
+    return true; // Already have posts
   }
   
   console.log('Starting blog posts seeding...');
@@ -298,4 +298,5 @@ export async function seedInitialPosts(): Promise<void> {
   // Set flag to prevent future seeding
   await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
   console.log('Blog posts seeding completed.');
+  return true;
 }
