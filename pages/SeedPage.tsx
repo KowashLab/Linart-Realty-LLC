@@ -33,7 +33,7 @@ export default function SeedPage() {
 
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/server/seed-all`,
+        `https://${projectId}.supabase.co/functions/v1/seed`,
         {
           method: 'GET',
           headers: {
@@ -248,30 +248,6 @@ export default function SeedPage() {
                 </motion.button>
 
                 <motion.button
-                  onClick={handleSeedBlog}
-                  disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.01 }}
-                  whileTap={{ scale: loading ? 1 : 0.99 }}
-                  className="w-full px-8 py-3 border border-[#E5E4E2]/20 text-[#E5E4E2] hover:border-[#E5E4E2]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                >
-                  <span className="font-['Montserrat'] uppercase text-sm tracking-wider">
-                    Initialize Blog Only
-                  </span>
-                </motion.button>
-
-                <motion.button
-                  onClick={handleForceReseed}
-                  disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.01 }}
-                  whileTap={{ scale: loading ? 1 : 0.99 }}
-                  className="w-full px-8 py-3 border border-[#E5E4E2]/20 text-[#E5E4E2] hover:border-[#E5E4E2]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                >
-                  <span className="font-['Montserrat'] uppercase text-sm tracking-wider">
-                    Force Reseed All Data
-                  </span>
-                </motion.button>
-
-                <motion.button
                   onClick={() => (window as any).navigateTo?.('/')}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
@@ -297,7 +273,7 @@ export default function SeedPage() {
                 </summary>
                 <div className="mt-3 p-3 bg-[#0A0A0B] border border-[#E5E4E2]/10 font-mono text-xs text-[#E5E4E2]/50 break-all space-y-1">
                   <div>Project ID: <span className="text-[#E5E4E2]/70">{projectId}</span></div>
-                  <div>Endpoint: <span className="text-[#E5E4E2]/70">https://{projectId}.supabase.co/functions/v1/server/seed-all</span></div>
+                  <div>Endpoint: <span className="text-[#E5E4E2]/70">https://{projectId}.supabase.co/functions/v1/seed</span></div>
                 </div>
               </details>
             </div>
