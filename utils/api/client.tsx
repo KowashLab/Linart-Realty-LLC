@@ -25,19 +25,12 @@ async function getByPrefix<T = any>(prefix: string): Promise<T[]> {
       return [];
     }
 
+    console.log(`Fetched ${data?.length || 0} items for prefix "${prefix}"`);
+    
+    // JSONB columns are auto-parsed by Supabase, no need for JSON.parse
     return (data || [])
-      .map(item => {
-        try {
-          const parsed = typeof item.value === 'string' 
-            ? JSON.parse(item.value) 
-            : item.value;
-          return parsed;
-        } catch (e) {
-          console.error(`Error parsing KV value for key ${item.key}:`, e);
-          return null;
-        }
-      })
-      .filter((item): item is T => item !== null);
+      .map(item => item.value)
+      .filter((item): item is T => item !== null && item !== undefined);
   } catch (error) {
     console.error(`Unexpected error fetching prefix "${prefix}":`, error);
     return [];
