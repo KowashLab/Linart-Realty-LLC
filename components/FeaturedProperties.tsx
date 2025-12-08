@@ -41,9 +41,9 @@ export function FeaturedProperties() {
       setLoading(true);
       const data = await fetchProperties();
       
-      // Show only published properties, limit to 3 for featured section
-      const publishedProperties = data.filter((p: any) => p.published !== false).slice(0, 3);
-      setProperties(publishedProperties);
+      // Show only featured properties (featured: true)
+      const featuredProperties = data.filter((p: any) => p.featured === true && p.published !== false);
+      setProperties(featuredProperties);
     } catch (error) {
       console.error('Error fetching properties:', error);
       setProperties([]);

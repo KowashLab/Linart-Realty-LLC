@@ -366,9 +366,12 @@ export async function seedInitialProperties(): Promise<boolean> {
     }
   ];
   
-  for (const propertyData of initialProperties) {
-    await createProperty(propertyData);
-  }
+  // Create all properties in parallel for speed
+  console.log(`Creating ${initialProperties.length} properties in parallel...`);
+  await Promise.all(
+    initialProperties.map(propertyData => createProperty(propertyData))
+  );
+  console.log(`✅ Created ${initialProperties.length} properties`);
   
   // Set flag to prevent future seeding
   await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });

@@ -182,9 +182,12 @@ export async function seedInitialTestimonials(): Promise<boolean> {
     }
   ];
   
-  for (const testimonialData of initialTestimonials) {
-    await createTestimonial(testimonialData);
-  }
+  // Create all testimonials in parallel for speed
+  console.log(`Creating ${initialTestimonials.length} testimonials in parallel...`);
+  await Promise.all(
+    initialTestimonials.map(testimonialData => createTestimonial(testimonialData))
+  );
+  console.log(`✅ Created ${initialTestimonials.length} testimonials`);
   
   console.log('Testimonials seeding completed, setting flag...');
   // Set flag to prevent future seeding
