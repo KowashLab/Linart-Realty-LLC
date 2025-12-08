@@ -19,6 +19,8 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${publicAnonKey}`,
+      'apikey': publicAnonKey,
       ...options.headers,
     },
   });
