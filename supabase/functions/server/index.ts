@@ -1,13 +1,13 @@
-import { Hono } from "npm:hono@^4.0.0";
-import { cors } from "npm:hono/cors";
-import { logger } from "npm:hono/logger";
-import { createClient } from "jsr:@supabase/supabase-js@2";
-import * as kvStore from "./kv_store.tsx";
-import * as blog from "./blog.ts";
-import * as properties from "./properties.ts";
-import * as testimonials from "./testimonials.ts";
-import * as recognition from "./recognition.ts";
-import * as partnerships from "./partnerships.ts";
+import { Hono } from 'npm:hono@^4.0.0';
+import { cors } from 'npm:hono/cors';
+import { logger } from 'npm:hono/logger';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import * as kvStore from './kv_store.ts';
+import * as blog from './blog.ts';
+import * as properties from './properties.ts';
+import * as testimonials from './testimonials.ts';
+import * as recognition from './recognition.ts';
+import * as partnerships from './partnerships.ts';
 
 const app = new Hono();
 
