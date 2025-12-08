@@ -418,7 +418,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
           {/* Features - compact */}
           <div className="mb-4">
             <div className="flex flex-wrap gap-1.5">
-              {property.features.map((feature, idx) => (
+              {(property.features || []).map((feature, idx) => (
                 <span 
                   key={idx}
                   className="px-2.5 py-1 bg-[#1A1A1A] border border-[#E5E4E2]/10 font-['Montserrat'] text-[#E5E4E2]"
