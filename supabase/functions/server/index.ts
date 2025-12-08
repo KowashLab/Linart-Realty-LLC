@@ -92,9 +92,7 @@ app.get("/seed-all", async (c) => {
 // FORCE RESET - Clear ALL data and reseed
 app.get("/force-reseed", async (c) => {
   try {
-    console.log(
-      "🔥 FORCE RESET: Starting complete database reset...",
-    );
+    console.log("🔥 FORCE RESET: Starting complete database reset...");
 
     // Delete ALL seed flags
     await kvStore.del("seed:completed:blog");
@@ -121,12 +119,12 @@ app.get("/force-reseed", async (c) => {
 
     for (const prefix of prefixes) {
       const items = await kvStore.getByPrefix(prefix);
-      console.log(
-        `🧹 Found ${items.length} items with prefix "${prefix}"`,
-      );
+      console.log(`🧹 Found ${items.length} items with prefix "${prefix}"`);
+      
       for (const item of items) {
-        if (item && typeof item === "object" && "id" in item) {
-          await kvStore.del(`${prefix}${item.id}`);
+        if (item && item.key) {
+          console.log(`    Deleting key: ${item.key}`);
+          await kvStore.del(item.key);
         }
       }
     }
@@ -147,16 +145,12 @@ app.get("/force-reseed", async (c) => {
 
     return c.json({
       success: true,
-      message:
-        "FORCE RESET completed! All data cleared and reseeded with fresh data.",
+      message: "FORCE RESET completed! All data cleared and reseeded with fresh data.",
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error(`❌ Error in force reseed: ${error}`);
-    return c.json(
-      { error: `Force reseed error: ${error}` },
-      500,
-    );
+    return c.json({ error: `Force reseed error: ${error}` }, 500);
   }
 });
 
