@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -7,27 +7,32 @@ import { BackToTop } from './components/BackToTop';
 import { HomePage } from './pages/HomePage';
 import { PropertiesPage } from './pages/PropertiesPage';
 import { ServicesPage } from './pages/ServicesPage';
-import BlogPage from './pages/Blog';
 import { AboutPage } from './pages/AboutPage';
-import { TestimonialsPage } from './pages/TestimonialsPage';
 import { ContactPage } from './pages/ContactPage';
-import { PrivacyPage } from './pages/PrivacyPage';
-import { TermsPage } from './pages/TermsPage';
-import { CookiesPage } from './pages/CookiesPage';
-import { CommercialPropertyPage } from './pages/CommercialPropertyPage';
-import { ResidentialEstatesPage } from './pages/ResidentialEstatesPage';
-import { DesignRenovationPage } from './pages/DesignRenovationPage';
-import { InvestmentAdvisoryPage } from './pages/InvestmentAdvisoryPage';
-import { AuthPage } from './pages/AuthPage';
-import { ProfilePage } from './pages/ProfilePage';
 import { AuthProvider } from './contexts/AuthContext';
-import AdminBlog from './pages/AdminBlog';
-import { AdminProperties } from './components/AdminProperties';
-import { AdminTestimonials } from './components/AdminTestimonials';
-import { AdminRecognition } from './components/AdminRecognition';
-import { AdminPartnerships } from './components/AdminPartnerships';
-import SeedPage from './pages/SeedPage';
 import { autoSeed } from './utils/seedData';
+
+// Lazy load non-critical pages
+const BlogPage = lazy(() => import('./pages/Blog'));
+const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const CookiesPage = lazy(() => import('./pages/CookiesPage'));
+const CommercialPropertyPage = lazy(() => import('./pages/CommercialPropertyPage'));
+const ResidentialEstatesPage = lazy(() => import('./pages/ResidentialEstatesPage'));
+const DesignRenovationPage = lazy(() => import('./pages/DesignRenovationPage'));
+const InvestmentAdvisoryPage = lazy(() => import('./pages/InvestmentAdvisoryPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPost'));
+
+// Lazy load admin pages
+const AdminBlog = lazy(() => import('./pages/AdminBlog'));
+const AdminProperties = lazy(() => import('./components/AdminProperties'));
+const AdminTestimonials = lazy(() => import('./components/AdminTestimonials'));
+const AdminRecognition = lazy(() => import('./components/AdminRecognition'));
+const AdminPartnerships = lazy(() => import('./components/AdminPartnerships'));
+const SeedPage = lazy(() => import('./pages/SeedPage'));
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -168,7 +173,13 @@ export default function App() {
           
           <Navbar />
           <main>
-            {renderPage()}
+            <Suspense fallback={
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#E5E4E2]"></div>
+              </div>
+            }>
+              {renderPage()}
+            </Suspense>
           </main>
           <BackToTop />
           <Footer />
