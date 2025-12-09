@@ -39,7 +39,7 @@ const values: Value[] = [
 ];
 
 const stats = [
-  { value: '$2.4B+', label: 'Total Transactions' },
+  { value: '$250M+', label: 'Total Transactions' },
   { value: '450+', label: 'Properties Sold' },
   { value: '15+', label: 'Years Excellence' },
   { value: '98%', label: 'Client Satisfaction' }
