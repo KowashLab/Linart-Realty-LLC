@@ -14,14 +14,14 @@ import { autoSeed } from './utils/seedData';
 
 // Lazy load non-critical pages
 const BlogPage = lazy(() => import('./pages/Blog'));
-const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const CookiesPage = lazy(() => import('./pages/CookiesPage'));
-const CommercialPropertyPage = lazy(() => import('./pages/CommercialPropertyPage'));
-const ResidentialEstatesPage = lazy(() => import('./pages/ResidentialEstatesPage'));
-const DesignRenovationPage = lazy(() => import('./pages/DesignRenovationPage'));
-const InvestmentAdvisoryPage = lazy(() => import('./pages/InvestmentAdvisoryPage'));
+const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage').then(m => ({ default: m.TestimonialsPage })));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const CookiesPage = lazy(() => import('./pages/CookiesPage').then(m => ({ default: m.CookiesPage })));
+const CommercialPropertyPage = lazy(() => import('./pages/CommercialPropertyPage').then(m => ({ default: m.CommercialPropertyPage })));
+const ResidentialEstatesPage = lazy(() => import('./pages/ResidentialEstatesPage').then(m => ({ default: m.ResidentialEstatesPage })));
+const DesignRenovationPage = lazy(() => import('./pages/DesignRenovationPage').then(m => ({ default: m.DesignRenovationPage })));
+const InvestmentAdvisoryPage = lazy(() => import('./pages/InvestmentAdvisoryPage').then(m => ({ default: m.InvestmentAdvisoryPage })));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPost'));
