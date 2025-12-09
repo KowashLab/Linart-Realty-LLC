@@ -36,28 +36,17 @@ Deno.serve(async (req) => {
     if (clean) {
       console.log('🧹 Clean mode enabled - deleting ALL data...');
       
-      // Delete all blog posts
-      const { error: blogError } = await supabase
+      // Delete ALL records except seed flags (to handle old slug-based keys and any other old data)
+      const { error: cleanError } = await supabase
         .from('kv_store_dcec270f')
         .delete()
-        .like('key', 'blog:post:%');
-      if (blogError) console.error('Error deleting blog posts:', blogError);
+        .not('key', 'like', 'seed:%');
       
-      // Delete all properties
-      const { error: propsError } = await supabase
-        .from('kv_store_dcec270f')
-        .delete()
-        .like('key', 'property:%');
-      if (propsError) console.error('Error deleting properties:', propsError);
-      
-      // Delete all testimonials
-      const { error: testimonialsError } = await supabase
-        .from('kv_store_dcec270f')
-        .delete()
-        .like('key', 'testimonial:%');
-      if (testimonialsError) console.error('Error deleting testimonials:', testimonialsError);
-      
-      console.log('✅ All data deleted');
+      if (cleanError) {
+        console.error('Error during clean:', cleanError);
+      } else {
+        console.log('✅ All data deleted (except seed flags)');
+      }
     }
     
     if (force || clean) {
