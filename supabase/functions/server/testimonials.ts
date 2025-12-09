@@ -182,12 +182,25 @@ export async function seedInitialTestimonials(): Promise<boolean> {
     }
   ];
   
-  // Create all testimonials in parallel for speed
-  console.log(`Creating ${initialTestimonials.length} testimonials in parallel...`);
-  await Promise.all(
-    initialTestimonials.map(testimonialData => createTestimonial(testimonialData))
-  );
-  console.log(`✅ Created ${initialTestimonials.length} testimonials`);
+  // Create all testimonials sequentially with detailed logging
+  console.log(`Creating ${initialTestimonials.length} testimonials sequentially...`);
+  let successCount = 0;
+  let failCount = 0;
+  
+  for (let i = 0; i < initialTestimonials.length; i++) {
+    const testimonialData = initialTestimonials[i];
+    try {
+      console.log(`[${i + 1}/${initialTestimonials.length}] Creating: ${testimonialData.name}`);
+      await createTestimonial(testimonialData);
+      successCount++;
+      console.log(`✅ [${i + 1}/${initialTestimonials.length}] Success: ${testimonialData.name}`);
+    } catch (error) {
+      failCount++;
+      console.error(`❌ [${i + 1}/${initialTestimonials.length}] Failed: ${testimonialData.name}`, error);
+    }
+  }
+  
+  console.log(`✅ Successfully created ${successCount}/${initialTestimonials.length} testimonials (${failCount} failed)`);
   
   console.log('Testimonials seeding completed, setting flag...');
   // Set flag to prevent future seeding

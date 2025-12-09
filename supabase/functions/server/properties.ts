@@ -366,12 +366,25 @@ export async function seedInitialProperties(): Promise<boolean> {
     }
   ];
   
-  // Create all properties in parallel for speed
-  console.log(`Creating ${initialProperties.length} properties in parallel...`);
-  await Promise.all(
-    initialProperties.map(propertyData => createProperty(propertyData))
-  );
-  console.log(`✅ Created ${initialProperties.length} properties`);
+  // Create all properties sequentially with detailed logging
+  console.log(`Creating ${initialProperties.length} properties sequentially...`);
+  let successCount = 0;
+  let failCount = 0;
+  
+  for (let i = 0; i < initialProperties.length; i++) {
+    const propertyData = initialProperties[i];
+    try {
+      console.log(`[${i + 1}/${initialProperties.length}] Creating: ${propertyData.title}`);
+      await createProperty(propertyData);
+      successCount++;
+      console.log(`✅ [${i + 1}/${initialProperties.length}] Success: ${propertyData.title}`);
+    } catch (error) {
+      failCount++;
+      console.error(`❌ [${i + 1}/${initialProperties.length}] Failed: ${propertyData.title}`, error);
+    }
+  }
+  
+  console.log(`✅ Successfully created ${successCount}/${initialProperties.length} properties (${failCount} failed)`);
   
   // Set flag to prevent future seeding
   await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });

@@ -3,6 +3,7 @@ import { SEO } from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Database, CheckCircle, AlertCircle, Loader, Crown } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { getSupabaseClient } from '../utils/supabase/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -102,7 +103,7 @@ export default function SeedPage() {
 
     try {
       // Step 1: Delete seed completion flags via direct KV access
-      const supabase = (await import('../utils/supabase/client')).getSupabaseClient();
+      const supabase = getSupabaseClient();
       
       await supabase
         .from('kv_store_dcec270f')
@@ -220,23 +221,23 @@ export default function SeedPage() {
                 <ul className="space-y-2 font-['Montserrat'] text-[#E5E4E2]/70">
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#E5E4E2]/50" />
-                    6 Luxury Blog Posts
+                    1 Blog Post
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#E5E4E2]/50" />
-                    Premium Florida Properties
+                    12 Luxury Properties (6 Featured)
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#E5E4E2]/50" />
-                    Client Testimonials
+                    8 Client Testimonials
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#E5E4E2]/50" />
-                    Global Recognition Awards
+                    4 Global Recognition Awards
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-[#E5E4E2]/50" />
-                    Strategic Partnerships
+                    6 Strategic Partnerships
                   </li>
                 </ul>
               </div>
