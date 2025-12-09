@@ -129,8 +129,9 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9 }}
+            className="flex flex-col"
           >
-            <div className="relative bg-[#0F0F0F] p-10 border-2 border-[#E5E4E2]/20">
+            <div className="mt-auto relative bg-[#0F0F0F] p-10 border-2 border-[#E5E4E2]/20">
               
               {/* Corner Accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#E5E4E2]" />
