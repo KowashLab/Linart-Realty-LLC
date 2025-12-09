@@ -388,8 +388,9 @@ export function CookiesPage() {
                 lineHeight: 1.8
               }}
             >
-              <p>Email: <a href="mailto:privacy@linartrealty.com" className="text-[#A8A9AD] hover:text-[#E5E4E2] transition-colors">privacy@linartrealty.com</a></p>
-              <p>Phone: +1 (305) 555-0123</p>
+              <p>Email: <a href="mailto:info@linartrealty.com" className="text-[#A8A9AD] hover:text-[#E5E4E2] transition-colors">info@linartrealty.com</a></p>
+              <p>Phone: +1 (561) 235-6804</p>
+              <p>Address: 8318 Crystal Downs Avenue, Boca Raton, FL 33434</p>
             </div>
           </div>
 

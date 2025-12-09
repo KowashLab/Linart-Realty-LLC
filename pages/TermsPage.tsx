@@ -310,8 +310,8 @@ export function TermsPage() {
               }}
             >
               <p>Email: <a href="mailto:legal@linartrealty.com" className="text-[#A8A9AD] hover:text-[#E5E4E2] transition-colors">legal@linartrealty.com</a></p>
-              <p>Phone: +1 (305) 555-0123</p>
-              <p>Address: 1000 Brickell Avenue, Suite 500, Miami, FL 33131</p>
+              <p>Phone: +1 (561) 235-6804</p>
+              <p>Address: 8318 Crystal Downs Avenue, Boca Raton, FL 33434</p>
             </div>
           </div>
 
