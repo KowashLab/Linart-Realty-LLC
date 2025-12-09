@@ -183,7 +183,7 @@ export function PropertiesPage() {
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-[#0A0A0B]">
                   <ImageWithFallback
-                    src={property.image}
+                    src={property.mainImage || property.images?.[0]}
                     alt={property.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
@@ -204,24 +204,23 @@ export function PropertiesPage() {
                     </div>
                   </div>
 
-                  {/* ROI Badge */}
-                  <div className="absolute top-4 right-4">
-                    <div className="px-3 py-1.5 bg-[#A8A9AD]/20 backdrop-blur-sm border border-[#E5E4E2]/30">
-                      <div className="flex items-center gap-1.5">
-                        <TrendingUp className="w-3 h-3 text-[#E5E4E2]" strokeWidth={2} />
+                  {/* Type Badge */}
+                  {property.propertyType && (
+                    <div className="absolute top-4 right-4">
+                      <div className="px-3 py-1.5 bg-[#A8A9AD]/20 backdrop-blur-sm border border-[#E5E4E2]/30">
                         <span 
-                          className="font-['Montserrat'] text-[#E5E4E2]"
+                          className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                           style={{
-                            fontSize: '0.7rem',
+                            fontSize: '0.65rem',
                             fontWeight: 600,
-                            letterSpacing: '0.05em'
+                            letterSpacing: '0.15em'
                           }}
                         >
-                          {property.roi}
+                          {property.propertyType}
                         </span>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -257,25 +256,25 @@ export function PropertiesPage() {
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 mb-5 pb-5 border-b border-[#E5E4E2]/10">
-                    {property.beds && (
+                    {property.bedrooms > 0 && (
                       <div className="flex items-center gap-1.5">
                         <Bed className="w-4 h-4 text-[#A8A9AD]" strokeWidth={1.5} />
                         <span 
                           className="font-['Montserrat'] text-[#E5E4E2]/70"
                           style={{ fontSize: '0.85rem', fontWeight: 500 }}
                         >
-                          {property.beds}
+                          {property.bedrooms}
                         </span>
                       </div>
                     )}
-                    {property.baths && (
+                    {property.bathrooms > 0 && (
                       <div className="flex items-center gap-1.5">
                         <Bath className="w-4 h-4 text-[#A8A9AD]" strokeWidth={1.5} />
                         <span 
                           className="font-['Montserrat'] text-[#E5E4E2]/70"
                           style={{ fontSize: '0.85rem', fontWeight: 500 }}
                         >
-                          {property.baths}
+                          {property.bathrooms}
                         </span>
                       </div>
                     )}
@@ -285,7 +284,7 @@ export function PropertiesPage() {
                         className="font-['Montserrat'] text-[#E5E4E2]/70"
                         style={{ fontSize: '0.85rem', fontWeight: 500 }}
                       >
-                        {property.sqft} sqft
+                        {property.sqft?.toLocaleString()} sqft
                       </span>
                     </div>
                   </div>

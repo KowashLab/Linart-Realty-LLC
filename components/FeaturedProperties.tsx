@@ -17,15 +17,16 @@ interface Property {
   title: string;
   location: string;
   price: string;
-  image: string;
-  sqft: string;
+  mainImage: string;
+  images: string[];
+  sqft: number;
   bedrooms?: number;
   bathrooms?: number;
-  status: 'For Sale' | 'Sold' | 'Exclusive';
-  type: 'Residential' | 'Commercial';
-  yearBuilt: number;
+  status: 'For Sale' | 'Sold' | 'Pending';
+  propertyType: string;
   features: string[];
   published?: boolean;
+  featured?: boolean;
 }
 
 export function FeaturedProperties() {
@@ -241,7 +242,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
             className="w-full h-full"
           >
             <ImageWithFallback
-              src={property.image}
+              src={property.mainImage || property.images?.[0]}
               alt={property.title}
               className="w-full h-full object-cover"
             />
@@ -275,7 +276,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                   letterSpacing: '0.12em'
                 }}
               >
-                {property.type}
+                {property.propertyType}
               </span>
             </div>
             <div className="relative px-3 py-1 bg-[#0F0F0F]/90 backdrop-blur-sm border border-[#A8A9AD]/40">
@@ -328,19 +329,8 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                   {property.title}
                 </motion.span>
               </motion.h3>
-              <span 
-                className="font-['Montserrat'] text-[#A8A9AD] ml-2"
-                style={{
-                  fontSize: '0.7rem',
-                  fontWeight: 500,
-                  letterSpacing: '0.03em'
-                }}
-              >
-                {property.yearBuilt}
-              </span>
             </div>
-            <div className="flex items-center gap-1.5 text-[#A8A9AD]">
-              <MapPin size={12} strokeWidth={1.5} />
+            <div className="flex items-center gap-1.5 text-[#A8A9AD]">\n              <MapPin size={12} strokeWidth={1.5} />
               <span 
                 className="font-['Montserrat']"
                 style={{
@@ -355,21 +345,21 @@ function PropertyCard({ property, index }: { property: Property; index: number }
           </div>
 
           {/* Specs - Compact inline version */}
-          {property.type === 'Residential' ? (
-            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E5E4E2]/10">
-              <div className="flex items-center gap-1.5 text-[#A8A9AD]">
-                <Square size={12} strokeWidth={1.5} />
-                <span 
-                  className="font-['Montserrat'] text-[#E5E4E2]"
-                  style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 500,
-                    letterSpacing: '0.02em'
-                  }}
-                >
-                  {property.sqft}
-                </span>
-              </div>
+          <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E5E4E2]/10">
+            <div className="flex items-center gap-1.5 text-[#A8A9AD]">
+              <Square size={12} strokeWidth={1.5} />
+              <span 
+                className="font-['Montserrat'] text-[#E5E4E2]"
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.02em'
+                }}
+              >
+                {property.sqft?.toLocaleString()} sqft
+              </span>
+            </div>
+            {property.bedrooms > 0 && (
               <div className="flex items-center gap-1.5 text-[#A8A9AD]">
                 <Bed size={12} strokeWidth={1.5} />
                 <span 
@@ -383,6 +373,8 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                   {property.bedrooms}
                 </span>
               </div>
+            )}
+            {property.bathrooms > 0 && (
               <div className="flex items-center gap-1.5 text-[#A8A9AD]">
                 <Bath size={12} strokeWidth={1.5} />
                 <span 
@@ -396,7 +388,8 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                   {property.bathrooms}
                 </span>
               </div>
-            </div>
+            )}
+          </div>
           ) : (
             <div className="mb-4 pb-4 border-b border-[#E5E4E2]/10">
               <div className="flex items-center gap-1.5 text-[#A8A9AD]">
@@ -409,11 +402,11 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                     letterSpacing: '0.02em'
                   }}
                 >
-                  {property.sqft} Sq Ft
+                  {property.sqft?.toLocaleString()} Sq Ft
                 </span>
               </div>
             </div>
-          )}
+          )
 
           {/* Features - compact */}
           <div className="mb-4">
