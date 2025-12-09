@@ -81,12 +81,12 @@ export async function deleteTestimonial(id: string): Promise<boolean> {
   return true;
 }
 
-export async function seedInitialTestimonials(): Promise<boolean> {
+export async function seedInitialTestimonials(): Promise<{ success: boolean; total: number; created: number; failed: number; failedItems: string[] }> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:testimonials');
   if (seedFlag) {
     console.log('Testimonials already seeded (flag exists), skipping...');
-    return true; // Already seeded
+    return { success: true, total: 0, created: 0, failed: 0, failedItems: [] }; // Already seeded
   }
   
   console.log('Starting testimonials seeding (will create all 8 testimonials)...');
@@ -186,6 +186,7 @@ export async function seedInitialTestimonials(): Promise<boolean> {
   console.log(`Creating ${initialTestimonials.length} testimonials sequentially...`);
   let successCount = 0;
   let failCount = 0;
+  const failedItems: string[] = [];
   
   for (let i = 0; i < initialTestimonials.length; i++) {
     const testimonialData = initialTestimonials[i];
@@ -196,6 +197,7 @@ export async function seedInitialTestimonials(): Promise<boolean> {
       console.log(`✅ [${i + 1}/${initialTestimonials.length}] Success: ${testimonialData.name}`);
     } catch (error) {
       failCount++;
+      failedItems.push(testimonialData.name);
       console.error(`❌ [${i + 1}/${initialTestimonials.length}] Failed: ${testimonialData.name}`, error);
     }
   }
@@ -205,5 +207,5 @@ export async function seedInitialTestimonials(): Promise<boolean> {
   console.log('Testimonials seeding completed, setting flag...');
   // Set flag to prevent future seeding
   await kv.set('seed:completed:testimonials', { completed: true, timestamp: new Date().toISOString() });
-  return true;
+  return { success: true, total: initialTestimonials.length, created: successCount, failed: failCount, failedItems };
 }

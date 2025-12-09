@@ -44,20 +44,22 @@ Deno.serve(async (req) => {
     results.blog = blogCount || 0;
 
     // Seed properties
-    await seedInitialProperties();
+    const propsResult = await seedInitialProperties();
     const { count: propsCount } = await supabase
       .from('kv_store_dcec270f')
       .select('key', { count: 'exact', head: true })
       .like('key', 'property:%');
     results.properties = propsCount || 0;
+    console.log('Properties result:', JSON.stringify(propsResult));
 
     // Seed testimonials
-    await seedInitialTestimonials();
+    const testimonialsResult = await seedInitialTestimonials();
     const { count: testimonialsCount } = await supabase
       .from('kv_store_dcec270f')
       .select('key', { count: 'exact', head: true })
       .like('key', 'testimonial:%');
     results.testimonials = testimonialsCount || 0;
+    console.log('Testimonials result:', JSON.stringify(testimonialsResult));
 
     // Seed recognition
     await seedInitialRecognitions();
@@ -82,6 +84,10 @@ Deno.serve(async (req) => {
         success: true,
         message: 'All initial data seeded successfully',
         counts: results,
+        details: {
+          properties: propsResult,
+          testimonials: testimonialsResult,
+        },
         timestamp: new Date().toISOString(),
       }),
       { 

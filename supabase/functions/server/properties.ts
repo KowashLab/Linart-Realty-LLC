@@ -106,12 +106,12 @@ export async function deleteProperty(id: string): Promise<boolean> {
   return true;
 }
 
-export async function seedInitialProperties(): Promise<boolean> {
+export async function seedInitialProperties(): Promise<{ success: boolean; total: number; created: number; failed: number; failedItems: string[] }> {
   // Check if seeding has already been completed (using KV flag)
   const seedFlag = await kv.get('seed:completed:properties');
   if (seedFlag) {
     console.log('Properties already seeded (flag exists), skipping...');
-    return true; // Already seeded
+    return { success: true, total: 0, created: 0, failed: 0, failedItems: [] }; // Already seeded
   }
   
   console.log('Starting properties seeding (will create all 12 properties)...');
@@ -370,6 +370,7 @@ export async function seedInitialProperties(): Promise<boolean> {
   console.log(`Creating ${initialProperties.length} properties sequentially...`);
   let successCount = 0;
   let failCount = 0;
+  const failedItems: string[] = [];
   
   for (let i = 0; i < initialProperties.length; i++) {
     const propertyData = initialProperties[i];
@@ -380,6 +381,7 @@ export async function seedInitialProperties(): Promise<boolean> {
       console.log(`✅ [${i + 1}/${initialProperties.length}] Success: ${propertyData.title}`);
     } catch (error) {
       failCount++;
+      failedItems.push(propertyData.title);
       console.error(`❌ [${i + 1}/${initialProperties.length}] Failed: ${propertyData.title}`, error);
     }
   }
@@ -389,5 +391,5 @@ export async function seedInitialProperties(): Promise<boolean> {
   // Set flag to prevent future seeding
   await kv.set('seed:completed:properties', { completed: true, timestamp: new Date().toISOString() });
   console.log('Properties seeding completed.');
-  return true;
+  return { success: true, total: initialProperties.length, created: successCount, failed: failCount, failedItems };
 }
