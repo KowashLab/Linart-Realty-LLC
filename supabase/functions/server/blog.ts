@@ -283,12 +283,24 @@ export async function seedInitialPosts(): Promise<boolean> {
     }
   ];
   
+  console.log(`Creating ${initialPosts.length} blog posts...`);
+  let created = 0;
+  let failed = 0;
+  
   for (const postData of initialPosts) {
-    await createPost(postData);
+    try {
+      await createPost(postData);
+      created++;
+      console.log(`✅ Created blog post: ${postData.title}`);
+    } catch (error) {
+      failed++;
+      console.error(`❌ Failed to create blog post: ${postData.title}`, error);
+    }
   }
+  
+  console.log(`Blog posts seeding completed: ${created} created, ${failed} failed`);
   
   // Set flag to prevent future seeding
   await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
-  console.log('Blog posts seeding completed.');
   return true;
 }
