@@ -94,12 +94,12 @@ export function Navbar() {
               </div>
             </motion.a>
 
-            {/* Desktop Navigation Links - Centered with proper spacing */}
+            {/* Desktop Navigation Links - Centered between logo and buttons */}
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="hidden 2xl:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8"
+              className="hidden 2xl:flex items-center justify-center flex-1 gap-8 mx-8"
             >
               {links.map((link, index) => (
                 <a
