@@ -129,8 +129,9 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9 }}
+            className="flex"
           >
-            <div className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20">
+            <div className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20 flex-1 flex flex-col">
               
               {/* Corner Accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-[#E5E4E2]" />
@@ -349,6 +350,9 @@ export function Contact() {
                 </button>
 
               </form>
+              
+              {/* Spacer to push content if needed */}
+              <div className="flex-1 min-h-[20px]" />
             </div>
           </motion.div>
 
