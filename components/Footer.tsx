@@ -40,10 +40,10 @@ export function Footer() {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
-    { icon: Mail, href: 'mailto:contact@linartrealty.com', label: 'Email' }
+    { icon: Facebook, href: 'https://www.facebook.com/linartrealty', label: 'Facebook' },
+    { icon: Instagram, href: 'https://www.instagram.com/linartrealty/', label: 'Instagram' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/linartrealty/', label: 'LinkedIn' },
+    { icon: Mail, href: 'mailto:linartrealty@gmail.com', label: 'Email' }
   ];
 
   return (
