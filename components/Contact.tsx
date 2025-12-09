@@ -462,81 +462,86 @@ export function Contact() {
               </motion.div>
             ))}
 
-            {/* Additional Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20 group hover:border-[#A8A9AD]/50 transition-all duration-700"
-            >
-              <h4 
-                className="font-['Cinzel'] text-[#F2EEE7] mb-6 pb-4 border-b border-[#E5E4E2]/10"
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.02em'
-                }}
-              >
-                Corporate Headquarters
-              </h4>
-              <p 
-                className="font-['Montserrat'] text-[#E5E4E2]/80 leading-relaxed"
-                style={{
-                  fontSize: '0.95rem',
-                  fontWeight: 400,
-                  letterSpacing: '0.01em',
-                  lineHeight: 1.7
-                }}
-              >
-                Linart Realty LLC operates throughout Florida with additional representation 
-                in major luxury real estate markets globally. Our network extends across North America, 
-                Europe, and select international destinations.
-              </p>
-
-              {/* Shimmer Effect */}
-              <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
-                  backgroundSize: '200% 200%',
-                  animation: 'shimmer 3s ease-in-out infinite'
-                }}
-              />
-            </motion.div>
-
-            {/* Google Maps */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative bg-[#0F0F0F] border border-[#E5E4E2]/20 overflow-hidden group hover:border-[#A8A9AD]/50 transition-all duration-700"
-            >
-              <div className="aspect-[16/9] w-full">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.5245!2d-80.1686!3d26.3683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d8e3e5d5d5d5d5%3A0x5d5d5d5d5d5d5d5!2s8318%20Crystal%20Downs%20Ave%2C%20Boca%20Raton%2C%20FL%2033434!5e0!3m2!1sen!2sus!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Linart Realty Office Location"
-                  className="grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-                />
-              </div>
+            {/* Corporate Headquarters and Google Maps - Side by Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
-              {/* Shimmer Effect */}
-              <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
-                  backgroundSize: '200% 200%',
-                  animation: 'shimmer 3s ease-in-out infinite'
-                }}
-              />
-            </motion.div>
+              {/* Corporate Headquarters */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20 group hover:border-[#A8A9AD]/50 transition-all duration-700"
+              >
+                <h4 
+                  className="font-['Cinzel'] text-[#F2EEE7] mb-6 pb-4 border-b border-[#E5E4E2]/10"
+                  style={{
+                    fontSize: '1.5rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.02em'
+                  }}
+                >
+                  Corporate Headquarters
+                </h4>
+                <p 
+                  className="font-['Montserrat'] text-[#E5E4E2]/80 leading-relaxed"
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 400,
+                    letterSpacing: '0.01em',
+                    lineHeight: 1.7
+                  }}
+                >
+                  Linart Realty LLC operates throughout Florida with additional representation 
+                  in major luxury real estate markets globally. Our network extends across North America, 
+                  Europe, and select international destinations.
+                </p>
+
+                {/* Shimmer Effect */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
+                    backgroundSize: '200% 200%',
+                    animation: 'shimmer 3s ease-in-out infinite'
+                  }}
+                />
+              </motion.div>
+
+              {/* Google Maps */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className="relative bg-[#0F0F0F] border border-[#E5E4E2]/20 overflow-hidden group hover:border-[#A8A9AD]/50 transition-all duration-700"
+              >
+                <div className="aspect-[16/9] w-full">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.5245!2d-80.1686!3d26.3683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d8e3e5d5d5d5d5%3A0x5d5d5d5d5d5d5d5!2s8318%20Crystal%20Downs%20Ave%2C%20Boca%20Raton%2C%20FL%2033434!5e0!3m2!1sen!2sus!4v1234567890"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Linart Realty Office Location"
+                    className="grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                  />
+                </div>
+                
+                {/* Shimmer Effect */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
+                    backgroundSize: '200% 200%',
+                    animation: 'shimmer 3s ease-in-out infinite'
+                  }}
+                />
+              </motion.div>
+
+            </div>
 
           </motion.div>
         </div>
