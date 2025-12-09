@@ -190,7 +190,7 @@ export function PropertiesPage() {
                   
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4">
-                    <div className="px-4 py-1.5 bg-[#0A0A0B]/90 backdrop-blur-sm border border-[#E5E4E2]/30">
+                    <div className="px-4 py-1.5 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
                       <span 
                         className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                         style={{
@@ -207,7 +207,7 @@ export function PropertiesPage() {
                   {/* Type Badge */}
                   {property.propertyType && (
                     <div className="absolute top-4 right-4">
-                      <div className="px-3 py-1.5 bg-[#A8A9AD]/20 backdrop-blur-sm border border-[#E5E4E2]/30">
+                      <div className="px-3 py-1.5 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
                         <span 
                           className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                           style={{

@@ -73,7 +73,7 @@ export function Navbar() {
         />
 
         <div className="container-custom">
-          <div className="relative flex items-center justify-between h-16 lg:h-24 xl:h-32 px-4 lg:px-6 xl:px-12">
+          <div className="relative flex items-center justify-between h-14 lg:h-16 xl:h-20 px-4 lg:px-6 xl:px-12">
             
             {/* Logo - Left */}
             <motion.a 
@@ -85,11 +85,11 @@ export function Navbar() {
               className="group flex-shrink-0 relative z-10"
             >
               {/* Logo Image */}
-              <div className="relative w-8 h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 overflow-hidden">
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14">
                 <img 
                   src="/images/logo.png"
                   alt="Linart Realty Logo"
-                  className="w-full h-full object-contain opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-500"
                 />
               </div>
             </motion.a>
@@ -99,7 +99,7 @@ export function Navbar() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="hidden 2xl:flex items-center justify-evenly flex-1 mx-8"
+              className="hidden 2xl:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8"
             >
               {links.map((link, index) => (
                 <a
@@ -108,9 +108,9 @@ export function Navbar() {
                   onClick={(e) => handleNavClick(e, link.href)}
                   className="group relative font-['Montserrat'] uppercase text-[#E5E4E2]/70 hover:text-[#F2EEE7] transition-all duration-500 whitespace-nowrap py-2.5"
                   style={{
-                    fontSize: '0.65rem',
+                    fontSize: '0.7rem',
                     fontWeight: 600,
-                    letterSpacing: '0.2em'
+                    letterSpacing: '0.15em'
                   }}
                 >
                   {link.name}
@@ -163,12 +163,12 @@ export function Navbar() {
                       <span 
                         className="relative z-10 font-['Montserrat'] uppercase text-[#E5E4E2] group-hover:text-[#F2EEE7] transition-colors duration-500 whitespace-nowrap flex items-center justify-center gap-1.5"
                         style={{
-                          fontSize: '0.65rem',
+                          fontSize: '0.7rem',
                           fontWeight: 600,
-                          letterSpacing: '0.2em'
+                          letterSpacing: '0.15em'
                         }}
                       >
-                        <User size={11} strokeWidth={1.5} />
+                        <User size={12} strokeWidth={1.5} />
                         Profile
                       </span>
 
@@ -203,12 +203,12 @@ export function Navbar() {
                       <span 
                         className="relative z-10 font-['Montserrat'] uppercase text-[#E5E4E2] group-hover:text-[#F2EEE7] transition-colors duration-500 whitespace-nowrap flex items-center justify-center gap-1.5"
                         style={{
-                          fontSize: '0.65rem',
+                          fontSize: '0.7rem',
                           fontWeight: 600,
-                          letterSpacing: '0.2em'
+                          letterSpacing: '0.15em'
                         }}
                       >
-                        <LogIn size={11} strokeWidth={1.5} />
+                        <LogIn size={12} strokeWidth={1.5} />
                         Login
                       </span>
 
@@ -248,9 +248,9 @@ export function Navbar() {
                 <span 
                   className="relative z-10 font-['Montserrat'] uppercase text-[#E5E4E2] group-hover:text-[#F2EEE7] transition-colors duration-500 whitespace-nowrap flex items-center justify-center"
                   style={{
-                    fontSize: '0.65rem',
+                    fontSize: '0.7rem',
                     fontWeight: 600,
-                    letterSpacing: '0.2em'
+                    letterSpacing: '0.15em'
                   }}
                 >
                   Consultation

@@ -267,7 +267,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
 
           {/* Type & Status Badges */}
           <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
-            <div className="relative px-3 py-1 bg-[#0F0F0F]/90 backdrop-blur-sm border border-[#E5E4E2]/30">
+            <div className="relative px-3 py-1 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
               <span 
                 className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                 style={{
@@ -279,7 +279,7 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                 {property.propertyType}
               </span>
             </div>
-            <div className="relative px-3 py-1 bg-[#0F0F0F]/90 backdrop-blur-sm border border-[#A8A9AD]/40">
+            <div className="relative px-3 py-1 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
               <span 
                 className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                 style={{
@@ -330,7 +330,8 @@ function PropertyCard({ property, index }: { property: Property; index: number }
                 </motion.span>
               </motion.h3>
             </div>
-            <div className="flex items-center gap-1.5 text-[#A8A9AD]">\n              <MapPin size={12} strokeWidth={1.5} />
+            <div className="flex items-center gap-1.5 text-[#A8A9AD]">
+              <MapPin size={12} strokeWidth={1.5} />
               <span 
                 className="font-['Montserrat']"
                 style={{
@@ -390,23 +391,6 @@ function PropertyCard({ property, index }: { property: Property; index: number }
               </div>
             )}
           </div>
-          ) : (
-            <div className="mb-4 pb-4 border-b border-[#E5E4E2]/10">
-              <div className="flex items-center gap-1.5 text-[#A8A9AD]">
-                <Square size={12} strokeWidth={1.5} />
-                <span 
-                  className="font-['Montserrat'] text-[#E5E4E2]"
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 500,
-                    letterSpacing: '0.02em'
-                  }}
-                >
-                  {property.sqft?.toLocaleString()} Sq Ft
-                </span>
-              </div>
-            </div>
-          )
 
           {/* Features - compact */}
           <div className="mb-4">
