@@ -112,7 +112,7 @@ export function ResidentialEstatesPage() {
       
       <SEO 
         title="Luxury Residential Estates Florida - Beachfront, Waterfront & Private Islands | Linart Realty"
-        description="Ultra-premium residential estates in Florida: beachfront properties, waterfront mansions, private islands, gated communities. $850M+ in luxury sales. White-glove service."
+        description="Ultra-premium residential estates in Florida: beachfront properties, waterfront mansions, private islands, gated communities. $250M+ in luxury sales. White-glove service."
         canonical="https://www.linartrealty.com/residential-estates"
         ogType="website"
         keywords="luxury residential estates Florida, beachfront properties, waterfront mansions, private island Florida, gated community homes, architectural masterpieces Florida, luxury home sales"

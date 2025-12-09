@@ -102,7 +102,7 @@ export function CommercialPropertyPage() {
       
       <SEO 
         title="Commercial Real Estate Services Florida - Office, Retail & Mixed-Use | Linart Realty"
-        description="Strategic commercial property acquisition and management in Florida. Office towers, retail centers, mixed-use developments. $2.5B+ assets under management, 98% average occupancy."
+        description="Strategic commercial property acquisition and management in Florida. Office towers, retail centers, mixed-use developments. $80M+ assets under management, 98% average occupancy."
         canonical="https://www.linartrealty.com/commercial-property"
         ogType="website"
         keywords="commercial real estate Florida, office building acquisition, retail center development, mixed-use property Florida, commercial property management, Florida commercial investment"

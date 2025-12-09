@@ -112,7 +112,7 @@ export function DesignRenovationPage() {
       
       <SEO 
         title="Luxury Property Design & Renovation Services Florida - Architectural Excellence | Linart Realty"
-        description="Premium architectural design, interior design, and full-scale renovation services in Florida. 300+ projects completed, 25+ design awards. Award-winning team, turnkey solutions."
+        description="Premium architectural design, interior design, and full-scale renovation services in Florida. 80+ projects completed, 15+ design awards. Award-winning team, turnkey solutions."
         canonical="https://www.linartrealty.com/design-renovation"
         ogType="website"
         keywords="luxury property design Florida, architectural renovation, interior design services, historic restoration Florida, smart home integration, sustainable building Florida"

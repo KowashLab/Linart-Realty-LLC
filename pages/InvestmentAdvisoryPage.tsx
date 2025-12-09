@@ -112,7 +112,7 @@ export function InvestmentAdvisoryPage() {
       
       <SEO 
         title="Real Estate Investment Advisory Florida - Strategic Portfolio Management | Linart Realty"
-        description="Expert investment advisory services: market analysis, portfolio optimization, tax strategy, 1031 exchanges. $1.8B+ investment volume, 18.5% average annual ROI. Institutional-grade research."
+        description="Expert investment advisory services: market analysis, portfolio optimization, tax strategy, 1031 exchanges. $85M+ investment volume, 18.5% average annual ROI. Institutional-grade research."
         canonical="https://www.linartrealty.com/investment-advisory"
         ogType="website"
         keywords="real estate investment advisory Florida, property portfolio management, market analysis Florida, tax-efficient real estate investment, 1031 exchange services, Florida property investment strategy"

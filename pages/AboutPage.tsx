@@ -14,8 +14,8 @@ import { PremiumButton } from '../components/PremiumButton';
 
 export function AboutPage() {
   const stats = [
-    { number: '$2.8B+', label: 'Total Transaction Volume', icon: TrendingUp },
-    { number: '500+', label: 'Properties Sold', icon: Award },
+    { number: '$250M+', label: 'Total Transaction Volume', icon: TrendingUp },
+    { number: '450+', label: 'Properties Sold', icon: Award },
     { number: '15+', label: 'Years of Excellence', icon: Target },
     { number: '98%', label: 'Client Satisfaction', icon: Users }
   ];
@@ -81,7 +81,7 @@ export function AboutPage() {
       
       <SEO 
         title="About Linart Realty - 15+ Years of Luxury Real Estate Excellence in Florida"
-        description="Discover Linart Realty's journey: $2.8B+ in transactions, 500+ properties sold, and 98% client satisfaction. Florida's premier boutique luxury real estate firm since 2009."
+        description="Discover Linart Realty's journey: $250M+ in transactions, 450+ properties sold, and 98% client satisfaction. Florida's premier boutique luxury real estate firm since 2009."
         canonical="https://www.linartrealty.com/about"
         ogType="website"
         keywords="luxury real estate Florida, premium property services, Linart Realty history, boutique real estate firm, Florida luxury properties"
