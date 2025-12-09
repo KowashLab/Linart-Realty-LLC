@@ -511,9 +511,9 @@ export function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="relative bg-[#0F0F0F] border border-[#E5E4E2]/20 overflow-hidden group hover:border-[#A8A9AD]/50 transition-all duration-700"
+              className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20 overflow-hidden group hover:border-[#A8A9AD]/50 transition-all duration-700"
             >
-              <div className="aspect-[16/9] w-full">
+              <div className="aspect-[16/9] w-full -m-8">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.5245!2d-80.1686!3d26.3683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d8e3e5d5d5d5d5%3A0x5d5d5d5d5d5d5d5!2s8318%20Crystal%20Downs%20Ave%2C%20Boca%20Raton%2C%20FL%2033434!5e0!3m2!1sen!2sus!4v1234567890"
                   width="100%"
