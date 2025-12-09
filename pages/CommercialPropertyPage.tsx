@@ -455,8 +455,8 @@ export function CommercialPropertyPage() {
                 }}
               />
               <ImageWithFallback 
-                src="/images/commercial-office-process.jpg"
-                alt="Process"
+                src="/images/commercial-tower-lobby.jpg"
+                alt="Commercial Real Estate Process"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
               />
             </div>
