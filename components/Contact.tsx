@@ -62,14 +62,6 @@ export function Contact() {
         }}
       />
 
-      {/* Top Accent */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{
-          background: 'linear-gradient(90deg, transparent 0%, #E5E4E2 20%, #A8A9AD 50%, #E5E4E2 80%, transparent 100%)',
-        }}
-      />
-
       <div className="container-custom px-6 lg:px-12 relative z-10">
         
         {/* Section Header */}
