@@ -122,14 +122,6 @@ export async function seedInitialPosts(): Promise<boolean> {
     return true; // Already seeded
   }
   
-  const existingPosts = await getAllPosts();
-  if (existingPosts.length > 0) {
-    console.log('Blog posts already exist, setting flag...');
-    // Set flag to prevent future seeding
-    await kv.set('seed:completed:blog', { completed: true, timestamp: new Date().toISOString() });
-    return true; // Already have posts
-  }
-  
   console.log('Starting blog posts seeding...');
   
   const initialPosts = [

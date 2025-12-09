@@ -35,6 +35,14 @@ Deno.serve(async (req) => {
     
     if (clean) {
       console.log('🧹 Clean mode enabled - deleting ALL data...');
+      
+      // Delete all blog posts
+      const { error: blogError } = await supabase
+        .from('kv_store_dcec270f')
+        .delete()
+        .like('key', 'blog:post:%');
+      if (blogError) console.error('Error deleting blog posts:', blogError);
+      
       // Delete all properties
       const { error: propsError } = await supabase
         .from('kv_store_dcec270f')
