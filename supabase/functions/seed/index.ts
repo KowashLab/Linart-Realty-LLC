@@ -31,8 +31,28 @@ Deno.serve(async (req) => {
     // Check for force parameter to reset seed flags
     const url = new URL(req.url);
     const force = url.searchParams.get('force') === 'true';
+    const clean = url.searchParams.get('clean') === 'true';
     
-    if (force) {
+    if (clean) {
+      console.log('🧹 Clean mode enabled - deleting ALL data...');
+      // Delete all properties
+      const { error: propsError } = await supabase
+        .from('kv_store_dcec270f')
+        .delete()
+        .like('key', 'property:%');
+      if (propsError) console.error('Error deleting properties:', propsError);
+      
+      // Delete all testimonials
+      const { error: testimonialsError } = await supabase
+        .from('kv_store_dcec270f')
+        .delete()
+        .like('key', 'testimonial:%');
+      if (testimonialsError) console.error('Error deleting testimonials:', testimonialsError);
+      
+      console.log('✅ All data deleted');
+    }
+    
+    if (force || clean) {
       console.log('⚠️ Force mode enabled - deleting seed flags...');
       await kv.del('seed:completed:blog');
       await kv.del('seed:completed:properties');
