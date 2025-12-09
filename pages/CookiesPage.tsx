@@ -122,7 +122,7 @@ export function CookiesPage() {
               lineHeight: 1.7
             }}
           >
-            Last updated: November 20, 2024
+            Last updated: February 7, 2017
           </p>
         </motion.div>
 

@@ -302,7 +302,7 @@ export function Footer() {
                 letterSpacing: '0.02em'
               }}
             >
-              Licensed Real Estate Brokerage | Florida License #BK1234567
+              ARTHUR COVAS, Licensed Real Estate Broker | Florida License #BK3277167
             </motion.p>
           </div>
         </div>

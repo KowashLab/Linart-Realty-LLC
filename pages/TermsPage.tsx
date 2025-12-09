@@ -25,7 +25,7 @@ export function TermsPage() {
       icon: Scale,
       title: 'Professional Services',
       content: [
-        'Linart Realty LLC is a licensed real estate brokerage operating in the State of Florida (License #BK1234567).',
+        'Linart Realty LLC is a licensed real estate brokerage operating in the State of Florida (License #BK3277167).',
         'All real estate transactions are subject to Florida real estate laws and regulations.',
         'Property information is deemed reliable but not guaranteed. Buyers should conduct independent verification.',
         'Commission structures and service fees will be clearly disclosed in writing before any engagement.'
@@ -117,7 +117,7 @@ export function TermsPage() {
               lineHeight: 1.7
             }}
           >
-            Last updated: November 20, 2024
+            Last updated: February 7, 2017
           </p>
         </motion.div>
 
@@ -309,7 +309,7 @@ export function TermsPage() {
                 lineHeight: 1.8
               }}
             >
-              <p>Email: <a href="mailto:legal@linartrealty.com" className="text-[#A8A9AD] hover:text-[#E5E4E2] transition-colors">legal@linartrealty.com</a></p>
+              <p>Email: <a href="mailto:info@linartrealty.com" className="text-[#A8A9AD] hover:text-[#E5E4E2] transition-colors">info@linartrealty.com</a></p>
               <p>Phone: +1 (561) 235-6804</p>
               <p>Address: 8318 Crystal Downs Avenue, Boca Raton, FL 33434</p>
             </div>
