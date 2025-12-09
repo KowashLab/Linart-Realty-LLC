@@ -475,12 +475,12 @@ export function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative bg-[#0A0A0B] p-8 border border-[#E5E4E2]/15"
+              className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20 group hover:border-[#A8A9AD]/50 transition-all duration-700"
             >
               <h4 
-                className="font-['Cinzel'] text-[#F2EEE7] mb-4"
+                className="font-['Cinzel'] text-[#F2EEE7] mb-6 pb-4 border-b border-[#E5E4E2]/10"
                 style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.5rem',
                   fontWeight: 600,
                   letterSpacing: '0.02em'
                 }}
@@ -488,7 +488,7 @@ export function Contact() {
                 Corporate Headquarters
               </h4>
               <p 
-                className="font-['Montserrat'] text-[#E5E4E2]/70 leading-relaxed"
+                className="font-['Montserrat'] text-[#E5E4E2]/80 leading-relaxed"
                 style={{
                   fontSize: '0.95rem',
                   fontWeight: 400,
@@ -500,6 +500,16 @@ export function Contact() {
                 in major luxury real estate markets globally. Our network extends across North America, 
                 Europe, and select international destinations.
               </p>
+
+              {/* Shimmer Effect */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 25%, #9e9e9e 50%, #cfcfcf 75%, #e0e0e0 100%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'shimmer 3s ease-in-out infinite'
+                }}
+              />
             </motion.div>
 
           </motion.div>
