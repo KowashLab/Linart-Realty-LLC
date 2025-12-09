@@ -510,7 +510,7 @@ export function Contact() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.4 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
               className="relative bg-[#0F0F0F] border border-[#E5E4E2]/20 overflow-hidden group hover:border-[#A8A9AD]/50 transition-all duration-700"
             >
               <div className="aspect-[16/9] w-full">
