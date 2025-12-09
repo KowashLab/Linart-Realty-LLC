@@ -64,54 +64,6 @@ export function Contact() {
 
       <div className="container-custom px-6 lg:px-12 relative z-10">
         
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20 lg:mb-28"
-        >
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#A8A9AD]" />
-            <span 
-              className="font-['Montserrat'] uppercase text-[#A8A9AD]"
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 500,
-                letterSpacing: '0.25em'
-              }}
-            >
-              Begin Your Journey
-            </span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#A8A9AD]" />
-          </div>
-
-          <h2 
-            className="font-['Cinzel'] text-[#F2EEE7] mb-6"
-            style={{
-              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
-              fontWeight: 600,
-              letterSpacing: '0.02em',
-              lineHeight: 1.1
-            }}
-          >
-            Contact Us
-          </h2>
-
-          <p 
-            className="font-['Montserrat'] text-[#E5E4E2]/60 max-w-2xl mx-auto"
-            style={{
-              fontSize: '1rem',
-              fontWeight: 400,
-              letterSpacing: '0.03em',
-              lineHeight: 1.8
-            }}
-          >
-            Schedule a private consultation with our luxury real estate specialists
-          </p>
-        </motion.div>
-
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
           
