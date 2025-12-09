@@ -130,11 +130,11 @@ export function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.9 }}
           >
-            <div className="relative bg-[#0F0F0F] p-10 border-2 border-[#E5E4E2]/20">
+            <div className="relative bg-[#0F0F0F] p-8 border border-[#E5E4E2]/20">
               
               {/* Corner Accents */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#E5E4E2]" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#E5E4E2]" />
+              <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-[#E5E4E2]" />
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-[#E5E4E2]" />
 
               <h3 
                 className="font-['Cinzel'] text-[#F2EEE7] mb-8"
