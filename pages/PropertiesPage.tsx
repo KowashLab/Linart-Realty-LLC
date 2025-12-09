@@ -48,7 +48,14 @@ export function PropertiesPage() {
 
   const filteredProperties = activeFilter === 'all' 
     ? properties 
-    : properties.filter(p => p.type === activeFilter);
+    : properties.filter(p => {
+        const type = p.propertyType?.toLowerCase();
+        if (activeFilter === 'luxury') return type === 'luxury estates';
+        if (activeFilter === 'commercial') return type === 'commercial';
+        if (activeFilter === 'residential') return type === 'residential';
+        if (activeFilter === 'investment') return type === 'investment';
+        return false;
+      });
 
   return (
     <>
