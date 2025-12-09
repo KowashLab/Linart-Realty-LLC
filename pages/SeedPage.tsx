@@ -3,7 +3,6 @@ import { SEO } from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Database, CheckCircle, AlertCircle, Loader, Crown } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { getSupabaseClient } from '../utils/supabase/client';
 
 /*
 ═══════════════════════════════════════════════════════════════════
@@ -102,21 +101,11 @@ export default function SeedPage() {
     setResults(null);
 
     try {
-      // Step 1: Delete seed completion flags via direct KV access
-      const supabase = getSupabaseClient();
-      
-      await supabase
-        .from('kv_store_dcec270f')
-        .delete()
-        .like('key', 'seed:completed:%');
-      
-      console.log('✅ Deleted all seed flags');
-
-      // Step 2: Call seed function
+      // Call seed function with force=true parameter to delete flags
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/seed`,
+        `https://${projectId}.supabase.co/functions/v1/seed?force=true`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`,
             'Content-Type': 'application/json'
