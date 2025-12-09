@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import * as kv from '../server/kv_store.ts';
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
@@ -26,6 +27,20 @@ Deno.serve(async (req) => {
 
   try {
     console.log('🌱 Starting seed process...');
+    
+    // Check for force parameter to reset seed flags
+    const url = new URL(req.url);
+    const force = url.searchParams.get('force') === 'true';
+    
+    if (force) {
+      console.log('⚠️ Force mode enabled - deleting seed flags...');
+      await kv.del('seed:completed:blog');
+      await kv.del('seed:completed:properties');
+      await kv.del('seed:completed:testimonials');
+      await kv.del('seed:completed:recognition');
+      await kv.del('seed:completed:partnerships');
+      console.log('✅ Seed flags deleted');
+    }
     
     const results = {
       blog: 0,
