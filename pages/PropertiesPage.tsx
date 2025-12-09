@@ -188,39 +188,33 @@ export function PropertiesPage() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
                   
-                  {/* Status Badge */}
-                  <div className="absolute top-4 left-4">
-                    <div className="px-4 py-1.5 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
+                  {/* Type & Status Badges */}
+                  <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
+                    <div className="relative px-3 py-1 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
                       <span 
                         className="font-['Montserrat'] uppercase text-[#E5E4E2]"
                         style={{
-                          fontSize: '0.65rem',
+                          fontSize: '0.55rem',
                           fontWeight: 600,
-                          letterSpacing: '0.15em'
+                          letterSpacing: '0.12em'
+                        }}
+                      >
+                        {property.propertyType}
+                      </span>
+                    </div>
+                    <div className="relative px-3 py-1 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
+                      <span 
+                        className="font-['Montserrat'] uppercase text-[#E5E4E2]"
+                        style={{
+                          fontSize: '0.55rem',
+                          fontWeight: 600,
+                          letterSpacing: '0.12em'
                         }}
                       >
                         {property.status}
                       </span>
                     </div>
                   </div>
-
-                  {/* Type Badge */}
-                  {property.propertyType && (
-                    <div className="absolute top-4 right-4">
-                      <div className="px-3 py-1.5 bg-black/80 backdrop-blur-md border border-[#E5E4E2]/50 shadow-lg">
-                        <span 
-                          className="font-['Montserrat'] uppercase text-[#E5E4E2]"
-                          style={{
-                            fontSize: '0.65rem',
-                            fontWeight: 600,
-                            letterSpacing: '0.15em'
-                          }}
-                        >
-                          {property.propertyType}
-                        </span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Content */}
